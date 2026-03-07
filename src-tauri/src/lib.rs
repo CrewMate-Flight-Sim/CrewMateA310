@@ -29,7 +29,12 @@ use app_data::{
 
 mod simconnect;
 use simconnect::aircraft_title::{get_aircraft_title, start_aircraft_title_stream};
-use simconnect::flight_state::start_flight_state_stream;
+use simconnect::flight_state::{is_in_cockpit, start_flight_state_stream};
+
+#[tauri::command]
+fn get_in_cockpit() -> bool {
+    is_in_cockpit()
+}
 
 #[tauri::command]
 fn set_mic_gain(state: tauri::State<'_, SpeechBridgeState>, gain: f32) {
@@ -196,6 +201,7 @@ pub fn run() {
             get_sound_packs,
             get_aircraft_title,
             set_mic_gain,
+            get_in_cockpit,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

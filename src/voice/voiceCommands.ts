@@ -10,6 +10,7 @@ import { setFlaps } from "./commands/flaps"
 import { flightControlsCheck } from "./commands/flight_controls_check"
 import { setFlightDirector } from "./commands/flight_director"
 import { setGearHandle } from "./commands/gear"
+import { executeGoAround } from "./commands/goAround"
 import { setLandingLights } from "./commands/landing_lights"
 import { setStrobeLights } from "./commands/strobe_lights"
 import { setTaxiLights } from "./commands/taxi_lights"
@@ -60,6 +61,11 @@ export function createVoiceCommands(): VoiceCommand[] {
       phrases: ["flaps full"],
       action: () => setFlaps(4),
       description: "Set flaps to 4/full"
+    },
+    {
+      phrases: ["go around flaps"],
+      action: () => executeGoAround(),
+      description: "Go around: retract flaps one step, rearm positive-climb callout and after-takeoff flow"
     },
 
     // APU Commands

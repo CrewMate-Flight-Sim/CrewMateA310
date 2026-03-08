@@ -1,6 +1,7 @@
 import { useEffect, useRef, useCallback } from "react"
 
 import { playSound, isSoundPlaying } from "@/services/playSounds"
+import { useGoAroundStore } from "@/store/goAroundStore"
 import { useTelemetryStore } from "@/store/telemetryStore"
 import type { Telemetry } from "@/store/telemetryStore"
 
@@ -131,6 +132,17 @@ export function useCallouts(vrSpeed: number) {
 
   const vrSpeedRef = useRef(vrSpeed)
   vrSpeedRef.current = vrSpeed
+
+  // Re-arm positive-climb callout on go-around
+  const goAroundCount = useRef(useGoAroundStore.getState().count)
+  useEffect(() => {
+    return useGoAroundStore.subscribe((s) => {
+      if (s.count !== goAroundCount.current) {
+        goAroundCount.current = s.count
+        altitude.current.positiveClimb = false
+      }
+    })
+  }, [])
 
   const tick = useCallback(async () => {
     const t = useTelemetryStore.getState().telemetry

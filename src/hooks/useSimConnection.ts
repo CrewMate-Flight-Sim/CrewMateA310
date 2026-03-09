@@ -31,6 +31,7 @@ const simVars: { key: string; expression: string }[] = [
   { key: "spoilersHandlePosition", expression: "(A:SPOILERS HANDLE POSITION,Position)" },
   { key: "transitionAltitude", expression: "(L:INI_TRANSITION_ALTITUDE)" },
   { key: "transitionLevel", expression: "(L:INI_TRANSITION_LEVEL)" },
+  { key: "cabinIsReady", expression: "(L:INI_CABIN_IS_READY)" },
   { key: "iniFdOn", expression: "(L:INI_FD_ON)" },
   { key: "efisQnhUnitSelectorLeft", expression: "(A:EFIS_QNH_UNIT_SELECTOR_LEFT, Bool)" },
   { key: "captAltimeterSettingMB", expression: "(A:KOHLSMAN SETTING MB:1, Millibars)" },

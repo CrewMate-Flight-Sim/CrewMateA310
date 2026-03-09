@@ -4,7 +4,7 @@
   "steps": [
     {
       "label": "Ground Spoilers",
-      "read": "(L:SPOILERS_ARM_SET)",
+      "read": "(L:INI_SPOILERS_ARMED)",
       "on": "1 (>K:SPOILERS_ARM_OFF)",
       "expect": 0,
       "skip_verify": true

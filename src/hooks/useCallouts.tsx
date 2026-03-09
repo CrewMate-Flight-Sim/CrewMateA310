@@ -33,6 +33,7 @@ interface PreviousValues {
   speed: number
   alt: number
   onGround: number
+  cabinIsReady: number
 }
 
 const crossedUp = (prev: number, curr: number, threshold: number) => prev < threshold && curr >= threshold
@@ -127,8 +128,11 @@ export function useCallouts(vrSpeed: number) {
   const prev = useRef<PreviousValues>({
     speed: 0,
     alt: 0,
-    onGround: 1
+    onGround: 1,
+    cabinIsReady: 0
   })
+
+  const cabinReadyPrimed = useRef(false)
 
   const vrSpeedRef = useRef(vrSpeed)
   vrSpeedRef.current = vrSpeed
@@ -154,6 +158,12 @@ export function useCallouts(vrSpeed: number) {
     const p = prev.current
     const vr = vrSpeedRef.current
     const now = Date.now()
+    const cabinIsReady = (t.cabinIsReady ?? 0) > 0.5 ? 1 : 0
+
+    if (!cabinReadyPrimed.current) {
+      cabinReadyPrimed.current = true
+      p.cabinIsReady = cabinIsReady
+    }
 
     // Takeoff / landing edge detection
     if (!t.onGround && p.onGround) {
@@ -186,6 +196,10 @@ export function useCallouts(vrSpeed: number) {
     if (t.onGround && crossedDown(p.speed, t.ias, 70) && !sp.called70) {
       playSound("70_knots.ogg")
       sp.called70 = true
+    }
+
+    if (t.onGround && p.cabinIsReady === 0 && cabinIsReady === 1) {
+      playSound("cabin_ready.ogg")
     }
 
     // Positive climb
@@ -281,6 +295,7 @@ export function useCallouts(vrSpeed: number) {
     p.speed = t.ias
     p.alt = t.alt
     p.onGround = t.onGround
+    p.cabinIsReady = cabinIsReady
   }, [])
 
   useEffect(() => {

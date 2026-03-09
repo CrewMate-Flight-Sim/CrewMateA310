@@ -18,7 +18,7 @@ else {
 # === CONFIGURATION ===
 $azureKey = $env:AZURE_TTS_KEY
 $azureRegion = $env:AZURE_TTS_REGION
-$voiceName = "en-US-JennyNeural"   # Jenny neural voice
+$voiceName = "en-US-DavisNeural"   # Jenny neural voice
 
 # Other voices:
 # "en-US-AriaNeural"  - Female, friendly
@@ -126,6 +126,7 @@ $phrases = @{
     "cabin_landing"                             = "Cabin crew, please be seated for landing"
     "are_you_sure"                              = "Are you sure?"
     "packs_1_and_2_on"                          = "Packs one and two on"
+    "cabin_ready"                               = "Cabin is ready"
 }
 
 # Derive folder name from voice: "en-US-JennyNeural" -> "Jenny"

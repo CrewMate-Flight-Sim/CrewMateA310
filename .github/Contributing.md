@@ -6,7 +6,6 @@ This document explains how to get set up, which checks contributors should run l
 
 **Quick links**
 - [**Code of Conduct**](../CODE_OF_CONDUCT.md)
-- [**Code of Conduct**](../CODE_OF_CONDUCT.md)
 - [**License GPL-3.0**](../LICENSE)
 
 

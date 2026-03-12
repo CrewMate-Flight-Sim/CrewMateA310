@@ -392,28 +392,29 @@ async function executeNormalItem(item: ChecklistItem, index: number, signal: Abo
     if (item.baro_confirmation) {
       const t = useTelemetryStore.getState().telemetry
       if (t !== null) {
-        // cptBaro: 0 = inHg, 1 = hPa
-        const isHpa = t.cptBaro === 1
-        let filenames: string[]
-        if (isHpa) {
-          // e.g. 1013 → ["1.ogg","0.ogg","1.ogg","3.ogg"]
-          filenames = String(Math.round(t.captAltimeterSettingMB ?? 0))
+        // cptBaro: 0 = inHg (e.g. 29.92 → "2992"), 1 = hPa (e.g. 1013.25 → "1013")
+        const value =
+          t.cptBaro === 1
+            ? Math.round(t.captAltimeterSettingMB ?? 0)
+            : Math.round((t.captAltimeterSettingHG ?? 0) * 100)
+        const filenames = [
+          ...String(value)
             .split("")
-            .map((d) => `${d}.ogg`)
-        } else {
-          // e.g. 29.92 → ["2.ogg","9.ogg","point.ogg","9.ogg","2.ogg"]
-          filenames = (t.captAltimeterSettingHG ?? 0)
-            .toFixed(2)
-            .split("")
-            .map((c) => (c === "." ? "point.ogg" : `${c}.ogg`))
-        }
-        // playSoundSequence blocks until all digits finish (silence-trimmed, gapless)
+            .map((d) => `${d}.ogg`),
+          "set.ogg"
+        ]
         await playSoundSequence(filenames)
       }
     }
 
     // No extra validation — accept the matched response
     break
+  }
+
+  if (item.copilot_confirmation) {
+    await waitForSoundFinished()
+    await playSound(item.copilot_confirmation)
+    await waitForSoundFinished()
   }
 
   setStepStatus(index, "complete")

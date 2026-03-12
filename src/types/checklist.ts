@@ -72,6 +72,13 @@ export interface ChecklistItem {
 
   // Direct list of SimVar checks applied after the verbal response is accepted
   simvar_checks?: SimvarCheck[]
+
+  // Audio the copilot plays after the pilot's response is accepted
+  copilot_confirmation?: string
+
+  // Baro confirmation: after the pilot's response, the copilot reads back the live
+  // baro value digit-by-digit (inHg as "29.92", hPa as "1013") from telemetry.
+  baro_confirmation?: true
 }
 
 export interface Checklist {

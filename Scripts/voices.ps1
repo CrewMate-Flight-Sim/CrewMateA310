@@ -27,6 +27,7 @@ $voiceName = "en-US-JennyNeural"   # Jenny neural voice
 # "en-US-JennyNeural"  - Female, clear
 
 $phrases = @{
+    "checked"                                   = "Checked"
     "clear_right"                               = "Clear right"
     "check"                                     = "Check"
     "ready"                                     = "Ready"
@@ -133,6 +134,7 @@ $phrases = @{
     "fcualt"                                    = "FCU altitude"
     "departure_change_checklist_completed"      = "Departure change checklist completed"
     "one_to_go"                                 = "One thousand to go"
+    "standard_set"                              = "Standard Set"
 }
 
 # Derive folder name from voice: "en-US-JennyNeural" -> "Jenny"

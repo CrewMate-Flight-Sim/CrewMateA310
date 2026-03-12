@@ -685,5 +685,6 @@ class Program
             "pull flight level",
             "manage altitude",
             "manage flight level",
+            "set standard",
         };
 }

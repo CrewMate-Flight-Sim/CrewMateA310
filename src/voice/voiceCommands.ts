@@ -2,6 +2,8 @@ import { abortChecklist, executeChecklist } from "@/services/checklistRunner"
 import { executeFlow } from "@/services/flowRunner"
 import { playSound } from "@/services/playSounds"
 import { usePreflightTimerStore } from "@/store/preflightTimerStore"
+import { useTelemetryStore } from "@/store/telemetryStore"
+import { usePerformanceStore } from "@/store/performanceStore"
 
 import { setAltitudeDial } from "./commands/altitude"
 import { setSelAlt } from "./commands/altitude"
@@ -43,10 +45,22 @@ interface VoiceCommand {
 export const numericPrefixCommands: Record<string, (value: number) => void | Promise<void>> = {
   "set heading ": (v) => setHeadingDial(v),
   "heading select ": (v) => setHeadingDial(v),
-  "set altitude ": (v) => setAltitudeDial(v),
-  "altitude select ": (v) => setAltitudeDial(v),
-  "set flight level ": (v) => setAltitudeDial(v * 100),
-  "flight level select ": (v) => setAltitudeDial(v * 100),
+  "set altitude ": (v) => {
+    playSound("check.ogg")
+    setAltitudeDial(v)
+  },
+  "altitude select ": (v) => {
+    playSound("check.ogg")
+    setAltitudeDial(v)
+  },
+  "set flight level ": (v) => {
+    playSound("check.ogg")
+    setAltitudeDial(v * 100)
+  },
+  "flight level select ": (v) => {
+    playSound("check.ogg")
+    setAltitudeDial(v * 100)
+  },
   "set speed ": (v) => setAirspeedDial(v),
   "speed select ": (v) => setAirspeedDial(v),
   "pull heading ": async (v) => {
@@ -312,6 +326,30 @@ export function createVoiceCommands(): VoiceCommand[] {
     },
 
     // Autopilot Commands
+    {
+      phrases: ["set missed approach altitude"],
+      action: () => {
+        const alt = usePerformanceStore.getState().landing?.["missedAltitude"]
+        if (alt != null) {
+          playSound("missed_approach_alt_set.ogg")
+          setAltitudeDial(alt)
+        }
+      },
+      description: "Sets missed approach altitude"
+    },
+
+    {
+      phrases: ["set runway track"],
+      action: () => {
+        const hdg = useTelemetryStore.getState().telemetry?.["landingtrk"]
+        if (hdg != null) {
+          playSound("check.ogg")
+          setHeadingDial(hdg)
+        }
+      },
+      description: "Sets landing runway track"
+    },
+
     {
       phrases: ["auto pilot on", "auto pilot one on", "autopilot on", "autopilot one on"],
       action: () => {

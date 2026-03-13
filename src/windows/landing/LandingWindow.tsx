@@ -11,7 +11,7 @@ export function LandingWindow() {
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target
-    const parsedValue = name === "rwytrk" ? Number(value) : value
+    const parsedValue = name === "missedAltitude" ? Number(value) : value
     setLandingData({ [name]: value } as Partial<typeof landing>)
     const newLanding = { ...landing, [name]: parsedValue }
     emit("landing-updated", newLanding)
@@ -43,17 +43,17 @@ export function LandingWindow() {
           </div>
 
           <div className="space-y-1">
-            <Label htmlFor="rwytrk" className="text-sm text-slate-300">
-              Runway Track
+            <Label htmlFor="missedAltitude" className="text-sm text-slate-300">
+              Missed Approach (ft)
             </Label>
             <Input
               type="number"
-              id="rwytrk"
-              name="rwytrk"
-              value={landing.rwytrk}
+              id="missedAltitude"
+              name="missedAltitude"
+              value={landing.missedAltitude}
               onChange={handleInputChange}
               className="h-9 bg-slate-900/50 border-slate-600 text-white text-sm font-mono focus-visible:ring-cyan-500"
-              placeholder="150"
+              placeholder="4000"
             />
           </div>
 
@@ -74,8 +74,6 @@ export function LandingWindow() {
             </select>
           </div>
         </div>
-
-
 
         {/* Flaps */}
 

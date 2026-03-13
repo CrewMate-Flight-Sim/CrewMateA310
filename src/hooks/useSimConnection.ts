@@ -58,7 +58,8 @@ const simVars: { key: string; expression: string }[] = [
   { key: "cptBaro", expression: "(L:XMLVAR_BARO_Selector_HPA_1)" },
   { key: "foBaro", expression: "(L:XMLVAR_BARO_Selector_HPA_2)" },
   { key: "stbBaro", expression: "(L:XMLVAR_BARO_Selector_HPA_3)" },
-  { key: "linkedInstruments", expression: "(L:INI_LINKED_INSTRUMENTS)" }
+  { key: "linkedInstruments", expression: "(L:INI_LINKED_INSTRUMENTS)" },
+  { key: "landingtrk", expression: "(L:INI_ARR_RUNWAY_HDG)" }
 ]
 
 const RETRY_INTERVAL_MS = 5000

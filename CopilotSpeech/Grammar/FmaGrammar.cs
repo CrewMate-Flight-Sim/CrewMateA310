@@ -65,7 +65,7 @@ partial class Program
             new string?[] { null, "thrust d climb", "thrust climb", "speed", "mach" },
             new string?[] { "srs", "climb", "open climb", "expedite climb" },
             new string?[] { null, "runway", "nav", "heading", "track" },
-            new string?[] { null, "climb blue", "alt blue", "alt cruise blue", "nav blue" }
+            new string?[] { null, "climb blue", "alt blue", "alt cruise star", "nav blue" }
         );
 
     // ─── Cruise ──────────────────────────────────────────────────────────────
@@ -74,7 +74,7 @@ partial class Program
             new string?[] { null, "speed", "mach" },
             new string?[] { "alt", "altitude", "alt cruise", "alt cst", "alt star" },
             new string?[] { null, "nav", "heading", "track" },
-            new string?[] { null, "des blue", "alt cruise blue", "alt cst blue" }
+            new string?[] { null, "des blue", "alt cruise star", "alt cst blue" }
         );
 
     // ─── Descent ─────────────────────────────────────────────────────────────
@@ -83,7 +83,7 @@ partial class Program
             new string?[] { null, "thrust idle", "speed", "mach" },
             new string?[] { "descent", "open descent", "expedite descent" },
             new string?[] { null, "nav", "heading", "track" },
-            new string?[] { null, "alt blue", "alt cruise blue", "alt star blue" }
+            new string?[] { null, "alt blue", "alt cruise star", "alt star blue" }
         );
 
     // ─── Approach ────────────────────────────────────────────────────────────
@@ -196,7 +196,7 @@ partial class Program
         {
             "climb blue",
             "alt blue",
-            "alt cruise blue",
+            "alt cruise star",
             "alt cst blue",
             "alt star blue",
             "descent blue",

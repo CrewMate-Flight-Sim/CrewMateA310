@@ -11,7 +11,7 @@ interface TakeoffData {
 interface LandingData {
   flaps: string
   autobrake?: string
-  rwytrk: number
+  missedAltitude: number
 }
 
 interface PerformanceStore {
@@ -32,7 +32,7 @@ const defaultTakeoffData: TakeoffData = {
 const defaultLandingData: LandingData = {
   flaps: "Full",
   autobrake: "manual",
-  rwytrk: 360,
+  missedAltitude: 4000
 }
 
 export const usePerformanceStore = create<PerformanceStore>()(

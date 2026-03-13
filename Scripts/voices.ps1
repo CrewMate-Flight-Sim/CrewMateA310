@@ -135,6 +135,7 @@ $phrases = @{
     "departure_change_checklist_completed"      = "Departure change checklist completed"
     "one_to_go"                                 = "One thousand to go"
     "standard_set"                              = "Standard Set"
+    "missed_approach_alt_set"                   = "Missed approach altitude set"
 }
 
 # Derive folder name from voice: "en-US-JennyNeural" -> "Jenny"

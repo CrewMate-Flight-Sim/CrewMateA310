@@ -174,6 +174,6 @@ partial class Program
             "manage altitude",
             "manage flight level",
             "set standard",
-            "set runway track"
+            "set runway track",
         };
 }

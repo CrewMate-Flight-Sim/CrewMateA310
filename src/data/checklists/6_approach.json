@@ -5,6 +5,7 @@
     {
       "challenge": "baro_ref.ogg",
       "response": ["#3", "#4", "set and checked"],
+      "baro_confirmation": true,
       "label": "Barometric Reference"
     },
     {

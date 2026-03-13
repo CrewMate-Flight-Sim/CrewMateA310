@@ -9,12 +9,13 @@
     },
     {
       "challenge": "fuel_quantity.ogg",
-      "response": ["set and checked"],
+      "response": ["tons", "set and checked"],
       "label": "Fuel Quantity"
     },
     {
       "challenge": "baro_ref.ogg",
       "response": ["set and checked", "#3", "#4"],
+      "baro_confirmation": true,
       "label": "Barometric Reference"
     }
   ],

@@ -54,7 +54,11 @@ const simVars: { key: string; expression: string }[] = [
   { key: "mixture1", expression: "(L:INI_MIXTURE_RATIO1_HANDLE)" },
   { key: "mixture2", expression: "(L:INI_MIXTURE_RATIO2_HANDLE)" },
   { key: "spoilersArmed", expression: "(L:INI_SPOILERS_ARMED)" },
-  { key: "fcu_alt", expression: "(L:INI_ALTITUDE_DIAL)" }
+  { key: "fcu_alt", expression: "(L:INI_ALTITUDE_DIAL)" },
+  { key: "cptBaro", expression: "(L:XMLVAR_BARO_Selector_HPA_1)" },
+  { key: "foBaro", expression: "(L:XMLVAR_BARO_Selector_HPA_2)" },
+  { key: "stbBaro", expression: "(L:XMLVAR_BARO_Selector_HPA_3)" },
+  { key: "linkedInstruments", expression: "(L:INI_LINKED_INSTRUMENTS)" }
 ]
 
 const RETRY_INTERVAL_MS = 5000

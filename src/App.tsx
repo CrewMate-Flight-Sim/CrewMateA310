@@ -5,6 +5,7 @@ import { IconToolbar } from "@/components/IconToolbar"
 import { NoVoiceModel } from "@/components/noVoiceModel"
 import { TextBar } from "@/components/textBar"
 import { useAutoFlows } from "@/hooks/useAutoFlows"
+import { useBaroSync } from "@/hooks/useBaroSync"
 import { useCallouts } from "@/hooks/useCallouts"
 import { useCloseConfirm } from "@/hooks/useCloseConfirm"
 import { usePreflightTimer } from "@/hooks/usePreflightTimer"
@@ -20,6 +21,7 @@ import { usePreflightTimerStore } from "./store/preflightTimerStore"
 
 function App() {
   useSimConnection()
+  useBaroSync()
 
   const status = useTelemetryStore((state) => state.status)
   const connected = status === "connected"
@@ -36,7 +38,7 @@ function App() {
   useCloseConfirm()
 
   const currentEvent = usePreflightTimerStore((s) => s.currentEvent)
-  
+
   return (
     <div className="flex flex-col min-h-screen">
       <main className="flex-1 bg-black text-white p-2">

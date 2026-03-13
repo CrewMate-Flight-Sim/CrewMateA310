@@ -3,6 +3,9 @@ import { executeFlow } from "@/services/flowRunner"
 import { playSound } from "@/services/playSounds"
 import { usePreflightTimerStore } from "@/store/preflightTimerStore"
 
+import { setAltitudeDial } from "./commands/altitude"
+import { setSelAlt } from "./commands/altitude"
+import { setManagedAlt } from "./commands/altitude"
 import { setStartAPU } from "./commands/apu"
 import { setAutoPilot } from "./commands/autoPilot"
 import { setEngAntiIce } from "./commands/eng_anti_ice"
@@ -11,12 +14,19 @@ import { flightControlsCheck } from "./commands/flight_controls_check"
 import { setFlightDirector } from "./commands/flight_director"
 import { setGearHandle } from "./commands/gear"
 import { executeGoAround } from "./commands/goAround"
+import { setHeadingDial } from "./commands/heading"
+import { setSelHeading } from "./commands/heading"
+import { setManagedHeading } from "./commands/heading"
 import { setLandingLights } from "./commands/landing_lights"
 import { setSeatBelts } from "./commands/seat_belts"
+import { setAirspeedDial } from "./commands/speed"
+import { setSelSpeed } from "./commands/speed"
+import { setManagedSpeed } from "./commands/speed"
 import { setStrobeLights } from "./commands/strobe_lights"
 import { setTaxiLights } from "./commands/taxi_lights"
 import { setWingAntiIce } from "./commands/wing_anti_ice"
 import { setWipers } from "./commands/wipers"
+import { setStdBaro } from "./commands/setStdBaro"
 
 interface VoiceCommand {
   phrases: string[]
@@ -25,8 +35,41 @@ interface VoiceCommand {
   exactMatch?: boolean
 }
 
+/**
+ * Numeric prefix commands emitted by the sidecar as a single normalized utterance.
+ * Key = the prefix string the sidecar emits (e.g. "set heading ").
+ * Value = handler receiving the parsed integer value.
+ */
+export const numericPrefixCommands: Record<string, (value: number) => void | Promise<void>> = {
+  "set heading ": (v) => setHeadingDial(v),
+  "heading select ": (v) => setHeadingDial(v),
+  "set altitude ": (v) => setAltitudeDial(v),
+  "altitude select ": (v) => setAltitudeDial(v),
+  "set flight level ": (v) => setAltitudeDial(v * 100),
+  "flight level select ": (v) => setAltitudeDial(v * 100),
+  "set speed ": (v) => setAirspeedDial(v),
+  "speed select ": (v) => setAirspeedDial(v),
+  "pull heading ": (v) => {
+    setSelHeading(1)
+    setSelHeading(v)
+  },
+  "pull speed ": (v) => {
+    setSelSpeed(1)
+    setSelSpeed(v)
+  }
+}
+
 export function createVoiceCommands(): VoiceCommand[] {
   return [
+    // baro commands
+    {
+      phrases: ["set standard"],
+      action: () => {
+        playSound("standard_set.ogg")
+        setStdBaro(1)
+      },
+      description: "Set standard barometer (QNH)"
+    },
     // Gear Commands
     {
       phrases: ["gear down"],
@@ -72,7 +115,7 @@ export function createVoiceCommands(): VoiceCommand[] {
 
     // APU Commands
     {
-      phrases: ["start the apu please", "start the apu", "start apu", "start apu please"],
+      phrases: ["start the apu", "start apu"],
       action: () => {
         playSound("check.ogg")
         setStartAPU(1)
@@ -82,7 +125,7 @@ export function createVoiceCommands(): VoiceCommand[] {
 
     // anti ice commands
     {
-      phrases: ["Engine anti ice on", "Engine anti-ice on", "Engine anti ice please", "Engine anti-ice please"],
+      phrases: ["engine anti ice on"],
       action: () => {
         playSound("check.ogg")
         setEngAntiIce(1)
@@ -90,7 +133,7 @@ export function createVoiceCommands(): VoiceCommand[] {
       description: "Turns on engine anti ice"
     },
     {
-      phrases: ["Engine anti ice off", "Engine anti-ice off"],
+      phrases: ["engine anti ice off"],
       action: () => {
         playSound("check.ogg")
         setEngAntiIce(0)
@@ -98,7 +141,7 @@ export function createVoiceCommands(): VoiceCommand[] {
       description: "Turns off engine anti ice"
     },
     {
-      phrases: ["Wing anti ice on", "Wing anti-ice on", "Wing anti ice please", "Wing anti-ice please"],
+      phrases: ["wing anti ice on"],
       action: () => {
         playSound("check.ogg")
         setWingAntiIce(1)
@@ -106,7 +149,7 @@ export function createVoiceCommands(): VoiceCommand[] {
       description: "Turns on wing anti ice"
     },
     {
-      phrases: ["Wing anti ice off", "Wing anti-ice off"],
+      phrases: ["wing anti ice off"],
       action: () => {
         playSound("check.ogg")
         setWingAntiIce(0)
@@ -115,7 +158,7 @@ export function createVoiceCommands(): VoiceCommand[] {
     },
     // Lights Commands
     {
-      phrases: ["Landing lights on", "Landing lights please"],
+      phrases: ["landing lights on"],
       action: () => {
         playSound("check.ogg")
         setLandingLights(1)
@@ -123,7 +166,7 @@ export function createVoiceCommands(): VoiceCommand[] {
       description: "Turns on landing lights"
     },
     {
-      phrases: ["Landing lights off"],
+      phrases: ["landing lights off"],
       action: () => {
         playSound("check.ogg")
         setLandingLights(0)
@@ -131,7 +174,7 @@ export function createVoiceCommands(): VoiceCommand[] {
       description: "Turns off landing lights"
     },
     {
-      phrases: ["Taxi Lights Off please", "Taxi Lights Off"],
+      phrases: ["taxi lights off"],
       action: () => {
         playSound("check.ogg")
         setTaxiLights(2)
@@ -139,7 +182,7 @@ export function createVoiceCommands(): VoiceCommand[] {
       description: "Turns off taxi lights"
     },
     {
-      phrases: ["Taxi Lights On please", "Taxi Lights On"],
+      phrases: ["taxi lights on"],
       action: () => {
         playSound("check.ogg")
         setTaxiLights(1)
@@ -147,7 +190,7 @@ export function createVoiceCommands(): VoiceCommand[] {
       description: "Turns on taxi lights"
     },
     {
-      phrases: ["Takeoff Light On please", "Takeoff Light On"],
+      phrases: ["takeoff light on"],
       action: () => {
         playSound("check.ogg")
         setTaxiLights(0)
@@ -155,7 +198,7 @@ export function createVoiceCommands(): VoiceCommand[] {
       description: "Turns on takeoff lights"
     },
     {
-      phrases: ["Strobe Lights Off please", "Strobe Lights Off"],
+      phrases: ["strobe lights off"],
       action: () => {
         playSound("check.ogg")
         setStrobeLights(2)
@@ -163,7 +206,7 @@ export function createVoiceCommands(): VoiceCommand[] {
       description: "Turns off strobe lights"
     },
     {
-      phrases: ["Strobe Lights Auto please", "Strobe Lights Auto"],
+      phrases: ["strobe lights auto"],
       action: () => {
         playSound("check.ogg")
         setStrobeLights(1)
@@ -171,7 +214,7 @@ export function createVoiceCommands(): VoiceCommand[] {
       description: "Turns strobe lights to auto"
     },
     {
-      phrases: ["Strobe Lights On please", "Strobe Lights On"],
+      phrases: ["strobe lights on"],
       action: () => {
         playSound("check.ogg")
         setStrobeLights(0)
@@ -180,7 +223,7 @@ export function createVoiceCommands(): VoiceCommand[] {
     },
     // Seat Belts Commands
     {
-      phrases: ["Seat belts off please", "Seat belts off"],
+      phrases: ["seat belts off"],
       action: () => {
         playSound("check.ogg")
         setSeatBelts(2)
@@ -188,7 +231,7 @@ export function createVoiceCommands(): VoiceCommand[] {
       description: "Turns off seat belts"
     },
     {
-      phrases: ["Seat belts on please", "Seat belts on"],
+      phrases: ["seat belts on"],
       action: () => {
         playSound("check.ogg")
         setSeatBelts(0)
@@ -196,7 +239,7 @@ export function createVoiceCommands(): VoiceCommand[] {
       description: "Turns on seat belts"
     },
     {
-      phrases: ["Seat belts auto please", "Seat belts auto"],
+      phrases: ["seat belts auto"],
       action: () => {
         playSound("check.ogg")
         setSeatBelts(1)
@@ -205,21 +248,21 @@ export function createVoiceCommands(): VoiceCommand[] {
     },
     // Wipers Commands
     {
-      phrases: ["Wipers off please", "Wipers off"],
+      phrases: ["wipers off"],
       action: () => {
         setWipers(3)
       },
       description: "Turns off wipers"
     },
     {
-      phrases: ["Wipers slow please", "Wipers slow"],
+      phrases: ["wipers slow"],
       action: () => {
         setWipers(4)
       },
       description: "Sets wipers to slow speed"
     },
     {
-      phrases: ["Wipers fast please", "Wipers fast"],
+      phrases: ["wipers fast"],
       action: () => {
         setWipers(5)
       },
@@ -249,7 +292,7 @@ export function createVoiceCommands(): VoiceCommand[] {
 
     // Flight Director & Bird Commands
     {
-      phrases: ["Flight Director On please", "Flight Director On"],
+      phrases: ["flight director on"],
       action: () => {
         playSound("check.ogg")
         setFlightDirector(1)
@@ -257,7 +300,7 @@ export function createVoiceCommands(): VoiceCommand[] {
       description: "Turns on flight director"
     },
     {
-      phrases: ["Flight Director Off please", "Flight Director Off"],
+      phrases: ["flight director off"],
       action: () => {
         playSound("check.ogg")
         setFlightDirector(0)
@@ -267,21 +310,61 @@ export function createVoiceCommands(): VoiceCommand[] {
 
     // Autopilot Commands
     {
-      phrases: [
-        "Auto Pilot On please",
-        "Auto Pilot one on",
-        "Auto Pilot On",
-        "Autopilot On please",
-        "Autopilot one on",
-        "Autopilot On"
-      ],
+      phrases: ["auto pilot on", "auto pilot one on", "autopilot on", "autopilot one on"],
       action: () => {
         playSound("check.ogg")
         setAutoPilot(1)
       },
       description: "Turns on auto pilot"
     },
-
+    {
+      phrases: ["pull speed"],
+      action: () => {
+        playSound("check.ogg")
+        setSelSpeed(1)
+      },
+      description: "Pulls speed knob to selected mode"
+    },
+    {
+      phrases: ["manage speed"],
+      action: () => {
+        playSound("check.ogg")
+        setManagedSpeed(1)
+      },
+      description: "Pushes speed knob to managed mode"
+    },
+    {
+      phrases: ["pull heading"],
+      action: () => {
+        playSound("check.ogg")
+        setSelHeading(1)
+      },
+      description: "Pulls heading knob"
+    },
+    {
+      phrases: ["manage nav"],
+      action: () => {
+        playSound("check.ogg")
+        setManagedHeading(1)
+      },
+      description: "Pushes heading knob to managed mode"
+    },
+    {
+      phrases: ["pull altitude", "pull flight level"],
+      action: () => {
+        playSound("check.ogg")
+        setSelAlt(1)
+      },
+      description: "Pulls altitude knob"
+    },
+    {
+      phrases: ["manage altitude", "manage flight levl"],
+      action: () => {
+        playSound("check.ogg")
+        setManagedAlt(1)
+      },
+      description: "Pushes altitude knob to managed mode"
+    },
     // Flight Controls Check
     {
       phrases: ["Flight controls check", "Flight control check"],

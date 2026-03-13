@@ -2,9 +2,10 @@ import { listen } from "@tauri-apps/api/event"
 
 import { simvarGet } from "@/API/simvarApi"
 import { getChecklistById } from "@/services/checklistLoader"
-import { isSoundPlaying, playSound } from "@/services/playSounds"
+import { isSoundPlaying, playSound, playSoundSequence } from "@/services/playSounds"
 import { useChecklistStore } from "@/store/checklistStore"
 import { usePerformanceStore } from "@/store/performanceStore"
+import { useTelemetryStore } from "@/store/telemetryStore"
 import type { ChecklistItem } from "@/types/checklist"
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -387,8 +388,33 @@ async function executeNormalItem(item: ChecklistItem, index: number, signal: Abo
       }
     }
 
+    // ── baro_confirmation: copilot reads back the live baro value ────────
+    if (item.baro_confirmation) {
+      const t = useTelemetryStore.getState().telemetry
+      if (t !== null) {
+        // cptBaro: 0 = inHg (e.g. 29.92 → "2992"), 1 = hPa (e.g. 1013.25 → "1013")
+        const value =
+          t.cptBaro === 1
+            ? Math.round(t.captAltimeterSettingMB ?? 0)
+            : Math.round((t.captAltimeterSettingHG ?? 0) * 100)
+        const filenames = [
+          ...String(value)
+            .split("")
+            .map((d) => `${d}.ogg`),
+          "set.ogg"
+        ]
+        await playSoundSequence(filenames)
+      }
+    }
+
     // No extra validation — accept the matched response
     break
+  }
+
+  if (item.copilot_confirmation) {
+    await waitForSoundFinished()
+    await playSound(item.copilot_confirmation)
+    await waitForSoundFinished()
   }
 
   setStepStatus(index, "complete")

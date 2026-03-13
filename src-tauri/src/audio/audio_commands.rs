@@ -1,4 +1,4 @@
-use crate::audio::audio_player::AudioPlayer;
+use crate::audio::audio_player::{play_sequence_trimmed, AudioPlayer};
 use std::path::PathBuf;
 use tauri::{AppHandle, Manager};
 
@@ -72,4 +72,36 @@ pub async fn play_sound(
 #[tauri::command]
 pub fn is_audio_playing(audio_player: tauri::State<'_, AudioPlayerState>) -> bool {
     audio_player.0.is_playing()
+}
+
+/// Play a list of sound files back-to-back with silence trimmed from each.
+/// Awaiting this command blocks until the last file finishes — no JS polling needed.
+#[tauri::command]
+pub async fn play_sound_sequence(
+    app_handle: AppHandle,
+    audio_player: tauri::State<'_, AudioPlayerState>,
+    pack: Option<String>,
+    filenames: Vec<String>,
+    volume: Option<f32>,
+) -> Result<(), String> {
+    let pack = pack.unwrap_or_else(|| "Jenny".to_string());
+    let volume = volume.unwrap_or(1.0);
+
+    let paths: Result<Vec<_>, _> = filenames
+        .iter()
+        .map(|f| resolve_sound_path(&app_handle, &pack, f))
+        .collect();
+    let paths = paths?;
+
+    // Move only the two Arc fields so we don't need AudioPlayer: Clone.
+    let stream_handle = audio_player.0.stream_handle.clone();
+    let is_playing = audio_player.0.is_playing.clone();
+
+    // play_sequence_trimmed blocks — run on a thread-pool thread.
+    tokio::task::spawn_blocking(move || {
+        play_sequence_trimmed(&stream_handle, &is_playing, paths, volume)
+    })
+    .await
+    .map_err(|e| e.to_string())?
+    .map_err(|e| e.to_string())
 }

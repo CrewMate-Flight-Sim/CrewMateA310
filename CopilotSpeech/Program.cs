@@ -8,7 +8,7 @@ using Microsoft.ML.OnnxRuntime.Tensors;
 using NAudio.Wave;
 using Vosk;
 
-class Program
+partial class Program
 {
     private const int SampleRate = 16000;
 
@@ -34,7 +34,10 @@ class Program
     private static int silenceFrames = 0;
 
     private static readonly HashSet<string> ValidCommands = new HashSet<string>(
-        GetValidCommands().Concat(GetDigitCommands(4))
+        WithOptionalPlease(GetValidCommands())
+            .Concat(GetDigitCommands(4))
+            .Concat(GetCompoundDigitPhrases())
+            .Concat(GetFmaCallouts())
     );
 
     static void Main(string[] args)
@@ -221,12 +224,13 @@ class Program
         if (string.IsNullOrWhiteSpace(text))
             return;
 
-        // NORMALIZE FIRST
-        text = NormalizeCommand(text);
-
-        // THEN VALIDATE
+        // VALIDATE on raw Vosk output first — ValidCommands contains the word-form
+        // strings that Vosk is constrained to (e.g. "one zero one three").
+        // Only after validation do we normalize for output (e.g. → "1013").
         if (!IsValidCommand(text))
             return;
+
+        text = NormalizeCommand(text);
 
         Console.WriteLine(
             JsonSerializer.Serialize(
@@ -242,6 +246,14 @@ class Program
 
     static string NormalizeCommand(string text)
     {
+        // Strip optional "please" suffix when the base form is itself a valid command.
+        if (text.EndsWith(" please"))
+        {
+            var withoutPlease = text[..^" please".Length];
+            if (ValidCommands.Contains(withoutPlease))
+                text = withoutPlease;
+        }
+
         text = text switch
         {
             "are tee oh" => "rto",
@@ -272,11 +284,72 @@ class Program
             _ => text,
         };
 
+        // Try compound digit phrase first (e.g. "one zero two three set" → "1023 set")
+        var compound = TryParseCompoundDigitPhrase(text);
+        if (compound != null)
+            return compound;
+
+        // Pure digit sequence (e.g. "one zero two three" → "1023")
         var digits = TryParseDigitSequence(text);
         if (digits != null)
             return digits;
 
         return text;
+    }
+
+    static string? TryParseCompoundDigitPhrase(string text)
+    {
+        // Suffix patterns: "[digits] set" / "[digits] tons"
+        foreach (var suffix in new[] { " set", " tons" })
+        {
+            if (!text.EndsWith(suffix))
+                continue;
+
+            var numberPart = text[..^suffix.Length];
+            var digits = TryParseDigitSequence(numberPart);
+            if (digits != null)
+                return $"{digits}{suffix}"; // e.g. "1023 set", "102 tons"
+        }
+
+        // Decimal tons: "[digits] point [digits] tons"  →  "10.2 tons"
+        if (text.EndsWith(" tons"))
+        {
+            var withoutTons = text[..^" tons".Length];
+            var pointIdx = withoutTons.IndexOf(" point ");
+            if (pointIdx >= 0)
+            {
+                var intPart = TryParseDigitSequence(withoutTons[..pointIdx]);
+                var decPart = TryParseDigitSequence(withoutTons[(pointIdx + 7)..]);
+                if (intPart != null && decPart != null)
+                    return $"{intPart}.{decPart} tons"; // e.g. "10.2 tons"
+            }
+        }
+
+        // Prefix patterns: "set altitude [digits]", "set heading [digits]", etc.
+        foreach (
+            var prefix in new[]
+            {
+                "set altitude ",
+                "set heading ",
+                "set speed ",
+                "set baro ",
+                "set qnh ",
+                "set altimeter ",
+                "set flight level ",
+                "set missed approach altitude ",
+            }
+        )
+        {
+            if (!text.StartsWith(prefix))
+                continue;
+
+            var numberPart = text[prefix.Length..];
+            var digits = TryParseDigitSequence(numberPart);
+            if (digits != null)
+                return $"{prefix}{digits}"; // e.g. "set altitude 2000", "set heading 238"
+        }
+
+        return null;
     }
 
     static string? TryParseDigitSequence(string text)
@@ -314,222 +387,4 @@ class Program
     }
 
     static bool IsValidCommand(string text) => ValidCommands.Contains(text);
-
-    static IEnumerable<string> GetDigitCommands(int maxDigits)
-    {
-        var digits = new[]
-        {
-            "zero",
-            "one",
-            "two",
-            "three",
-            "four",
-            "five",
-            "six",
-            "seven",
-            "eight",
-            "nine",
-            "niner",
-        };
-
-        var results = new List<string>();
-        results.AddRange(digits);
-
-        for (int length = 2; length <= maxDigits; length++)
-            BuildDigitSequences(digits, length, new List<string>(), results);
-
-        return results;
-    }
-
-    static void BuildDigitSequences(
-        string[] digits,
-        int remaining,
-        List<string> current,
-        List<string> output
-    )
-    {
-        if (remaining == 0)
-        {
-            output.Add(string.Join(" ", current));
-            return;
-        }
-
-        foreach (var d in digits)
-        {
-            current.Add(d);
-            BuildDigitSequences(digits, remaining - 1, current, output);
-            current.RemoveAt(current.Count - 1);
-        }
-    }
-
-    static HashSet<string> GetValidCommands() =>
-        new HashSet<string>
-        {
-            "lets prepare the aircraft",
-            "lets prepare the flight",
-            "lets set up the aircraft",
-            "gear up",
-            "gear down",
-            "flaps zero",
-            "flaps one",
-            "flaps two",
-            "flaps three",
-            "flaps full",
-            "landing lights on",
-            "landing lights on please",
-            "landing lights off",
-            "landing lights off please",
-            "strobe lights on",
-            "strobe lights on please",
-            "strobe lights auto",
-            "strobe lights auto please",
-            "strobe lights off",
-            "strobe lights off please",
-            "taxi lights on",
-            "taxi lights off",
-            "takeoff light on",
-            "flight director on",
-            "flight director on please",
-            "flight director off",
-            "flight director off please",
-            "bird on",
-            "bird on please",
-            "bird off",
-            "bird off please",
-            "turn off bird",
-            "flight director off bird on",
-            "flight director off bird on please",
-            "auto pilot on",
-            "auto pilot on please",
-            "auto pilot one on",
-            "autopilot on",
-            "autopilot on please",
-            "autopilot one on",
-            "cancel checklist",
-            "stop checklist",
-            "abort checklist",
-            "cockpit preparation checklist",
-            "before start checklist",
-            "before start procedure",
-            "before start flow",
-            "starting engine number one",
-            "starting engine number two",
-            "starting number one",
-            "starting number two",
-            "after start checklist",
-            "clear left",
-            "clear on the left",
-            "left side clear",
-            "clear left side",
-            "taxi checklist",
-            "departure change checklist",
-            "removed",
-            "line up checklist",
-            "runway entry procedure",
-            "clear to line up",
-            "clear for takeoff",
-            "before takeoff procedure",
-            "takeoff",
-            "approach checklist",
-            "approach",
-            "start approach checklist",
-            "landing checklist",
-            "parking checklist",
-            "secure aircraft checklist",
-            "ok to clean up",
-            "clear to clean up",
-            "lights please",
-            "shutdown procedure",
-            "shutdown",
-            "flight controls check",
-            "set",
-            "on",
-            "off",
-            "armed",
-            "check",
-            "confirmed",
-            "checked",
-            "set and checked",
-            "received",
-            "config one plus f",
-            "config one plus eff",
-            "config 1 plus f",
-            "con fig one plus eff",
-            "can fix one plus f2",
-            "con fig one plus f",
-            "can fix two",
-            "con fig two",
-            "config two",
-            "config to",
-            "config two",
-            "config three",
-            "config 3",
-            "config tree",
-            "config free",
-            "con fig three",
-            "con fig tree",
-            "can fix three",
-            "can fix tree",
-            "advised",
-            "signaled",
-            "medium",
-            "btv",
-            "auto",
-            "started",
-            "running",
-            "normal",
-            "rto",
-            "stop",
-            "are tee oh",
-            "r t o",
-            "art o",
-            "artio",
-            "are tea oh",
-            "tara",
-            "ta ra",
-            "t a r a",
-            "terra",
-            "zero",
-            "up",
-            "retracted",
-            "down",
-            "secured",
-            "secure",
-            "ta only",
-            "chocks in place",
-            "parking brake set",
-            "wing anti ice on",
-            "wing anti ice please",
-            "wing anti ice off",
-            "engine anti ice on",
-            "engine anti ice please",
-            "engine anti ice off",
-            "starting one",
-            "starting engine one",
-            "starting engine number one",
-            "starting two",
-            "starting engine two",
-            "starting engine number two",
-            "config",
-            "start the apu please",
-            "start the apu",
-            "start apu",
-            "start apu please",
-            "go around flaps",
-            "wipers off",
-            "wipers off please",
-            "wipers slow",
-            "wipers slow please",
-            "wipers fast",
-            "wipers fast please",
-            "wipers slow intermittent",
-            "wipers medium intermittent",
-            "wipers fast intermittent",
-            "seat belts on",
-            "seat belts on please",
-            "seat belts off",
-            "seat belts off please",
-            "seat belts auto",
-            "seat belts auto please",
-        };
 }

@@ -29,3 +29,15 @@ export const isSoundPlaying = async (): Promise<boolean> => {
     return false
   }
 }
+
+/// Play a list of sound files back-to-back (silence-trimmed, gapless).
+export const playSoundSequence = async (filenames: string[], options?: PlaySoundOptions) => {
+  try {
+    const state = useVoiceStore.getState()
+    const soundPack = options?.pack ?? state.soundPack
+    const volume = options?.volume ?? state.soundVolume / 100
+    await invoke("play_sound_sequence", { filenames, pack: soundPack, volume })
+  } catch (error) {
+    console.error("Error playing sound sequence via backend:", error)
+  }
+}

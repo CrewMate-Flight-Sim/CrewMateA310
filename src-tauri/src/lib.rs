@@ -1,6 +1,8 @@
 use std::sync::{mpsc, Mutex};
 mod audio;
-use audio::audio_commands::{get_sound_packs, is_audio_playing, play_sound, AudioPlayerState};
+use audio::audio_commands::{
+    get_sound_packs, is_audio_playing, play_sound, play_sound_sequence, AudioPlayerState,
+};
 use audio::audio_player::AudioPlayer;
 mod brigdes;
 use brigdes::speech_bridge::SpeechBridge;
@@ -197,6 +199,7 @@ pub fn run() {
             set_selected_vosk_model,
             check_vosk_model_status,
             play_sound,
+            play_sound_sequence,
             is_audio_playing,
             get_sound_packs,
             get_aircraft_title,

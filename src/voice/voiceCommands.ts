@@ -1,33 +1,34 @@
 import { abortChecklist, executeChecklist } from "@/services/checklistRunner"
 import { executeFlow } from "@/services/flowRunner"
 import { playSound } from "@/services/playSounds"
+import { usePerformanceStore } from "@/store/performanceStore"
 import { usePreflightTimerStore } from "@/store/preflightTimerStore"
 import { useTelemetryStore } from "@/store/telemetryStore"
-import { usePerformanceStore } from "@/store/performanceStore"
 
-import { setAltitudeDial } from "./commands/altitude"
-import { setSelAlt } from "./commands/altitude"
-import { setManagedAlt } from "./commands/altitude"
+import { setEngAntiIce, setWingAntiIce } from "./commands/anti_ice"
 import { setStartAPU } from "./commands/apu"
-import { setAutoPilot } from "./commands/autoPilot"
-import { setEngAntiIce } from "./commands/eng_anti_ice"
+import {
+  setAutoPilot,
+  setFlightDirector,
+  setBird,
+  setAltitudeDial,
+  setSelAlt,
+  setManagedAlt,
+  setHeadingDial,
+  setSelHeading,
+  setManagedHeading,
+  setAirspeedDial,
+  setSelSpeed,
+  setManagedSpeed
+} from "./commands/autoPilot"
+import { setStdBaro } from "./commands/baro"
+import { setDoorSlides } from "./commands/doorSlides"
 import { setFlaps } from "./commands/flaps"
 import { flightControlsCheck } from "./commands/flight_controls_check"
-import { setFlightDirector } from "./commands/flight_director"
 import { setGearHandle } from "./commands/gear"
 import { executeGoAround } from "./commands/goAround"
-import { setHeadingDial } from "./commands/heading"
-import { setSelHeading } from "./commands/heading"
-import { setManagedHeading } from "./commands/heading"
-import { setLandingLights } from "./commands/landing_lights"
+import { setLandingLights, setStrobeLights, setTaxiLights } from "./commands/lights"
 import { setSeatBelts } from "./commands/seat_belts"
-import { setStdBaro } from "./commands/setStdBaro"
-import { setAirspeedDial } from "./commands/speed"
-import { setSelSpeed } from "./commands/speed"
-import { setManagedSpeed } from "./commands/speed"
-import { setStrobeLights } from "./commands/strobe_lights"
-import { setTaxiLights } from "./commands/taxi_lights"
-import { setWingAntiIce } from "./commands/wing_anti_ice"
 import { setWipers } from "./commands/wipers"
 
 interface VoiceCommand {
@@ -78,6 +79,15 @@ export const numericPrefixCommands: Record<string, (value: number) => void | Pro
 
 export function createVoiceCommands(): VoiceCommand[] {
   return [
+    // Doors / Slides Commands
+    {
+      phrases: ["cabin crew arm slides and cross check", "cabin crew arm slides"],
+      action: () => {
+        setDoorSlides(1)
+      },
+      description: "Arms slides "
+    },
+
     // baro commands
     {
       phrases: ["set standard"],
@@ -322,7 +332,36 @@ export function createVoiceCommands(): VoiceCommand[] {
         playSound("check.ogg")
         setFlightDirector(0)
       },
+      exactMatch: true,
       description: "Turns off flight director"
+    },
+
+    {
+      phrases: ["flight director off bird on"],
+      action: async () => {
+        playSound("check.ogg")
+        await setFlightDirector(0)
+        await setBird(1)
+      },
+      description: "Turns off flight director and turns on bird"
+    },
+
+    {
+      phrases: ["bird on"],
+      action: () => {
+        playSound("check.ogg")
+        setBird(1)
+      },
+      description: "Turns on bird"
+    },
+
+    {
+      phrases: ["bird off"],
+      action: () => {
+        playSound("check.ogg")
+        setBird(0)
+      },
+      description: "Turns off bird"
     },
 
     // Autopilot Commands

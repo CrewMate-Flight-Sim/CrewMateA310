@@ -175,5 +175,7 @@ partial class Program
             "manage flight level",
             "set standard",
             "set runway track",
+            "cabin crew arm slides and cross check",
+            "cabin crew arm slides",
         };
 }

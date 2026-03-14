@@ -88,6 +88,30 @@
       "read": "(L:INI_RMP2_9_VOLUME)",
       "on": "65 (>L:INI_RMP2_9_VOLUME)",
       "expect": 65
+    },
+    {
+      "label": "Show Airports FO EFIS",
+      "read": "(L:INI_SHOW_AIRPORTS2)",
+      "on": "1 (>L:INI_SHOW_AIRPORTS2)",
+      "expect": 1
+    },
+    {
+      "label": "Show Constraints FO EFIS",
+      "read": "(L:INI_SHOW_CONSTRAINTS2)",
+      "on": "1 (>L:INI_SHOW_CONSTRAINTS2)",
+      "expect": 1
+    },
+    {
+      "label": "Show VOR1 FO EFIS",
+      "read": "(L:INI_FO_VOR1_ACTIVE)",
+      "on": "1 (>L:INI_FO_VOR1_ACTIVE)",
+      "expect": 1
+    },
+    {
+      "label": "Show VOR2 FO EFIS",
+      "read": "(L:INI_FO_VOR2_ACTIVE)",
+      "on": "1 (>L:INI_FO_VOR2_ACTIVE)",
+      "expect": 1
     }
   ]
 }

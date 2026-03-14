@@ -1,3 +1,4 @@
+import { simvarSet } from "@/API/simvarApi"
 import { playSound, isSoundPlaying } from "@/services/playSounds"
 import { useTelemetryStore } from "@/store/telemetryStore"
 import type { Telemetry } from "@/store/telemetryStore"
@@ -63,4 +64,7 @@ export async function flightControlsCheck() {
     await playSound(step.sound)
     await waitForSoundDone()
   }
+
+  // as per Airbus SOP RTO is only armed after flight controls check
+  await simvarSet("4 (>L:INI_AUTOBRAKE_LEVEL)")
 }

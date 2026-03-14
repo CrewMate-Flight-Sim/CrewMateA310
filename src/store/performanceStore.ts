@@ -10,7 +10,6 @@ interface TakeoffData {
 
 interface LandingData {
   flaps: string
-  autobrake?: string
   missedAltitude: number
 }
 
@@ -31,7 +30,6 @@ const defaultTakeoffData: TakeoffData = {
 
 const defaultLandingData: LandingData = {
   flaps: "Full",
-  autobrake: "manual",
   missedAltitude: 4000
 }
 

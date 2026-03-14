@@ -24,7 +24,6 @@ export function LandingWindow() {
   return (
     <div className="min-h-screen bg-black text-white p-4">
       <div className="space-y-4">
-        {/* V Speeds */}
         <div className="grid grid-cols-2 gap-3">
           <div className="space-y-1">
             <Label htmlFor="flaps" className="text-sm text-slate-300">
@@ -56,27 +55,7 @@ export function LandingWindow() {
               placeholder="4000"
             />
           </div>
-
-          <div className="space-y-1">
-            <Label htmlFor="flaps" className="text-sm text-slate-300">
-              Auto Brake
-            </Label>
-            <select
-              id="autobrake"
-              name="autobrake"
-              value={landing.autobrake}
-              onChange={handleInputChange}
-              className="w-full h-9 bg-slate-900/50 border border-slate-600 text-white text-sm rounded-md px-3 focus:outline-none focus:ring-2 focus:ring-cyan-500"
-            >
-              <option value="manual">Manual</option>
-              <option value="medium">Medium</option>
-              <option value="btv">BTV</option>
-            </select>
-          </div>
         </div>
-
-        {/* Flaps */}
-
         <Button onClick={handleClose} className="w-full bg-cyan-600 hover:bg-cyan-700 text-white font-semibold py-2">
           Close
         </Button>

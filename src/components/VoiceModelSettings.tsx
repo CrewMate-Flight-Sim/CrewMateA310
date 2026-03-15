@@ -5,6 +5,7 @@ import { useState, useEffect } from "react"
 
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
+import { cn } from "@/lib/utils"
 
 interface VoskModelInfo {
   id: string
@@ -40,7 +41,7 @@ export function VoiceModelSettings() {
         invoke<string | null>("get_selected_vosk_model")
       ])
       setModels(availableModels)
-      setSelectedModel(selected || "")
+      setSelectedModel(selected ?? "")
     } catch (error) {
       console.error("Failed to load models:", error)
     } finally {
@@ -52,11 +53,7 @@ export function VoiceModelSettings() {
     loadModels()
 
     const unlisten = listen<DownloadProgress>("vosk-model-download-progress", (event) => {
-      setDownloadProgress((prev) => {
-        const newMap = new Map(prev)
-        newMap.set(event.payload.model_id, event.payload)
-        return newMap
-      })
+      setDownloadProgress((prev) => new Map(prev).set(event.payload.model_id, event.payload))
     })
 
     const unlistenComplete = listen<string>("vosk-model-download-complete", () => {
@@ -71,8 +68,8 @@ export function VoiceModelSettings() {
   }, [])
 
   const handleDownload = async (modelId: string) => {
+    setModels((prev) => prev.map((m) => (m.id === modelId ? { ...m, is_downloading: true } : m)))
     try {
-      setModels((prev) => prev.map((m) => (m.id === modelId ? { ...m, is_downloading: true } : m)))
       await invoke("download_vosk_model", { modelId })
     } catch (error) {
       console.error("Failed to download model:", error)
@@ -81,8 +78,6 @@ export function VoiceModelSettings() {
   }
 
   const handleDelete = async (modelId: string) => {
-    if (!confirm("Are you sure you want to delete this model?")) return
-
     try {
       await invoke("delete_vosk_model", { modelId })
       if (selectedModel === modelId) setSelectedModel("")
@@ -127,15 +122,17 @@ export function VoiceModelSettings() {
             <div className="space-y-1">
               {downloadedModels.map((model) => {
                 const isActive = model.id === selectedModel
+
                 return (
                   <div
                     key={model.id}
                     onClick={() => handleSelectModel(model.id)}
-                    className={`flex items-center justify-between rounded-md px-2 py-1.5 border transition-colors cursor-pointer ${
+                    className={cn(
+                      "flex items-center justify-between rounded-md px-2 py-1.5 border transition-colors cursor-pointer",
                       isActive
                         ? "border-cyan-700/60 bg-cyan-950/30"
                         : "border-slate-700/40 bg-slate-900/30 hover:border-slate-600/60"
-                    }`}
+                    )}
                   >
                     <div className="flex items-center gap-2 min-w-0">
                       {isActive ? (
@@ -143,18 +140,16 @@ export function VoiceModelSettings() {
                       ) : (
                         <div className="h-3 w-3 rounded-full border border-slate-600 shrink-0" />
                       )}
-                      <span className={`text-xs truncate ${isActive ? "text-white" : "text-slate-300"}`}>
+                      <span className={cn("text-xs truncate", isActive ? "text-white" : "text-slate-300")}>
                         {model.name}
                       </span>
                       <span className="text-[10px] font-mono text-slate-500 shrink-0">{model.size_mb} MB</span>
                     </div>
+
                     <Button
                       variant="ghost"
                       size="sm"
-                      onClick={(e) => {
-                        e.stopPropagation()
-                        handleDelete(model.id)
-                      }}
+                      onClick={() => handleDelete(model.id)}
                       className="h-6 w-6 p-0 text-slate-600 hover:text-red-400 hover:bg-red-950/30 shrink-0"
                     >
                       <Trash2 className="h-3 w-3" />
@@ -197,12 +192,10 @@ export function VoiceModelSettings() {
                       {isDownloading ? (
                         <>
                           <Loader2 className="h-2.5 w-2.5 animate-spin" />
-                          Downloading
+                          {progress ? `${progress.percentage.toFixed(0)}%` : "Starting…"}
                         </>
                       ) : (
-                        <>
-                          <Download className="h-2.5 w-2.5" />
-                        </>
+                        <Download className="h-2.5 w-2.5" />
                       )}
                     </Button>
                   </div>

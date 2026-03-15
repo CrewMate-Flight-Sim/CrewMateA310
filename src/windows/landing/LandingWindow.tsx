@@ -7,6 +7,9 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { usePerformanceStore } from "@/store/performanceStore"
 
+const selectCls =
+  "w-full h-8 bg-slate-900/50 border border-slate-600 text-white text-xs rounded-md px-2 focus:outline-none focus:ring-2 focus:ring-cyan-500"
+
 export function LandingWindow() {
   const { landing, setLandingData } = usePerformanceStore()
 
@@ -16,57 +19,92 @@ export function LandingWindow() {
       .catch(() => {})
   }, [])
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    const { name, value } = e.target
-    const parsedValue = name === "missedAltitude" ? Number(value) : value
+  const handleChange = (name: string, value: string | number) => {
     setLandingData({ [name]: value } as Partial<typeof landing>)
-    const newLanding = { ...landing, [name]: parsedValue }
-    emit("landing-updated", newLanding)
+    emit("landing-updated", { ...landing, [name]: value })
   }
 
-  const handleClose = () => {
-    getCurrentWindow().close()
+  const handleNumberInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+    handleChange(e.target.name, Number(e.target.value))
+  }
+
+  const handleSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    handleChange(e.target.name, e.target.value)
   }
 
   return (
-    <div className="min-h-screen bg-black text-white p-4">
-      <div className="space-y-4">
-        <div className="grid grid-cols-2 gap-3">
-          <div className="space-y-1">
-            <Label htmlFor="flaps" className="text-sm text-slate-300">
-              Flaps Setting
-            </Label>
-            <select
-              id="flaps"
-              name="flaps"
-              value={landing.flaps}
-              onChange={handleInputChange}
-              className="w-full h-9 bg-slate-900/50 border border-slate-600 text-white text-sm rounded-md px-3 focus:outline-none focus:ring-2 focus:ring-cyan-500"
-            >
-              <option value="3">3</option>
-              <option value="4">Full</option>
-            </select>
-          </div>
-
-          <div className="space-y-1">
-            <Label htmlFor="missedAltitude" className="text-sm text-slate-300">
-              Missed Approach (ft)
-            </Label>
-            <Input
-              type="number"
-              id="missedAltitude"
-              name="missedAltitude"
-              value={landing.missedAltitude}
-              onChange={handleInputChange}
-              className="h-9 bg-slate-900/50 border-slate-600 text-white text-sm font-mono focus-visible:ring-cyan-500"
-              placeholder="4000"
-            />
-          </div>
+    <div className="h-screen bg-black text-white p-3 flex flex-col gap-3">
+      {/*Flaps + Missed Approach */}
+      <div className="grid grid-cols-2 gap-2">
+        <div className="space-y-1">
+          <Label htmlFor="flaps" className="text-[10px] font-mono text-cyan-400 uppercase tracking-widest">
+            Flaps
+          </Label>
+          <select id="flaps" name="flaps" value={landing.flaps} onChange={handleSelectChange} className={selectCls}>
+            <option value="3">3</option>
+            <option value="Full">Full</option>
+          </select>
         </div>
-        <Button onClick={handleClose} className="w-full bg-cyan-600 hover:bg-cyan-700 text-white font-semibold py-2">
-          Close
-        </Button>
+
+        <div className="space-y-1">
+          <Label htmlFor="missedAltitude" className="text-[10px] font-mono text-cyan-400 uppercase tracking-widest">
+            Missed App (ft)
+          </Label>
+          <Input
+            type="number"
+            min={1000}
+            max={20000}
+            id="missedAltitude"
+            name="missedAltitude"
+            value={landing.missedAltitude}
+            onChange={handleNumberInput}
+            className="h-8 bg-slate-900/50 border-slate-600 text-white text-xs font-mono text-center px-1 focus-visible:ring-cyan-500"
+            placeholder="4000"
+          />
+        </div>
       </div>
+
+      {/* Anti Ice + APU Start */}
+      <div className="grid grid-cols-2 gap-2">
+        <div className="space-y-1">
+          <Label htmlFor="antiIce" className="text-[10px] font-mono text-cyan-400 uppercase tracking-widest">
+            Anti Ice
+          </Label>
+          <select
+            id="antiIce"
+            name="antiIce"
+            value={landing.antiIce}
+            onChange={handleSelectChange}
+            className={selectCls}
+          >
+            <option value="off">OFF</option>
+            <option value="oneng">ENG</option>
+          </select>
+        </div>
+
+        <div className="space-y-1">
+          <Label htmlFor="apuStart" className="text-[10px] font-mono text-cyan-400 uppercase tracking-widest">
+            APU Start
+          </Label>
+          <select
+            id="apuStart"
+            name="apuStart"
+            value={landing.apuStart}
+            onChange={handleSelectChange}
+            className={selectCls}
+          >
+            <option value="auto">Auto</option>
+            <option value="manual">Manual</option>
+          </select>
+        </div>
+      </div>
+
+      <Button
+        onClick={() => getCurrentWindow().close()}
+        className="w-full h-8 bg-cyan-600 hover:bg-cyan-700 text-white font-semibold text-sm mt-auto"
+      >
+        Ok
+      </Button>
     </div>
   )
 }

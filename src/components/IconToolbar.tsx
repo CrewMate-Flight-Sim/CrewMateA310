@@ -4,6 +4,7 @@ import { useState } from "react"
 
 import { Button } from "@/components/ui/button"
 import { TooltipProvider, Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip"
+import { cn } from "@/lib/utils"
 import { useFlowStore } from "@/store/flowStore"
 import { usePreflightTimerStore } from "@/store/preflightTimerStore"
 import { openLandingWindow, openSettingsWindow, openTakeoffWindow } from "@/windows/windowsHandler"
@@ -13,6 +14,8 @@ type IconToolbarProps = {
   onToggleVoice: () => void
   voiceDisabled: boolean
 }
+
+const baseBtn = "w-9 h-9 p-0 bg-transparent border border-slate-700/50 transition"
 
 export function IconToolbar({ voiceEnabled, onToggleVoice, voiceDisabled }: IconToolbarProps) {
   const [alwaysOnTop, setAlwaysOnTop] = useState(false)
@@ -24,8 +27,7 @@ export function IconToolbar({ voiceEnabled, onToggleVoice, voiceDisabled }: Icon
 
   const flowRunning = useFlowStore((s) => s.executionState === "running")
 
-  const minutes = Math.floor(remainingSeconds / 60)
-  const timeDisplay = `${String(minutes).padStart(2, "0")}`
+  const timeDisplay = String(Math.floor(remainingSeconds / 60)).padStart(2, "0")
 
   const handleToggleAlwaysOnTop = async () => {
     const newValue = !alwaysOnTop
@@ -38,37 +40,26 @@ export function IconToolbar({ voiceEnabled, onToggleVoice, voiceDisabled }: Icon
   }
 
   return (
-    <div className="flex items-center gap-4">
+    <div className="flex items-center gap-5">
       <TooltipProvider>
         <Tooltip>
           <TooltipTrigger asChild>
             <Button
               onClick={onToggleVoice}
               disabled={voiceDisabled}
-              className={`
-                w-9 h-9 p-0 bg-transparent border border-slate-700/50
-                hover:bg-cyan-400/10
-                ${voiceEnabled ? "border-red-400 hover:border-red-400" : ""}
-              `}
+              className={cn(baseBtn, "hover:bg-cyan-400/10", voiceEnabled && "border-red-400 hover:border-red-400")}
             >
-              {voiceEnabled ? <MicOff className="w-5 h-5 text-red-400" /> : <Mic className="w-5 h-5 text-cyan-300" />}
+              {voiceEnabled ? <Mic className="w-5 h-5 text-red-400" /> : <MicOff className="w-5 h-5 text-cyan-300" />}
             </Button>
           </TooltipTrigger>
           <TooltipContent side="bottom">{voiceEnabled ? "Stop Listening" : "Start Listening"}</TooltipContent>
         </Tooltip>
-      </TooltipProvider>
 
-      <TooltipProvider>
         <Tooltip>
           <TooltipTrigger asChild>
             <Button
               onClick={handleToggleAlwaysOnTop}
-              className={`
-                w-9 h-9 p-0 bg-transparent border border-slate-700/50
-                hover:bg-amber-400/10
-                transition
-                ${alwaysOnTop ? "border-amber-400" : ""}
-              `}
+              className={cn(baseBtn, "hover:bg-amber-400/10", alwaysOnTop && "border-amber-400")}
             >
               {alwaysOnTop ? (
                 <PinOff className="w-5 h-5 text-amber-400" />
@@ -79,75 +70,45 @@ export function IconToolbar({ voiceEnabled, onToggleVoice, voiceDisabled }: Icon
           </TooltipTrigger>
           <TooltipContent side="bottom">{alwaysOnTop ? "Unpin App" : "Pin App"}</TooltipContent>
         </Tooltip>
-      </TooltipProvider>
 
-      <TooltipProvider>
         <Tooltip>
           <TooltipTrigger asChild>
             <Button
               onClick={timerRunning ? skipMinute : startTimer}
               disabled={flowRunning}
-              className={`
-    h-9 p-0 bg-transparent border border-slate-700/50
-    transition
-    ${timerRunning ? "border-blue-600 hover:bg-blue-600/10 px-2 gap-1.5" : "w-9 hover:bg-blue-400/10"}
-  `}
+              className={cn(
+                baseBtn,
+                timerRunning ? "border-blue-600 hover:bg-blue-600/10 w-auto px-2 gap-1.5" : "hover:bg-blue-400/10"
+              )}
             >
-              <Clock className={`w-5 h-5 ${timerRunning ? "text-blue-600" : "text-blue-400"}`} />
+              <Clock className={cn("w-5 h-5", timerRunning ? "text-blue-600" : "text-blue-400")} />
               {timerRunning && <span className="text-xs font-mono text-blue-300">{timeDisplay}m</span>}
             </Button>
           </TooltipTrigger>
           <TooltipContent side="bottom">{timerRunning ? "Skip 1 min" : "Start preflight countdown"}</TooltipContent>
         </Tooltip>
-      </TooltipProvider>
 
-      <TooltipProvider>
         <Tooltip>
           <TooltipTrigger asChild>
-            <Button
-              onClick={openTakeoffWindow}
-              className="
-                w-9 h-9 p-0 bg-transparent border border-slate-700/50
-                hover:bg-emerald-400/10
-                transition
-              "
-            >
+            <Button onClick={openTakeoffWindow} className={cn(baseBtn, "hover:bg-emerald-400/10")}>
               <PlaneTakeoff className="w-5 h-5 text-emerald-400" />
             </Button>
           </TooltipTrigger>
           <TooltipContent side="bottom">Takeoff Performance</TooltipContent>
         </Tooltip>
-      </TooltipProvider>
 
-      <TooltipProvider>
         <Tooltip>
           <TooltipTrigger asChild>
-            <Button
-              onClick={openLandingWindow}
-              className="
-                w-9 h-9 p-0 bg-transparent border border-slate-700/50
-                hover:bg-violet-400/10
-                transition
-              "
-            >
+            <Button onClick={openLandingWindow} className={cn(baseBtn, "hover:bg-violet-400/10")}>
               <PlaneLanding className="w-5 h-5 text-violet-400" />
             </Button>
           </TooltipTrigger>
           <TooltipContent side="bottom">Landing Performance</TooltipContent>
         </Tooltip>
-      </TooltipProvider>
 
-      <TooltipProvider>
         <Tooltip>
           <TooltipTrigger asChild>
-            <Button
-              onClick={openSettingsWindow}
-              className="
-                w-9 h-9 p-0 bg-transparent border border-slate-700/50
-                hover:bg-slate-400/10
-                transition
-              "
-            >
+            <Button onClick={openSettingsWindow} className={cn(baseBtn, "hover:bg-slate-400/10")}>
               <SettingsIcon className="w-5 h-5 text-slate-300" />
             </Button>
           </TooltipTrigger>

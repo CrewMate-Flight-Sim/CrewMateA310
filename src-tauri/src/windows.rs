@@ -95,7 +95,7 @@ pub async fn open_landing_window(app_handle: AppHandle) -> Result<(), String> {
         "src/windows/landing/landing.html",
         "Landing Performance",
         350.0,
-        150.0,
+        200.0,
         false,
     )
 }

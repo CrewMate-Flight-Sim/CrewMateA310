@@ -1,4 +1,4 @@
-import { Check, Loader2, Mic, Play, Square, X } from "lucide-react"
+import { Loader2, Mic, Play, Square, X } from "lucide-react"
 import { useEffect, useState } from "react"
 
 import { Button } from "@/components/ui/button"
@@ -8,7 +8,6 @@ import { useChecklistStore } from "@/store/checklistStore"
 import type { ChecklistItem } from "@/types/checklist"
 
 function formatResponseToken(token: string): string {
-  if (token === "*") return "any"
   if (token === "#2") return "##"
   if (token === "#3") return "###"
   if (token === "#4") return "####"
@@ -20,7 +19,7 @@ function getDisplayResponses(item: ChecklistItem): string[] {
 }
 
 export function ChecklistPanel() {
-  const { currentChecklist, currentStepIndex, stepStatuses, executionState, error } = useChecklistStore()
+  const { currentChecklist, currentStepIndex, stepStatuses, executionState } = useChecklistStore()
   const isRunning = executionState === "running"
   const totalItems = currentChecklist?.items.length ?? 0
   const completedItems = stepStatuses.filter((s) => s === "complete").length
@@ -79,24 +78,6 @@ export function ChecklistPanel() {
       {/* Running state */}
       {currentChecklist && executionState !== "idle" && (
         <div className="space-y-1">
-          {/* Thin progress bar */}
-          <div className="w-full h-0.5 bg-slate-800 rounded-full overflow-hidden">
-            <div
-              className={`h-full rounded-full transition-all duration-300 ${
-                executionState === "completed"
-                  ? "bg-emerald-400"
-                  : executionState === "error"
-                    ? "bg-red-400"
-                    : executionState === "aborted"
-                      ? "bg-amber-400"
-                      : "bg-amber-400"
-              }`}
-              style={{
-                width: `${totalItems > 0 ? (completedItems / totalItems) * 100 : isSilent && isRunning ? 50 : 0}%`
-              }}
-            />
-          </div>
-
           {/* Silent mode */}
           {isSilent && isRunning && (
             <div className="flex items-center gap-1.5 text-xs text-slate-400">
@@ -142,30 +123,6 @@ export function ChecklistPanel() {
                     </span>
                   ))}
                 </div>
-              )}
-            </div>
-          )}
-
-          {/* Normal mode completed/aborted/failed one-liner */}
-          {!isRunning && (
-            <div className="flex items-center gap-1 text-xs">
-              {executionState === "completed" && (
-                <>
-                  <Check className="w-2.5 h-2.5 text-emerald-400" />
-                  <span className="text-emerald-400">Complete</span>
-                </>
-              )}
-              {executionState === "error" && (
-                <>
-                  <X className="w-2.5 h-2.5 text-red-400" />
-                  <span className="text-red-400">{error ?? "Items failed"}</span>
-                </>
-              )}
-              {executionState === "aborted" && (
-                <>
-                  <X className="w-2.5 h-2.5 text-amber-400" />
-                  <span className="text-amber-400">Aborted</span>
-                </>
               )}
             </div>
           )}

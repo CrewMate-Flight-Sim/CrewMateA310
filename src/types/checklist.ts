@@ -1,54 +1,3 @@
-/**
- * Numbers (need to check this later):
- *   "#2" → matches any spoken 2-digit number  (e.g. "29")
- *   "#3" → matches any spoken 3-digit number  (e.g. "102")
- *   "#4" → matches any spoken 4-digit number  (e.g. "1013")
- *   "*"  → wildcard, any non-empty response accepted
- */
-
-export interface SimvarValidationEntry {
-  sim_value: number
-  expected_response: string
-  copilot_confirmation?: string
-}
-
-export interface ChecklistSimvarCheck {
-  var_name: string
-  var_type: string
-  validation_map: SimvarValidationEntry[]
-  incorrect?: string
-}
-
-export interface SimvarCheck {
-  var: string
-  expected: number
-}
-
-export interface StoreValidationEntry {
-  store_value: string
-  expected_response?: string // used in normal (challenge/response) mode
-  simvar_checks?: SimvarCheck[] // aircraft state verification after verbal match
-  simvar_name?: string // used in silent mode: SimVar to read
-  expected_simvar?: number // used in silent mode: expected SimVar value
-}
-
-export interface ChecklistStoreCheck {
-  store: string // dot-path into performanceStore, e.g. "takeoff.packs"
-  validation_map: StoreValidationEntry[]
-  incorrect: string // audio filename to play on mismatch
-}
-
-export interface LvarPlanValidationEntry {
-  lvar_value: number
-  expected_response: string
-}
-
-export interface ChecklistLvarPlanCheck {
-  var_name: string // e.g. "(L:TO_FLAPS_CONF)"
-  validation_map: LvarPlanValidationEntry[]
-  incorrect: string // audio filename to play on mismatch
-}
-
 export interface ChecklistItem {
   label: string
 
@@ -62,16 +11,35 @@ export interface ChecklistItem {
   incorrect?: string // audio to play when var check fails
 
   // SimVar index check (e.g. flap handle position)
-  simvar_check?: ChecklistSimvarCheck
+  simvar_check?: {
+    var_name: string
+    var_type: string
+    validation_map: { sim_value: number; expected_response: string; copilot_confirmation?: string }[]
+    incorrect?: string
+  }
 
   // Performance store check (e.g. packs, anti-ice, landing flaps)
-  store_check?: ChecklistStoreCheck
+  store_check?: {
+    store: string // dot-path into performanceStore, e.g. "takeoff.packs"
+    validation_map: {
+      store_value: string
+      expected_response?: string // used in normal (challenge/response) mode
+      simvar_checks?: { var: string; expected: number }[] // aircraft state verification after verbal match
+      simvar_name?: string // used in silent mode: SimVar to read
+      expected_simvar?: number // used in silent mode: expected SimVar value
+    }[]
+    incorrect: string // audio filename to play on mismatch
+  }
 
   // Live LVAR plan check (e.g. TO_FLAPS_CONF vs spoken config)
-  lvar_plan_check?: ChecklistLvarPlanCheck
+  lvar_plan_check?: {
+    var_name: string // e.g. "(L:TO_FLAPS_CONF)"
+    validation_map: { lvar_value: number; expected_response: string }[]
+    incorrect: string // audio filename to play on mismatch
+  }
 
   // Direct list of SimVar checks applied after the verbal response is accepted
-  simvar_checks?: SimvarCheck[]
+  simvar_checks?: { var: string; expected: number }[]
 
   // Audio the copilot plays after the pilot's response is accepted
   copilot_confirmation?: string

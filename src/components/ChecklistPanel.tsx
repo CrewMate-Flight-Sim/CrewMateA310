@@ -7,6 +7,8 @@ import { abortChecklist, executeChecklist } from "@/services/checklistRunner"
 import { useChecklistStore } from "@/store/checklistStore"
 import type { ChecklistItem } from "@/types/checklist"
 
+const WEIGHT_UNITS = new Set(["tons", "kilograms", "pounds", "kilograms balanced", "pounds balanced"])
+
 function formatResponseToken(token: string): string {
   if (token === "#2") return "##"
   if (token === "#3") return "###"
@@ -34,6 +36,13 @@ export function ChecklistPanel() {
   const activeItem: ChecklistItem | null =
     isRunning && currentChecklist ? (currentChecklist.items[currentStepIndex] ?? null) : null
   const activeResponses = activeItem ? getDisplayResponses(activeItem) : []
+
+  function renderResponseToken(r: string) {
+    if (WEIGHT_UNITS.has(r)) return `xxx.x ${r}`
+    if (r === "set") return "xxxx set"
+    if (r === "feet") return "xxxx feet"
+    return r
+  }
 
   return (
     <div className="mt-1 space-y-1">
@@ -119,7 +128,7 @@ export function ChecklistPanel() {
                       key={r}
                       className="px-1.5 py-px rounded text-xs font-mono bg-slate-800 text-slate-400 border border-slate-700"
                     >
-                      {r}
+                      {renderResponseToken(r)}
                     </span>
                   ))}
                 </div>

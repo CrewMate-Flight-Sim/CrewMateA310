@@ -1,6 +1,6 @@
 import { invoke } from "@tauri-apps/api/core"
 import { getCurrentWindow } from "@tauri-apps/api/window"
-import { FolderOpen, Volume2, ClipboardList } from "lucide-react"
+import { FolderOpen, Volume2, Option } from "lucide-react"
 import { useEffect, useState } from "react"
 
 import { Button } from "@/components/ui/button"
@@ -10,20 +10,23 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Slider } from "@/components/ui/slider"
 import { VoiceModelSettings } from "@/components/VoiceModelSettings"
 import { useChecklistStore } from "@/store/checklistStore"
-import { useVoiceStore } from "@/store/voiceStore"
+import { useSettingsStore } from "@/store/settingsStore"
 
 export function SettingsWindow() {
   const [availableSoundPacks, setAvailableSoundPacks] = useState<string[]>([])
 
-  const soundPack = useVoiceStore((s) => s.soundPack)
-  const setSoundPack = useVoiceStore((s) => s.setSoundPack)
-  const soundVolume = useVoiceStore((s) => s.soundVolume)
-  const setSoundVolume = useVoiceStore((s) => s.setSoundVolume)
-  const micGain = useVoiceStore((s) => s.micGain)
-  const setMicGain = useVoiceStore((s) => s.setMicGain)
+  const soundPack = useSettingsStore((s) => s.soundPack)
+  const setSoundPack = useSettingsStore((s) => s.setSoundPack)
+  const soundVolume = useSettingsStore((s) => s.soundVolume)
+  const setSoundVolume = useSettingsStore((s) => s.setSoundVolume)
+  const micGain = useSettingsStore((s) => s.micGain)
+  const setMicGain = useSettingsStore((s) => s.setMicGain)
 
   const holdOnIncorrect = useChecklistStore((s) => s.holdOnIncorrect)
   const setHoldOnIncorrect = useChecklistStore((s) => s.setHoldOnIncorrect)
+
+  const lightsControlMode = useSettingsStore((s) => s.lightsControlMode)
+  const setLightsControlMode = useSettingsStore((s) => s.setLightsControlMode)
 
   useEffect(() => {
     const fetchSoundPacks = async () => {
@@ -74,7 +77,7 @@ export function SettingsWindow() {
 
         <VoiceModelSettings />
 
-        <SectionHeader icon={<ClipboardList className="h-3 w-3 text-cyan-400 shrink-0" />} label="Checklist" />
+        <SectionHeader icon={<Option className="h-3 w-3 text-cyan-400 shrink-0" />} label="Options" />
 
         <div className="grid grid-cols-[1fr_auto] items-center gap-3">
           <Label htmlFor="holdOnIncorrect" className="text-sm text-slate-300 cursor-pointer">
@@ -84,6 +87,17 @@ export function SettingsWindow() {
             id="holdOnIncorrect"
             checked={holdOnIncorrect}
             onCheckedChange={(checked) => setHoldOnIncorrect(checked === true)}
+          />
+        </div>
+
+        <div className="grid grid-cols-[1fr_auto] items-center gap-3">
+          <Label htmlFor="lightsControlMode" className="text-sm text-slate-300 cursor-pointer">
+            Auto Ground lights control
+          </Label>
+          <Checkbox
+            id="lightsControlMode"
+            checked={lightsControlMode === "virtual"}
+            onCheckedChange={(checked) => setLightsControlMode(checked ? "virtual" : "user")}
           />
         </div>
 

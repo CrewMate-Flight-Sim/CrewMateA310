@@ -18,8 +18,8 @@ import { useSpeechCommands } from "@/hooks/useSpeechCommands"
 import { useVoskModelStatus } from "@/hooks/useVoskModelStatus"
 import { usePerformanceStore } from "@/store/performanceStore"
 import { usePreflightTimerStore } from "@/store/preflightTimerStore"
+import { useSettingsStore } from "@/store/settingsStore"
 import { useTelemetryStore } from "@/store/telemetryStore"
-import { useVoiceStore } from "@/store/voiceStore"
 
 import "./App.css"
 
@@ -30,8 +30,8 @@ function App() {
   const status = useTelemetryStore((state) => state.status)
   const connected = status === "connected"
 
-  const voiceEnabled = useVoiceStore((state) => state.voiceEnabled)
-  const setVoiceEnabled = useVoiceStore((state) => state.setVoiceEnabled)
+  const voiceEnabled = useSettingsStore((state) => state.voiceEnabled)
+  const setVoiceEnabled = useSettingsStore((state) => state.setVoiceEnabled)
   const takeoffVr = usePerformanceStore((state) => state.takeoff.vr)
   const { voskModelAvailable, voskModelSelected } = useVoskModelStatus({ setVoiceEnabled })
 

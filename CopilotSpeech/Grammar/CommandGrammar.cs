@@ -75,6 +75,7 @@ partial class Program
             "shutdown",
             "flight controls check",
             "set",
+            "released",
             "on",
             "off",
             "armed",
@@ -177,5 +178,6 @@ partial class Program
             "set runway track",
             "cabin crew arm slides and cross check",
             "cabin crew arm slides",
+            "brake check",
         };
 }

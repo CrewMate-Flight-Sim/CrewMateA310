@@ -10,12 +10,23 @@ partial class Program
 
         // "[digits] set"  e.g. "one zero two three set"
         // "[digits] tons" e.g. "nine tons"
-        var suffixes = new[] { "set", "tons" };
+        // "[digits] feet" e.g. "one zero zero feet"
+        // "[digits] kilograms / pounds [balanced]"
+        var suffixes = new[]
+        {
+            "set",
+            "tons",
+            "feet",
+            "kilograms",
+            "pounds",
+            "kilograms balanced",
+            "pounds balanced",
+        };
         foreach (var seq in seqs4)
         foreach (var suffix in suffixes)
             yield return $"{seq} {suffix}";
 
-        // "[digits] point [digits] tons"  e.g. "nine point five tons", "one zero zero point two tons"
+        // "[digits] point [digits] <unit>"  e.g. "nine point five tons", "one zero zero point two kilograms"
         var singleDigits = new[]
         {
             "zero",
@@ -30,9 +41,18 @@ partial class Program
             "nine",
             "niner",
         };
+        var weightUnits = new[]
+        {
+            "tons",
+            "kilograms",
+            "pounds",
+            "kilograms balanced",
+            "pounds balanced",
+        };
         foreach (var intSeq in seqs3)
         foreach (var dec in singleDigits)
-            yield return $"{intSeq} point {dec} tons";
+        foreach (var unit in weightUnits)
+            yield return $"{intSeq} point {dec} {unit}";
 
         // Prefix patterns: "set altitude [digits]", "set heading [digits]", etc.
         var prefixes = new[]
@@ -53,8 +73,8 @@ partial class Program
         foreach (var spoken in GetSpokenNumberWordForms(40, 75))
             yield return $"man flex {spoken}";
 
-        // Natural-number tons: "[spoken 1–150] tons" and "[spoken 1–150] point [digit] tons"
-        var tonsDecimals = new[]
+        // Natural-number weight: "[spoken 1–150] <unit>" and "[spoken 1–150] point [digit] <unit>"
+        var weightDecimals = new[]
         {
             "zero",
             "one",
@@ -68,10 +88,28 @@ partial class Program
             "nine",
         };
         foreach (var spoken in GetSpokenNumberWordForms(1, 150))
+        foreach (var unit in weightUnits)
         {
-            yield return $"{spoken} tons";
-            foreach (var dec in tonsDecimals)
-                yield return $"{spoken} point {dec} tons";
+            yield return $"{spoken} {unit}";
+            foreach (var dec in weightDecimals)
+                yield return $"{spoken} point {dec} {unit}";
+        }
+
+        // "[N] thousand [M hundred]? <weight unit>"  e.g. "forty thousand two hundred kilograms"
+        // Only needed for kg/pounds — tons stays as small natural numbers (1–150).
+        var largeWeightUnits = new[]
+        {
+            "kilograms",
+            "pounds",
+            "kilograms balanced",
+            "pounds balanced",
+        };
+        foreach (var spoken in GetSpokenNumberWordForms(1, 199))
+        foreach (var wu in largeWeightUnits)
+        {
+            yield return $"{spoken} thousand {wu}";
+            foreach (var hundredSpoken in GetSpokenNumberWordForms(1, 9))
+                yield return $"{spoken} thousand {hundredSpoken} hundred {wu}";
         }
 
         // "set altitude / altitude select [N] thousand [M hundred]?"

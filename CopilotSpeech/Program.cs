@@ -299,8 +299,18 @@ partial class Program
 
     static string? TryParseCompoundDigitPhrase(string text)
     {
-        // Suffix patterns: "[digits] set" / "[digits] tons"
-        foreach (var suffix in new[] { " set", " tons" })
+        // Suffix patterns: "[digits] set" / "[digits] <weight unit>"
+        foreach (
+            var suffix in new[]
+            {
+                " set",
+                " tons",
+                " kilograms",
+                " pounds",
+                " kilograms balanced",
+                " pounds balanced",
+            }
+        )
         {
             if (!text.EndsWith(suffix))
                 continue;
@@ -308,44 +318,78 @@ partial class Program
             var numberPart = text[..^suffix.Length];
             var digits = TryParseDigitSequence(numberPart);
             if (digits != null)
-                return $"{digits}{suffix}"; // e.g. "1023 set", "102 tons"
+                return $"{digits}{suffix}"; // e.g. "1023 set", "102 tons", "75 kilograms"
         }
 
-        // Decimal tons: "[digits] point [digits] tons"  →  "10.2 tons"
-        if (text.EndsWith(" tons"))
+        // Weight-unit forms: "[digits|natural] point [digit] <unit>",  "[natural] <unit>",
+        //                    and "[N] thousand [M hundred]? <unit>" (kg/pounds only).
+        // Covers tons, kilograms, pounds and their "balanced" variants.
+        foreach (
+            var unit in new[]
+            {
+                "tons",
+                "kilograms",
+                "pounds",
+                "kilograms balanced",
+                "pounds balanced",
+            }
+        )
         {
-            var withoutTons = text[..^" tons".Length];
-            var pointIdx = withoutTons.IndexOf(" point ");
+            var unitSuffix = $" {unit}";
+            if (!text.EndsWith(unitSuffix))
+                continue;
+
+            var withoutUnit = text[..^unitSuffix.Length];
+
+            // Decimal form: "[digits] point [digits] <unit>"  →  "10.2 tons"
+            //           or  "[natural] point [digit] <unit>"  →  "55.5 kilograms"
+            var pointIdx = withoutUnit.IndexOf(" point ");
             if (pointIdx >= 0)
             {
-                var intPart = TryParseDigitSequence(withoutTons[..pointIdx]);
-                var decPart = TryParseDigitSequence(withoutTons[(pointIdx + 7)..]);
-                if (intPart != null && decPart != null)
-                    return $"{intPart}.{decPart} tons"; // e.g. "10.2 tons"
+                var beforePoint = withoutUnit[..pointIdx];
+                var afterPoint = withoutUnit[(pointIdx + 7)..];
+                var decPart = TryParseDigitSequence(afterPoint); // single digit word
+
+                var intDigits = TryParseDigitSequence(beforePoint);
+                if (intDigits != null && decPart != null)
+                    return $"{intDigits}.{decPart}{unitSuffix}";
+
+                var intNat = TryParseNaturalNumber(beforePoint);
+                if (intNat != null && decPart != null)
+                    return $"{intNat}.{decPart}{unitSuffix}";
             }
-        }
 
-        // Natural number tons
-        if (text.EndsWith(" tons"))
-        {
-            var withoutTons = text[..^" tons".Length];
-
-            // decimal form: "[natural] point [digit] tons"
-            var pointIdx2 = withoutTons.IndexOf(" point ");
-            if (pointIdx2 >= 0)
+            // "[N] thousand [M hundred]? <unit>"  →  "40200 kilograms"
+            // Only applies to kg/pounds; tons values are small enough not to need this.
+            if (unit != "tons")
             {
-                var intWords = withoutTons[..pointIdx2];
-                var decWords = withoutTons[(pointIdx2 + 7)..];
-                var intNum = TryParseNaturalNumber(intWords);
-                var decNum = TryParseDigitSequence(decWords); // single digit word
-                if (intNum != null && decNum != null)
-                    return $"{intNum}.{decNum} tons";
+                var tIdx = withoutUnit.IndexOf(" thousand");
+                if (tIdx > 0)
+                {
+                    var tWords = withoutUnit[..tIdx];
+                    var afterThousand = withoutUnit[(tIdx + " thousand".Length)..].Trim();
+                    var th = TryParseNaturalNumber(tWords);
+                    if (th != null)
+                    {
+                        if (afterThousand.Length == 0)
+                            return $"{int.Parse(th) * 1000}{unitSuffix}";
+
+                        // "[M] hundred" remainder
+                        if (afterThousand.EndsWith(" hundred"))
+                        {
+                            var hWords = afterThousand[..^" hundred".Length];
+                            var hu = TryParseNaturalNumber(hWords);
+                            if (hu != null)
+                                return $"{int.Parse(th) * 1000 + int.Parse(hu) * 100}{unitSuffix}";
+                        }
+                    }
+                }
             }
 
-            // integer form: "[natural] tons"
-            var intNum2 = TryParseNaturalNumber(withoutTons);
+            // Natural-number integer form: "[natural] <unit>"  →  "55 pounds"
+            var intNum2 = TryParseNaturalNumber(withoutUnit);
             if (intNum2 != null)
-                return $"{intNum2} tons";
+                return $"{intNum2}{unitSuffix}";
         }
 
         // Prefix patterns: "set altitude [digits]", "set heading [digits]", etc.

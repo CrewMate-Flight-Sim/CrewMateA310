@@ -80,6 +80,14 @@ export const numericPrefixCommands: Record<string, (value: number) => void | Pro
 
 export function createVoiceCommands(): VoiceCommand[] {
   return [
+    // misc
+    {
+      phrases: ["brake check"],
+      action: () => {
+        playSound("pressure_zero.ogg")
+      },
+      description: "Brake check"
+    },
     // Doors / Slides Commands
     {
       phrases: ["cabin crew arm slides and cross check", "cabin crew arm slides"],
@@ -442,7 +450,7 @@ export function createVoiceCommands(): VoiceCommand[] {
       description: "Pulls altitude knob"
     },
     {
-      phrases: ["manage altitude", "manage flight levl"],
+      phrases: ["manage altitude", "manage flight level"],
       action: () => {
         playSound("check.ogg")
         setManagedAlt(1)
@@ -471,11 +479,15 @@ export function createVoiceCommands(): VoiceCommand[] {
       description: "Start clear left procedure/flow"
     },
     {
-      phrases: ["runway entry procedure", "clear to line up", "clear for takeoff", "before takeoff procedure"],
+      phrases: ["runway entry procedure", "clear to line up", "before takeoff procedure"],
       action: () => executeFlow("before_takeoff"),
       description: "Start before takeoff procedure/flow"
     },
-
+    {
+      phrases: ["takeoff"],
+      action: () => executeFlow("takeoff"),
+      description: "Start takeoff flow"
+    },
     // Preflight Timer Commands
     {
       phrases: ["lets prepare the aircraft", "lets prepare the flight", "lets set up the aircraft"],

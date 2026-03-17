@@ -1,6 +1,6 @@
 # Changelog
 
-## [0.1.8] - 2026-03-XX
+## [0.1.8] - 2026-03-17
 
 - Voice Command Updates to FCOM and Manual Standards - @marxio09dio, @alexlenh
 - Enhanced spoken number parsing capabilities - @marxio09dio

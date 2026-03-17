@@ -79,7 +79,7 @@ The FO will confirm the speed is checked before moving the flaps while airborne.
 ### Nose Wheel Lights
 
 | Say                  | What happens                 |
-|----------------------|------------------------------|
+| -------------------- | ---------------------------- |
 | `"Takeoff light on"` | Turns on nose takeoff light. |
 | `"Taxi lights on"`   | Turns on nose taxi light.    |
 | `"Taxi lights off"`  | Turns off nose taxi light.   |
@@ -87,7 +87,7 @@ The FO will confirm the speed is checked before moving the flaps while airborne.
 ### Strobe Lights
 
 | Say                    | What happens       |
-|------------------------|--------------------|
+| ---------------------- | ------------------ |
 | `"Strobe lights on"`   | Turns on strobes.  |
 | `"Strobe lights auto"` | Sets strobes auto. |
 | `"Strobe lights off"`  | Turns off strobes. |
@@ -95,7 +95,7 @@ The FO will confirm the speed is checked before moving the flaps while airborne.
 ### Flight Director
 
 | Say                             | What happens                                               |
-|---------------------------------|------------------------------------------------------------|
+| ------------------------------- | ---------------------------------------------------------- |
 | `"Flight Director on"`          | Activates the Flight Director.                             |
 | `"Flight Director off"`         | Deactivates the Flight Director.                           |
 | `"Flight Director off bird on"` | Deactivates the Flight Director and selects TRK/FPA on AP. |
@@ -105,7 +105,7 @@ The FO will confirm the speed is checked before moving the flaps while airborne.
 ### Autopilot
 
 | Say                                                                                                 | What happens                                                                  |
-|-----------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------|
+| --------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------- |
 | `"Autopilot on"` or `"Auto Pilot on"`                                                               | Engages Autopilot 1.                                                          |
 | `"Set speed ___ or speed select ___"`                                                               | Sets commanded speed.                                                         |
 | `"Set heading ___ or heading select ____"`                                                          | Sets commanded heading.                                                       |
@@ -124,7 +124,7 @@ The FO will confirm the speed is checked before moving the flaps while airborne.
 ### Flight Controls Check
 
 | Say                       | What happens                                                                      |
-|---------------------------|-----------------------------------------------------------------------------------|
+| ------------------------- | --------------------------------------------------------------------------------- |
 | `"Flight controls check"` | Starts the Flight controls flow: Up, Down, Left, Right, Rudder Left, Rudder Right |
 
 ### Preflight Timer
@@ -354,7 +354,7 @@ Start by saying: **`"Lineup checklist"`**
 Start by saying: **`"Approach checklist"`**
 
 | FO Challenge         | Say                                                               |
-|----------------------|-------------------------------------------------------------------|
+| -------------------- | ----------------------------------------------------------------- |
 | Barometric reference | `"Set and checked"` or your QNH (e.g. `"1013"`)                   |
 | Minimums reference   | `"Set and checked"` or your minimums value (e.g `"277 feet set"`) |
 | Runway condition     | `"Set and checked"`                                               |
@@ -406,7 +406,7 @@ Start by saying: **`"Secure aircraft checklist"`**
 Start by saying: **`"Departure Change checklist"`**
 
 | FO Challenge              | Say                                                           | Notes                                                            |
-|---------------------------|---------------------------------------------------------------|------------------------------------------------------------------|
+| ------------------------- | ------------------------------------------------------------- | ---------------------------------------------------------------- |
 | Runway and SID            | `"Set and checked"`                                           | -                                                                |
 | Flap settings             | `"Config one plus F"`, `"Config two"`, or `"Set and checked"` | The FO verifies flapselection matches your performance settings. |
 | Takeoff speeds and thrust | `"Set and checked"`                                           | —                                                                |

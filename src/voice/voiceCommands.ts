@@ -94,7 +94,7 @@ export const numericPrefixCommands: Record<string, (value: number) => void | Pro
     setSelAlt(1)
     await new Promise((r) => setTimeout(r, 500))
     setAltitudeDial(v)
-  },
+  }
 }
 
 export function createVoiceCommands(): VoiceCommand[] {

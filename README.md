@@ -19,7 +19,7 @@
 
 - [Contribution Guidelines](.github/Contributing.md)
 - [License](LICENSE)
-- [Manual](.Manual/USER_MANUAL.md)
+- [Manual](Manual/USER_MANUAL.md)
 
 ---
 

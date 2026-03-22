@@ -51,18 +51,19 @@ This tutorial assumes you are parked at the gate with engines off. You are the C
 - 60 min: Cockpit door and curtains opened.
 - 58 min: PM takes their seat.
 - 55 min: PM starts preliminary cockpit preparation.
-- 40 min: PM departs for external walkaround.
-- 30 min: PM returns and continues cockpit preparation.
+- 45 min: PM departs for external walkaround. PF starts cockpit preparation.
+  ![Cockpit Preparation flow pattern](Images/COCKPIT%20PREPARATION%20FLOW%20PATTERN.png)
+- 33 min: PM returns and starts cockpit preparation on his side.
 - 25 min: PF conducts the departure briefing (enter takeoff data in the Takeoff Performance window).
-- 20 min: PF calls for the COCKPIT PREPARATION flow.
-- 1 min: CrewMate closes the cockpit door. PF calls for the BEFORE START checklist.
+- 20 min: PF calls for the COCKPIT PREPARATION checklist.
+- 1 min: CrewMate closes the cockpit door. PF and PM perform before start flow, after that PF calls for the BEFORE START checklist.
 
 ![Before Start flow pattern](Images/BEFORE%20START%20FLOW%20PATTERN.png)
 
 ### Pushback and Engine Start
 
 - Announce each engine start (e.g., “Starting engine one”).
-- When ignition is set to NORMAL, PM will start the AFTER START flow pattern. If anti‑ice will be used, flaps may be left as required.
+- When ignition is set to NORMAL, PF and PM will start the AFTER START flow pattern. If anti‑ice will be used, flaps may be left as required.
 - On hand signal from ground personnel, call for the AFTER START checklist.
 
 ![After Start flow pattern](Images/AFTER%20START%20FLOW%20PATTERN.png)
@@ -99,13 +100,15 @@ This tutorial assumes you are parked at the gate with engines off. You are the C
 
 - PF should insert landing data in the Landing Performance window.
 
+![PF Descent preparation items](Images/PF%20DESCENT%20PREP%20ITEMS.png)
+
 ### 10k Descent
 
-![10k descent flow pattern](Images/AT%2010K%20Descen.png)
+![10k descent flow pattern](Images/AT%2010%20000%20FT%20AAL%20DES%20FLOW%20PATTERN.png)
 
 ### Approach
 
-- After passing the transition level or setting the barometric reference, complete the APPROACH checklist.
+- After passing the transition level and/or setting the barometric reference, complete the APPROACH checklist.
 
 ### Landing
 
@@ -116,20 +119,20 @@ This tutorial assumes you are parked at the gate with engines off. You are the C
 
 - Disarming the ground spoilers will trigger the After‑Landing flow.
 - If anti‑ice is used, flaps may remain at LDG CONF per procedure.
-- After the Parking flow pattern completes, PM calls for the SHUTDOWN checklist.
 
 ![After landing flow pattern](Images/AFTER%20LANDING%20FLOW%20PATTERN.png)
-
-### Securing the Aircraft
-
-- After the last passenger leaves (if securing the aircraft), call for the SECURE AIRCRAFT checklist.
 
 ### Parking
 
 - Turn off taxi lights when turning into the gate, or ask the PM to confirm.
 - Shutting down the engines will trigger the Parking flow.
+- After the Parking flow pattern completes, PM calls for the SHUTDOWN checklist.
 
 ![Parking flow pattern](Images/PARKING%20FLOW%20PATTERN.png)
+
+### Securing the Aircraft
+
+- After the last passenger leaves (if securing the aircraft), call for the SECURE AIRCRAFT checklist.
 
 ---
 

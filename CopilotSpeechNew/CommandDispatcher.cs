@@ -34,7 +34,6 @@ namespace VoiceSidecar
                 3 => AltitudeFeet(cval, raw),
                 4 => Speed(cval, raw),
                 5 => Frequency(cval, raw),
-                6 => Transponder(cval, raw),
                 7 => Altimeter(cval, raw),
                 8 => Fuel(cval, "kg", balanced: false, raw),
                 9 => Fuel(cval, "kg", balanced: true, raw),
@@ -104,15 +103,6 @@ namespace VoiceSidecar
                 System.Globalization.CultureInfo.InvariantCulture
             );
             return Cmd("frequency", raw, new() { ["value"] = freq });
-        }
-
-        private static VoiceCommand? Transponder(string cval, string raw)
-        {
-            if (cval.Length != 4 || !int.TryParse(cval, out _))
-                return null;
-            if (cval.Any((c) => c == '8' || c == '9'))
-                return null;
-            return Cmd("transponder", raw, new() { ["code"] = cval });
         }
 
         private static VoiceCommand? Altimeter(string cval, string raw)
@@ -347,8 +337,6 @@ namespace VoiceSidecar
             [105] = "manage_speed",
             [106] = "pull_heading",
             [107] = "manage_nav",
-            [108] = "pull_altitude",
-            [109] = "manage_altitude",
             [110] = "push_to_level_off",
             [111] = "arm_approach",
             [112] = "arm_localizer",
@@ -418,8 +406,6 @@ namespace VoiceSidecar
             [61] = "brake_check",
             // Altimeter
             [64] = "set_standard",
-            // Transponder
-            [66] = "transponder_auto",
             // Generic checklist responses
             [70] = "confirm",
             [71] = "negative",
@@ -450,6 +436,7 @@ namespace VoiceSidecar
             [96] = "config_1f",
             [97] = "config_2",
             [98] = "config_3",
+            [10] = "rwy_cond",
             // Go around / abort
             [99] = "go_around_flaps",
             [100] = "abort_takeoff",

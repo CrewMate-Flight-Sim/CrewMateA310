@@ -286,6 +286,7 @@ export const discreteCommandMap: Record<string, () => void | Promise<void>> = {
   config_1f: () => playSound("check.ogg"),
   config_2: () => playSound("check.ogg"),
   config_3: () => playSound("check.ogg"),
+  rwy_cond: () => playSound("check.ogg"),
   abort_takeoff: () => playSound("check.ogg"),
   continue: () => playSound("check.ogg")
 }

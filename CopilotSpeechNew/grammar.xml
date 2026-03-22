@@ -398,8 +398,6 @@
       <item>emergency descent<tag>out="EMER DES";</tag></item>
       <item>open climb<tag>out="OP CLB";</tag></item>
       <item>open descent<tag>out="OP DES";</tag></item>
-      <item>expedite climb<tag>out="EXP CLB";</tag></item>
-      <item>expedite descent<tag>out="EXP DES";</tag></item>
       <item>glideslope<tag>out="G/S";</tag></item>
       <item>glideslope star<tag>out="G/S*";</tag></item>
       <item>glideslope capture<tag>out="G/S*";</tag></item>
@@ -449,7 +447,7 @@
   <rule id="FMA_APPROACH_CAT">
     <one-of>
       <item>approach one<tag>out="APPR1";</tag></item>
-      <item>land ONE<tag>out="LAND1";</tag></item>
+      <item>land one<tag>out="LAND1";</tag></item>
       <item>land two<tag>out="LAND2";</tag></item>
       <item>land three single<tag>out="LAND3 SINGLE";</tag></item>
       <item>land three dual<tag>out="LAND3 DUAL";</tag></item>
@@ -484,14 +482,14 @@
       <item>autopilot off<tag>out.pid="9";</tag></item>
       <item>auto pilot off<tag>out.pid="9";</tag></item>
       <item>set runway track<tag>out.pid="65";</tag></item>
-      <item>pull altitude<tag>out.pid="102";</tag></item>
-      <item>manage altitude<tag>out.pid="103";</tag></item>
+      <item>altitude pull<tag>out.pid="102";</tag></item>
+      <item>altitude manage<tag>out.pid="103";</tag></item>
       <item>pull speed<tag>out.pid="104";</tag></item>
       <item>manage speed<tag>out.pid="105";</tag></item>
       <item>pull heading<tag>out.pid="106";</tag></item>
       <item>manage nav<tag>out.pid="107";</tag></item>
-      <item>pull altitude<tag>out.pid="108";</tag></item>
-      <item>manage altitude<tag>out.pid="109";</tag></item>
+      <item>flight level pull<tag>out.pid="102";</tag></item>
+      <item>flight level manage<tag>out.pid="103";</tag></item>
       <item>press alt<tag>out.pid="110";</tag></item>
       <item>arm approach<tag>out.pid="111";</tag></item>
       <item>arm localizer<tag>out.pid="112";</tag></item>
@@ -578,8 +576,6 @@
       <item>brake check<tag>out.pid="61";</tag></item>
       <!-- Altimeter -->
       <item>set standard<tag>out.pid="64";</tag></item>
-      <!-- Transponder -->
-      <item>set transponder auto<tag>out.pid="66";</tag></item>
       <!-- Generic responses / checklist replies -->
       <item>confirm<tag>out.pid="70";</tag></item>
       <item>confirmed<tag>out.pid="70";</tag></item>
@@ -615,6 +611,14 @@
       <item>config one plus f<tag>out.pid="96";</tag></item>
       <item>config two<tag>out.pid="97";</tag></item>
       <item>config three<tag>out.pid="98";</tag></item>
+      <item>dry<tag>out.pid="10"</tag></item>
+      <item>wet<tag>out.pid="10"</tag></item>
+      <item>compacted snow<tag>out.pid="10"</tag></item>
+      <item>snow<tag>out.pid="10"</tag></item>
+      <item>slippery<tag>out.pid="10"</tag></item>
+      <item>standing water<tag>out.pid="10"</tag></item>
+      <item>slush<tag>out.pid="10"</tag></item>
+      <item>ice<tag>out.pid="10"</tag></item>
       <!-- Go around / abort / land -->
       <item>go around flaps<tag>out.pid="99";</tag></item>
       <item>abort takeoff<tag>out.pid="100";</tag></item>

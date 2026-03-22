@@ -18,14 +18,14 @@
     "flowId": "prelim_cockpit_prep"
   },
   {
-    "minuteMark": 40,
+    "minuteMark": 45,
     "label": "PM walkaround",
     "type": "flow",
     "sound": "walkaround.ogg",
     "flowId": "table_close"
   },
   {
-    "minuteMark": 30,
+    "minuteMark": 33,
     "label": "PM back from walkaround and cockpit preparation",
     "type": "flow",
     "sound": "walkaround_completed.ogg",

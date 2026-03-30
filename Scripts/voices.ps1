@@ -142,6 +142,7 @@ $phrases = @{
     "standard_cross_checked"                    = "Standard cross checked"
     "passing_flight_level"                      = "Passing flight level"
     "now_at"                                    = "Now"
+    "starting_engine_2"                          = "Starting engine two"
 }
 
 # Derive folder name from voice: "en-US-JennyNeural" -> "Jenny"

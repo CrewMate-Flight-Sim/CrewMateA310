@@ -1,6 +1,7 @@
 {
   "id": "landing",
   "name": "Landing",
+  "sound_start": "cabin_landing.ogg",
   "steps": [
     {
       "label": "Ground Spoilers",

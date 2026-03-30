@@ -11,6 +11,11 @@ import type { FlowConditionValue } from "@/types/flow"
 
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms))
 
+function getRandomDelay(): number {
+  // Random delay between 500ms and 1500ms
+  return Math.random() * 1000 + 500
+}
+
 let abortController: AbortController | null = null
 
 async function waitForSoundFinished() {
@@ -168,6 +173,9 @@ export async function executeFlow(flowId: string): Promise<void> {
 
       if (!(await shouldExecuteStep(step))) {
         setStepStatus(i, "skipped")
+        if (i < flow.steps.length - 1) {
+          await abortableSleep(getRandomDelay(), signal)
+        }
         continue
       }
 
@@ -231,6 +239,10 @@ export async function executeFlow(flowId: string): Promise<void> {
         if (!verified) {
           console.warn(`[FlowRunner] Step "${step.label}" verification failed (expected ${expectedValue})`)
         }
+      }
+
+      if (i < flow.steps.length - 1) {
+        await abortableSleep(getRandomDelay(), signal)
       }
     }
 

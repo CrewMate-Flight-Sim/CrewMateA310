@@ -1,0 +1,13 @@
+{
+  "id": "climb_below_the_line",
+  "name": "After Takeoff Climb Checklist below the line",
+  "items": [
+    {
+      "challenge": "altimeters.ogg",
+      "response": ["standard set", "set and checked"],
+      "label": "Altimeters",
+      "copilot_confirmation": "standard_set.ogg"
+    }
+  ],
+  "completion": "climb_checklist_completed.ogg"
+}

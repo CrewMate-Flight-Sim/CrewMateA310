@@ -1,0 +1,36 @@
+{
+  "id": "desc_ten_thousand_flow",
+  "name": "Descend Ten Thousand Flow",
+  "steps": [
+    {
+      "label": "Ignition set",
+      "read": "(L:A310_eng_ignition_switch)",
+      "on": "4 (>L:A310_eng_ignition_switch)",
+      "expect": 4
+    },
+    {
+      "label": "Seat belts",
+      "read": "(L:A310_SEATBELTS_SWITCH)",
+      "on": "1 (>L:A310_SEATBELTS_SWITCH)",
+      "expect": 1
+    },
+    {
+      "label": "Landing Lights",
+      "read": "(L:A310_LANDING_LIGHT_L_SWITCH)",
+      "on": "0 (>L:A310_LANDING_LIGHT_L_SWITCH)",
+      "expect": 0
+    },
+    {
+      "label": "Landing Lights",
+      "read": "(L:A310_LANDING_LIGHT_R_SWITCH)",
+      "on": "0 (>L:A310_LANDING_LIGHT_R_SWITCH)",
+      "expect": 0
+    },
+    {
+      "label": "ND SET",
+      "read": "(L:A310_map_range_fo_switch)",
+      "on": "0 (>L:A310_map_range_fo_switch)",
+      "expect": 0
+    }
+  ]
+}

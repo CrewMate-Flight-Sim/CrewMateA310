@@ -1,0 +1,36 @@
+{
+  "id": "approach",
+  "name": "Approach Checklist",
+  "items": [
+    {
+      "challenge": "signs.ogg",
+      "response": ["set", "set and checked"],
+      "label": "Signs"
+    },
+    {
+      "challenge": "briefing.ogg",
+      "response": ["confirmed"],
+      "label": "Briefing"
+    },
+    {
+      "challenge": "ecam_stat.ogg",
+      "response": ["checked"],
+      "label": "ECAM status"
+    },
+    {
+      "challenge": "altimeters.ogg",
+      "response": ["set", "set and checked"],
+      "baro_confirmation": true,
+      "label": "Altimeters"
+    },
+    {
+      "label": "Ignition",
+      "challenge": "ign.ogg",
+      "response": ["cont relight"],
+      "var": "(L:A310_eng_ignition_switch, Number)",
+      "expected": 4,
+      "incorrect": "are_you_sure.ogg"
+    }
+  ],
+  "completion": "approach_checklist_completed.ogg"
+}

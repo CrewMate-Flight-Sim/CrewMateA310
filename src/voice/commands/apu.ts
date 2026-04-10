@@ -2,8 +2,8 @@ import { simvarSet } from "@/API/simvarApi"
 
 export async function setStartAPU(position: number) {
   try {
-    const expression = `${position} (>L:INI_APU_MASTER_SWITCH)`
-    const expression1 = `${position} (>L:INI_APU_START_BUTTON)`
+    const expression = `${position} (>L:A310_apu_master_switch)`
+    const expression1 = `${position} (>L:A310_apu_start_button)`
 
     await simvarSet(expression)
 

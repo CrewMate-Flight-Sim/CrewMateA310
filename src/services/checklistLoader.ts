@@ -1,26 +1,28 @@
-import departureChange from "@/data/checklists/10_departure_change.json"
-import cockpitPrep from "@/data/checklists/1_cockpit_preparation.json"
-import beforeStart from "@/data/checklists/2_before_start.json"
+import afterLanding from "@/data/checklists/10_after_landing.json"
+import parking from "@/data/checklists/11_parking.json"
+import beforeStartP1 from "@/data/checklists/1_before_start_to_the_line.json"
+import beforeStartP2 from "@/data/checklists/2_before_start_below_the_line.json"
 import afterStart from "@/data/checklists/3_after_start.json"
-import taxi from "@/data/checklists/4_taxi.json"
-import lineUp from "@/data/checklists/5_lineup.json"
-import approach from "@/data/checklists/6_approach.json"
-import landing from "@/data/checklists/7_landing.json"
-import parking from "@/data/checklists/8_parking.json"
-import secureAircraft from "@/data/checklists/9_secure_aircraft.json"
+import beforeTakeoffP1 from "@/data/checklists/4_before_takeoff_to_the_line.json"
+import beforeTakeoffP2 from "@/data/checklists/5_before_takeoff_below_the_line.json"
+import afterTakeoffP1 from "@/data/checklists/6_climb_to_the_line.json"
+import afterTakeoffP2 from "@/data/checklists/7_climb_below_the_line.json"
+import approach from "@/data/checklists/8_approach.json"
+import landing from "@/data/checklists/9_landing.json"
 import type { Checklist } from "@/types/checklist"
 
 export const allChecklists: Checklist[] = [
-  cockpitPrep,
-  beforeStart,
+  beforeStartP1,
+  beforeStartP2,
   afterStart,
-  taxi,
-  lineUp,
+  beforeTakeoffP1,
+  beforeTakeoffP2,
+  afterTakeoffP1,
+  afterTakeoffP2,
   approach,
   landing,
-  parking,
-  secureAircraft,
-  departureChange
+  afterLanding,
+  parking
 ] as Checklist[]
 
 export function getChecklistById(id: string): Checklist | undefined {

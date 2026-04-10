@@ -2,21 +2,11 @@ import { simvarSet } from "@/API/simvarApi"
 import { playSound } from "@/services/playSounds"
 import { useTelemetryStore } from "@/store/telemetryStore"
 
-type A350Variant = "A350-900" | "A350-1000"
-
-const flapSpeedLimits: Record<A350Variant, Record<number, number>> = {
-  "A350-900": {
-    1: 255,
-    2: 212,
-    3: 195,
-    4: 186
-  },
-  "A350-1000": {
-    1: 260,
-    2: 219,
-    3: 206,
-    4: 192
-  }
+const flapSpeedLimits: Record<number, number> = {
+  1: 245,
+  2: 210,
+  3: 195,
+  4: 180
 }
 
 const keyEventMap: Record<number, string> = {
@@ -28,42 +18,29 @@ const keyEventMap: Record<number, string> = {
 }
 
 const soundMap: Record<number, string> = {
-  0: "flaps_0.ogg",
-  1: "flaps_1.ogg",
-  2: "flaps_2.ogg",
-  3: "flaps_3.ogg",
-  4: "flaps_full.ogg"
+  0: "slats_ret.ogg",
+  1: "flaps_0.ogg",
+  2: "flaps_15.ogg",
+  3: "flaps_20.ogg",
+  4: "flaps_40.ogg"
 }
 
 function delay(ms: number) {
   return new Promise((resolve) => window.setTimeout(resolve, ms))
 }
 
-function getA350Variant(title?: string): A350Variant | null {
-  if (!title) return null
-
-  const normalized = title.toUpperCase()
-
-  const is1000 = /A\s*350[\s-]*1000\b/.test(normalized)
-  const is900 = /A\s*350[\s-]*900\b/.test(normalized)
-
-  if (is1000) return "A350-1000"
-  if (is900) return "A350-900"
-
-  return null
-}
-
 export async function setFlaps(setting: number, skipAnnouncement = false) {
   try {
-    const { telemetry, aircraftTitle } = useTelemetryStore.getState()
+    const { telemetry } = useTelemetryStore.getState()
     const currentSpeed = telemetry?.ias ?? 0
     const isOnGround = telemetry?.onGround ?? 0
-    const variant = getA350Variant(aircraftTitle ?? undefined)
+    const currentFlapIndex = telemetry?.flapsIndex ?? 0
+    const speedLimit = flapSpeedLimits[setting]
+    const isInitialExtension = currentFlapIndex === 0 && setting === 1
+    const isExtendingOrStatic = setting >= currentFlapIndex && setting > 0
+    const isTransition3to4 = currentFlapIndex === 3 && setting === 4
 
-    const effectiveVariant: A350Variant = variant ?? "A350-900"
-
-    const speedLimit = flapSpeedLimits[effectiveVariant][setting]
-
+    // 1. FO checks if you're too fast
     if (speedLimit && currentSpeed > speedLimit) {
       playSound("check_speed.ogg")
       return
@@ -73,25 +50,26 @@ export async function setFlaps(setting: number, skipAnnouncement = false) {
     if (!keyEvent) {
       return
     }
-
     const commandExpression = `(>K:${keyEvent})`
 
-    if (!isOnGround) {
+    // 2. FO says "Speed Checked" (Extension only, skip 3->4)
+    if (isOnGround && isExtendingOrStatic && !isTransition3to4) {
       if (!skipAnnouncement) {
         playSound("speed_checked.ogg")
         await delay(1000)
       }
-      await simvarSet(commandExpression)
+    }
 
-      await delay(1000)
-      const sound = soundMap[setting]
-      if (sound) playSound(sound)
+    // 3. FO moves the lever
+    await simvarSet(commandExpression)
+
+    // 4. FO confirms the selection (e.g., "Slats Extend" or "Flaps 15")
+    await delay(1000)
+    if (isInitialExtension) {
+      playSound("slats_ext.ogg")
     } else {
-      await simvarSet(commandExpression)
-
-      await delay(1000)
-      const sound = soundMap[setting]
-      if (sound) playSound(sound)
+      const confirmation = soundMap[setting]
+      if (confirmation) playSound(confirmation)
     }
   } catch (error) {
     console.error("[Flaps] Error setting flaps:", error)

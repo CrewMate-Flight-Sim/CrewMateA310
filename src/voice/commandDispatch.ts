@@ -16,25 +16,23 @@ import {
   setAltitudeDial,
   setAPPR,
   setAutoPilot,
-  setBird,
   setFlightDirector,
   setHeadingDial,
   setLOC,
   setLevelOff,
-  setManagedAlt,
-  setManagedHeading,
-  setManagedSpeed,
+  setSelSpeed,
   setSelAlt,
-  setSelHeading,
-  setSelSpeed
+  syncHeading,
+  setHdgSel,
+  setNav
 } from "./commands/autoPilot"
 import { setStdBaro } from "./commands/baro"
-import { setDoorSlides } from "./commands/doorSlides"
+import { startEngine1, startEngine2, setIgnKnob } from "./commands/engine"
 import { setFlaps } from "./commands/flaps"
 import { flightControlsCheck } from "./commands/flight_controls_check"
 import { setGearHandle } from "./commands/gear"
 import { executeGoAround } from "./commands/goAround"
-import { disconnectAllGround, setACU, setASU, setGPU } from "./commands/groundServices"
+import { disconnectAllGround, setASU, setGPU } from "./commands/groundServices"
 import { setLandingLights, setStrobeLights, setTaxiLights } from "./commands/lights"
 import { setSeatBelts } from "./commands/seat_belts"
 import { setWipers } from "./commands/wipers"
@@ -55,21 +53,21 @@ export const discreteCommandMap: Record<string, () => void | Promise<void>> = {
   gear_down: () => setGearHandle(1),
 
   // ── Flaps ─────────────────────────────────────────────────────────────────
-  flaps_0: () => setFlaps(0),
-  flaps_1: () => setFlaps(1),
-  flaps_2: () => setFlaps(2),
-  flaps_3: () => setFlaps(3),
-  flaps_full: () => setFlaps(4),
+  slats_ret: () => setFlaps(0),
+  slats_ext: () => setFlaps(1),
+  flaps_15: () => setFlaps(2),
+  flaps_20: () => setFlaps(3),
+  flaps_40: () => setFlaps(4),
   go_around_flaps: () => executeGoAround(),
 
   // ── Lights ────────────────────────────────────────────────────────────────
   landing_lights_on: () => {
     playSound("check.ogg")
-    setLandingLights(1)
+    setLandingLights(0)
   },
   landing_lights_off: () => {
     playSound("check.ogg")
-    setLandingLights(0)
+    setLandingLights(2)
   },
   takeoff_lights_on: () => {
     playSound("check.ogg")
@@ -105,20 +103,6 @@ export const discreteCommandMap: Record<string, () => void | Promise<void>> = {
     playSound("check.ogg")
     setFlightDirector(0)
   },
-  flight_director_off_bird_on: async () => {
-    playSound("check.ogg")
-    await setFlightDirector(0)
-    await setBird(1)
-  },
-  bird_on: () => {
-    playSound("check.ogg")
-    setBird(1)
-  },
-  bird_off: () => {
-    playSound("check.ogg")
-    setBird(0)
-  },
-
   // ── Autopilot  ──────────────────────────────────────────────
   autopilot_engage: () => {
     playSound("check.ogg")
@@ -129,27 +113,23 @@ export const discreteCommandMap: Record<string, () => void | Promise<void>> = {
   // ── FCU knob commands ──────────────────────────────
   pull_heading: () => {
     playSound("check.ogg")
-    setSelHeading(1)
+    setHdgSel(1)
+  },
+  push_heading: () => {
+    playSound("check.ogg")
+    syncHeading(1)
   },
   manage_nav: () => {
     playSound("check.ogg")
-    setManagedHeading(1)
+    setNav(1)
   },
   pull_altitude: () => {
     playSound("check.ogg")
     setSelAlt(1)
   },
-  manage_altitude: () => {
-    playSound("check.ogg")
-    setManagedAlt(1)
-  },
   pull_speed: () => {
     playSound("check.ogg")
     setSelSpeed(1)
-  },
-  manage_speed: () => {
-    playSound("check.ogg")
-    setManagedSpeed(1)
   },
   push_to_level_off: () => {
     playSound("check.ogg")
@@ -162,13 +142,6 @@ export const discreteCommandMap: Record<string, () => void | Promise<void>> = {
   arm_localizer: () => {
     playSound("check.ogg")
     setLOC(1)
-  },
-  set_runway_track: () => {
-    const hdg = useTelemetryStore.getState().telemetry?.["landingtrk"]
-    if (hdg != null) {
-      playSound("check.ogg")
-      setHeadingDial(hdg)
-    }
   },
 
   // ── Baro ──────────────────────────────────────────────────────────────────
@@ -221,28 +194,17 @@ export const discreteCommandMap: Record<string, () => void | Promise<void>> = {
   // ── Seat belts ────────────────────────────────────────────────────────────
   seat_belts_on: () => {
     playSound("check.ogg")
-    setSeatBelts(0)
+    setSeatBelts(1)
   },
   seat_belts_off: () => {
     playSound("check.ogg")
-    setSeatBelts(2)
-  },
-  seat_belts_auto: () => {
-    playSound("check.ogg")
-    setSeatBelts(1)
+    setSeatBelts(0)
   },
 
   // ── Wipers ────────────────────────────────────────────────────────────────
-  wipers_off: () => setWipers(3),
-  wipers_slow: () => setWipers(4),
-  wipers_fast: () => setWipers(5),
-  wipers_slow_intermittent: () => setWipers(0),
-  wipers_medium_intermittent: () => setWipers(1),
-  wipers_fast_intermittent: () => setWipers(2),
-
-  // ── Cabin crew / doors ────────────────────────────────────────────────────
-  cabin_crew_arm_slides: () => setDoorSlides(true),
-  cabin_crew_disarm_slides: () => setDoorSlides(false),
+  wipers_off: () => setWipers(0),
+  wipers_slow: () => setWipers(1),
+  wipers_fast: () => setWipers(2),
 
   // ── Brake check ───────────────────────────────────────────────────────────
   brake_check: () => playSound("pressure_zero.ogg"),
@@ -257,28 +219,36 @@ export const discreteCommandMap: Record<string, () => void | Promise<void>> = {
   prepare_aircraft: () => usePreflightTimerStore.getState().start(),
 
   // ── Engine start ──────────────────────────────────────────────────────────
-  engine_start_1: () => playSound("check.ogg"),
-  engine_start_2: () => playSound("check.ogg"),
+  engine_start_2: async () => {
+    await playSound("check.ogg")
+    const startAB = Math.random() < 0.5 ? 0 : 1
+    await setIgnKnob(startAB)
+    await new Promise((resolve) => setTimeout(resolve, 2000))
+    await startEngine2(1)
+  },
+  engine_start_1: async () => {
+    await playSound("check.ogg")
+    await startEngine1(1)
+  },
 
   // ── Flows ─────────────────────────────────────────────────────────────────
   clear_left: () => executeFlow("clear_left"),
   runway_entry_procedure: () => executeFlow("before_takeoff"),
-  start_engine_2: () => executeFlow("start_engine_2"),
-  shutdown_engine_1: () => executeFlow("shutdown_eng1"),
-  shutdown_engine_2: () => executeFlow("shutdown_eng2"),
   clear_for_takeoff: () => executeFlow("takeoff"),
+  before_pushback_procedure: () => executeFlow("before_pushback"),
 
   // ── Checklists ────────────────────────────────────────────────────────────
-  checklist_cockpit_preparation: () => executeChecklist("cockpit_preparation"),
-  checklist_departure_change: () => executeChecklist("departure_change"),
-  checklist_before_start: () => executeChecklist("before_start"),
+  checklist_before_startP1: () => executeChecklist("before_start_to_the_line"),
+  checklist_before_startP2: () => executeChecklist("before_start_below_the_line"),
   checklist_after_start: () => executeChecklist("after_start"),
-  checklist_taxi: () => executeChecklist("taxi"),
-  checklist_lineup: () => executeChecklist("line_up"),
-  checklist_approach: () => executeChecklist("approach"),
+  checklist_before_takeoffP1: () => executeChecklist("before_takeoff_to_the_line"),
+  checklist_before_takeoffP2: () => executeChecklist("before_takeoff_below_the_line"),
+  checklist_after_takeoffP1: () => executeChecklist("climb_to_the_line"),
+  checklist_after_takeoffP2: () => executeChecklist("climb_below_the_line"),
+  checklist_after_landing: () => executeChecklist("after_landing"),
+  checklist_apporach: () => executeChecklist("approach"),
   checklist_landing: () => executeChecklist("landing"),
   checklist_parking: () => executeChecklist("parking"),
-  checklist_secure_aircraft: () => executeChecklist("secure_aircraft"),
   checklist_cancel: () => abortChecklist(),
 
   // ── RTO / Continue  ─────────────────────────────────────
@@ -319,20 +289,6 @@ export const discreteCommandMap: Record<string, () => void | Promise<void>> = {
     await setASU(false)
     await playSound("asu_off.ogg", { pack: gePack() })
   },
-  connect_acu: async () => {
-    if (!useGroundEngineerStore.getState().isActive) return
-    useGroundEngineerStore.getState().deactivate()
-    await randomDelay(3000, 8000)
-    await setACU(true)
-    await playSound("acu_on.ogg", { pack: gePack() })
-  },
-  disconnect_acu: async () => {
-    if (!useGroundEngineerStore.getState().isActive) return
-    useGroundEngineerStore.getState().deactivate()
-    await randomDelay(3000, 8000)
-    await setACU(false)
-    await playSound("acu_off.ogg", { pack: gePack() })
-  },
   disconnect_all_ground: async () => {
     if (!useGroundEngineerStore.getState().isActive) return
     useGroundEngineerStore.getState().deactivate()
@@ -360,7 +316,7 @@ export async function dispatchFoCommand(commandType: string, payload: Record<str
     case "heading": {
       const value = payload.value as number
       if (isPull) {
-        setSelHeading(1)
+        setHdgSel(1)
         await delay(500)
       }
       setHeadingDial(value)
@@ -397,11 +353,11 @@ export async function dispatchFoCommand(commandType: string, payload: Record<str
       if ((payload.mode as string) === "auto") {
         const alt = usePerformanceStore.getState().landing?.["missedAltitude"]
         if (alt != null) {
-          playSound("missed_approach_alt_set.ogg")
+          playSound("go_around_alt_set.ogg")
           setAltitudeDial(alt)
         }
       } else if (payload.value != null) {
-        playSound("missed_approach_alt_set.ogg")
+        playSound("go_around_alt_set.ogg")
         setAltitudeDial(payload.value as number)
       }
       return true

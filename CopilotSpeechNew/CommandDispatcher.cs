@@ -40,13 +40,10 @@ namespace VoiceSidecar
                 11 => Fuel(cval, "lbs", balanced: true, raw),
                 12 => FuelTons(cval, balanced: false, raw),
                 13 => FuelTons(cval, balanced: true, raw),
-                14 => TakeoffData(cval, raw),
-                15 => TakeoffData(cval, raw),
-                16 => MissedApproachAuto(raw),
-                17 => MissedApproachFeet(cval, raw),
-                18 => MissedApproachFL(cval, raw),
-                19 => Minimums(cval, "baro", raw),
-                20 => Minimums(cval, "radio", raw),
+                16 => MissedApproachFeet(cval, raw),
+                17 => MissedApproachFL(cval, raw),
+                18 => Minimums(cval, "baro", raw),
+                19 => Minimums(cval, "radio", raw),
                 _ => null,
             };
         }
@@ -175,8 +172,6 @@ namespace VoiceSidecar
             );
         }
 
-        private static VoiceCommand MissedApproachAuto(string raw) =>
-            Cmd("missed_approach_altitude", raw, new() { ["mode"] = "auto" });
 
         private static VoiceCommand? MissedApproachFeet(string cval, string raw)
         {
@@ -231,38 +226,7 @@ namespace VoiceSidecar
             );
         }
 
-        private static VoiceCommand? TakeoffData(string cval, string raw)
-        {
-            // cval = "V1|VR|V2|thrustMode|flexTemp"
-            // e.g.  "130|135|142|FLX|65"  or  "130|135|142|TOGA|"
-            var parts = cval.Split('|');
-            if (parts.Length != 5)
-                return null;
-
-            if (!int.TryParse(parts[0], out var v1) || v1 < 100 || v1 > 199)
-                return null;
-            if (!int.TryParse(parts[1], out var vr) || vr < 100 || vr > 199)
-                return null;
-            if (!int.TryParse(parts[2], out var v2) || v2 < 100 || v2 > 199)
-                return null;
-
-            var thrust = parts[3]; // "FLX" or "TOGA"
-            var flexTemp = parts[4];
-
-            var payload = new Dictionary<string, object>
-            {
-                ["v1"] = v1,
-                ["vr"] = vr,
-                ["v2"] = v2,
-                ["thrust"] = thrust,
-            };
-
-            if (flexTemp.Length > 0 && int.TryParse(flexTemp, out var ft))
-                payload["flexTemp"] = ft;
-
-            return Cmd("takeoff_data", raw, payload);
-        }
-
+        
         private static VoiceCommand DispatchFma(string cval, string raw)
         {
             var payload = new Dictionary<string, object>();
@@ -286,13 +250,6 @@ namespace VoiceSidecar
             Set(5, "armed");
             Set(6, "urgent");
 
-            // extract flexTemp from thrust if present: "MAN FLX/65" → flexTemp="65"
-            if (
-                payload.TryGetValue("thrust", out var t)
-                && t is string ts
-                && ts.StartsWith("MAN FLX/")
-            )
-                payload["flexTemp"] = ts[8..];
 
             return Cmd("fma_callout", raw, payload);
         }
@@ -305,19 +262,17 @@ namespace VoiceSidecar
             [1] = "gear_up",
             [2] = "gear_down",
             // Flaps
-            [3] = "flaps_0",
-            [4] = "flaps_1",
-            [5] = "flaps_2",
-            [6] = "flaps_3",
-            [7] = "flaps_full",
+            [3] = "slats_ret",
+            [4] = "slats_ext",
+            [5] = "flaps_15",
+            [6] = "flaps_20",
+            [7] = "flaps_40",
             // Autopilot
             [8] = "autopilot_engage",
             [9] = "autopilot_disconnect",
-            [65] = "set_runway_track",
             [102] = "pull_altitude",
-            [103] = "manage_altitude",
+            [103] = "push_heading",
             [104] = "pull_speed",
-            [105] = "manage_speed",
             [106] = "pull_heading",
             [107] = "manage_nav",
             [110] = "push_to_level_off",
@@ -335,36 +290,31 @@ namespace VoiceSidecar
             // Flight director
             [19] = "flight_director_on",
             [20] = "flight_director_off",
-            [21] = "flight_director_off_bird_on",
-            [67] = "bird_on",
-            [68] = "bird_off",
             // Checklists
-            [22] = "checklist_cockpit_preparation",
-            [23] = "checklist_departure_change",
-            [24] = "checklist_before_start",
+            [22] = "checklist_before_startP1",
+            [24] = "checklist_before_startP2",
+            [23] = "checklist_after_landing",
             [25] = "checklist_after_start",
-            [26] = "checklist_taxi",
-            [27] = "checklist_lineup",
-            [28] = "checklist_approach",
-            [29] = "checklist_landing",
-            [30] = "checklist_parking",
-            [31] = "checklist_secure_aircraft",
+            [26] = "checklist_before_takeoffP1",
+            [27] = "checklist_before_takeoffP2",
+            [28] = "checklist_after_takeoffP1",
+            [29] = "checklist_after_takeoffP2",
+            [30] = "checklist_approach",
+            [31] = "checklist_landing",
+            [21] = "checklist_parking",
             [32] = "checklist_cancel",
             // Start preflight
             [33] = "prepare_aircraft",
             // Engine/apu start
-            [34] = "engine_start_1",
-            [35] = "engine_start_2",
+            [34] = "engine_start_2",
+            [35] = "engine_start_1",
             [36] = "apu_start",
             // Flows
             [37] = "clear_left",
             [38] = "runway_entry_procedure",
-            [39] = "start_engine_2",
+            [39] = "before_pushback_procedure",
             [40] = "clear_for_takeoff",
             // Shutdown
-            [41] = "shutdown_engine_1",
-            [42] = "shutdown_engine_2",
-            [43] = "shutdown",
             // Flight controls
             [44] = "flight_controls_check",
             // Anti ice
@@ -376,13 +326,9 @@ namespace VoiceSidecar
             [49] = "wipers_off",
             [50] = "wipers_slow",
             [51] = "wipers_fast",
-            [52] = "wipers_slow_intermittent",
-            [53] = "wipers_medium_intermittent",
-            [54] = "wipers_fast_intermittent",
             // Seat belts
             [55] = "seat_belts_on",
             [56] = "seat_belts_off",
-            [57] = "seat_belts_auto",
             // Parking
             [58] = "chocks_in_place",
             [59] = "parking_brake_set",
@@ -394,6 +340,15 @@ namespace VoiceSidecar
             // Altimeter
             [64] = "set_standard",
             // Generic checklist responses
+            [10] = "completed",
+            [57] = "on_and_auto",
+            [21] = "up_neutral",
+            [41] = "standard_set",
+            [42] = "low",
+            [52] = "mid",
+            [53] = "max",
+            [54] = "check_zero",
+            [66] = "brk_chk",
             [70] = "confirm",
             [71] = "negative",
             [72] = "set",
@@ -401,7 +356,7 @@ namespace VoiceSidecar
             [74] = "on",
             [75] = "off",
             [76] = "armed",
-            [77] = "auto",
+            [77] = "tara",
             [78] = "normal",
             [79] = "retracted",
             [80] = "down",
@@ -412,17 +367,17 @@ namespace VoiceSidecar
             [85] = "started",
             [86] = "running",
             [87] = "advised",
-            [88] = "signaled",
+            [88] = "cont_relight",
+            [89] = "tbs",
             [90] = "medium",
-            [91] = "btv",
+            [91] = "check_and_read",
             [92] = "engines_on",
             [93] = "engines_on_wings_on",
             [94] = "on_supplied_by_apu",
-            [95] = "config_1",
-            [96] = "config_1f",
-            [97] = "config_2",
-            [98] = "config_3",
-            [10] = "rwy_cond",
+            [95] = "s15f0",
+            [96] = "f15",
+            [97] = "f20",
+            [98] = "closed",
             // Go around / abort
             [99] = "go_around_flaps",
             [100] = "abort_takeoff",

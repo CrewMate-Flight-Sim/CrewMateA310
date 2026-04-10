@@ -1,0 +1,54 @@
+{
+  "id": "landing",
+  "name": "Landing Checklist",
+  "items": [
+    {
+      "challenge": "gear.ogg",
+      "response": ["down", "set and checked"],
+      "label": "Landing Gear"
+    },
+    {
+      "challenge": "auto_brake.ogg",
+      "response": ["low", "mid", "max", "set and checked"],
+      "label": "Autobrake"
+    },
+    {
+      "challenge": "askid.ogg",
+      "response": ["checked", "set and checked"],
+      "label": "Antiskid"
+    },
+    {
+      "challenge": "slats_flaps.ogg",
+      "response": ["twenty", "fourty", "set and checked"],
+      "label": "Slats and flaps",
+      "simvar_check": {
+        "var_name": "(A:FLAPS HANDLE INDEX, number)",
+        "var_type": "simvar",
+        "validation_map": [
+          {
+            "sim_value": 3.0,
+            "expected_response": "twenty"
+          },
+          {
+            "sim_value": 4.0,
+            "expected_response": "fourty"
+          }
+        ]
+      },
+      "store_check": {
+        "store": "landing.flaps",
+        "validation_map": [
+          { "store_value": "3", "expected_response": "twenty" },
+          { "store_value": "4", "expected_response": "fourty" }
+        ],
+        "incorrect": "are_you_sure.ogg"
+      }
+    },
+    {
+      "challenge": "spoilers.ogg",
+      "response": ["armed", "set and checked"],
+      "label": "Spoilers"
+    }
+  ],
+  "completion": "landing_checklist_completed.ogg"
+}

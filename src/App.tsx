@@ -34,8 +34,9 @@ function App() {
   const voiceEnabled = useSettingsStore((state) => state.voiceEnabled)
   const setVoiceEnabled = useSettingsStore((state) => state.setVoiceEnabled)
   const takeoffVr = usePerformanceStore((state) => state.takeoff.vr)
+  const takeoffV1 = usePerformanceStore((state) => state.takeoff.v1)
 
-  useCallouts(takeoffVr)
+  useCallouts(takeoffVr, takeoffV1)
   useAutoFlows()
   usePreflightTimer()
   const { recognizedText, isValidCommand, isUnrecognized, speechKey, speechEngineError } = useSpeechCommands({

@@ -11,9 +11,8 @@ import { useTelemetryStore } from "@/store/telemetryStore"
  */
 interface TriggeredFlags {
   afterStart: boolean
-  afterStartE2: boolean
-  packsOn: boolean
-  afterTakeoff: boolean
+  afterTakeoffP2: boolean
+  afterTakeoffP1: boolean
   landing: boolean
   afterLanding: boolean
   climbTenK: boolean
@@ -26,20 +25,18 @@ interface PrevValues {
   ignitionKnob: number
   flapsIndex: number
   spoilersArmed: number
-  engineN1_2: number
   landingGear: number
   alt: number
   mixture1: number
   mixture2: number
-  thrlvrclb: number
+  thrredalt: number
 }
 
 export function useAutoFlows() {
   const triggered = useRef<TriggeredFlags>({
     afterStart: false,
-    afterStartE2: false,
-    packsOn: false,
-    afterTakeoff: false,
+    afterTakeoffP2: false,
+    afterTakeoffP1: false,
     landing: false,
     afterLanding: false,
     climbTenK: false,
@@ -51,13 +48,12 @@ export function useAutoFlows() {
     onGround: 1,
     ignitionKnob: 0,
     flapsIndex: 0,
-    engineN1_2: 0,
     spoilersArmed: 0,
     landingGear: 1,
     alt: 0,
     mixture1: 1,
     mixture2: 1,
-    thrlvrclb: 0
+    thrredalt: 0
   })
 
   const phase = useRef<"ground" | "airborne">("ground")
@@ -69,7 +65,7 @@ export function useAutoFlows() {
     return useGoAroundStore.subscribe((s) => {
       if (s.count !== goAroundCount.current) {
         goAroundCount.current = s.count
-        triggered.current.afterTakeoff = false
+        // triggered.current.afterTakeoff = false  A310 has it's own go around flow, will be implemented later
       }
     })
   }, [])
@@ -89,7 +85,7 @@ export function useAutoFlows() {
       prev.current.alt = t.alt ?? 0
       prev.current.mixture1 = t.mixture1 ?? 1
       prev.current.mixture2 = t.mixture2 ?? 1
-      prev.current.thrlvrclb = t.thrlvrclb ?? 0
+      prev.current.thrredalt = t.thrredalt ?? 1024
       phase.current = t.onGround ? "ground" : "airborne"
       return
     }
@@ -102,7 +98,6 @@ export function useAutoFlows() {
       // Ground → Airborne
       phase.current = "airborne"
       fl.afterStart = false
-      fl.afterStartE2 = false
       fl.shutdown = false
       fl.afterLanding = false
     }
@@ -110,39 +105,32 @@ export function useAutoFlows() {
     if (phase.current === "airborne" && t.onGround && t.ias < 80) {
       // Airborne → Ground
       phase.current = "ground"
-      fl.afterTakeoff = false
+      fl.afterTakeoffP1 = false
+      fl.afterTakeoffP2 = false
       fl.landing = false
-      fl.packsOn = false
       fl.climbTenK = false
       fl.descTenK = false
     }
 
     if (!isRunning) {
       // After Start: ignition knob 0 → 1 while on ground
-      if (!fl.afterStart && t.onGround && p.ignitionKnob === 2 && t.ignitionKnob === 1) {
+      if (!fl.afterStart && t.onGround && !p.ignitionKnob && t.ignitionKnob === 3) {
         fl.afterStart = true
         executeFlow("after_start")
       }
 
-      // Placeholder item, can be modded
-      if (!fl.afterStartE2 && t.onGround && t.ignitionKnob === 2 && t.engineN1_2 > 22) {
-        fl.afterStartE2 = true
-        executeFlow("after_start_e2")
+      // Thrust Reduction
+      else if (!fl.afterTakeoffP1 && !t.onGround && !p.alt && t.alt > t.thrredalt) {
+        fl.afterTakeoffP1 = true
+        executeFlow("thr_red")
+      } else if (!fl.afterTakeoffP2 && !t.onGround && p.flapsIndex > 0 && t.flapsIndex === 0) {
+        fl.afterTakeoffP2 = true
+        executeFlow("both_packs")
       }
 
-      // Packs on: THR set to CL
-      else if (!fl.packsOn && !t.onGround && !p.thrlvrclb && t.thrlvrclb === 1) {
-        fl.packsOn = true
-        executeFlow("packs_on")
-      } else if (!fl.landing && !t.onGround && !p.flapsIndex && !p.landingGear && t.flapsIndex === 2 && t.landingGear) {
+      else if (!fl.landing && !t.onGround && !p.flapsIndex && !p.landingGear && t.flapsIndex === 3 && t.landingGear) {
         fl.landing = true
         executeFlow("landing")
-      }
-
-      // After Takeoff: flaps retracted to 0 while airborne
-      else if (!fl.afterTakeoff && !t.onGround && p.flapsIndex > 0 && t.flapsIndex === 0) {
-        fl.afterTakeoff = true
-        executeFlow("after_takeoff")
       }
 
       // After Landing: spoilers disarmed on ground
@@ -176,7 +164,7 @@ export function useAutoFlows() {
       }
     }
 
-    p.thrlvrclb = t.thrlvrclb ?? 0
+    p.thrredalt = t.thrredalt ?? 1024
     p.onGround = t.onGround
     p.ignitionKnob = t.ignitionKnob ?? 0
     p.flapsIndex = t.flapsIndex ?? 0

@@ -8,13 +8,13 @@ export async function setWipers(position: number) {
   try {
     const { telemetry } = useTelemetryStore.getState()
     const currentSpeed = telemetry?.ias ?? 0
-    if (position != 3 && currentSpeed > wipersSpeedLimit) {
+    if (position != 0 && currentSpeed > wipersSpeedLimit) {
       playSound("check_speed.ogg")
       return
     }
 
-    const expression1 = `${position} (>L:INI_WIPER_SWITCH_LEFT)`
-    const expression2 = `${position} (>L:INI_WIPER_SWITCH_RIGHT)`
+    const expression1 = `${position} (>L:A310_CPT_WIPER_KNOB)`
+    const expression2 = `${position} (>L:A310_FO_WIPER_KNOB)`
     await simvarSet(expression1)
     await simvarSet(expression2)
     playSound("check.ogg")

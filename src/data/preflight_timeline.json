@@ -1,56 +1,46 @@
 [
   {
-    "minuteMark": 60,
+    "minuteMark": 45,
     "label": "Arrive at aircraft",
-    "type": "flow",
-    "flowId": "open_curtains"
+    "type": "reminder"
   },
   {
-    "minuteMark": 58,
-    "label": "FO sits down and opens table",
-    "type": "flow",
-    "flowId": "table_open"
-  },
-  {
-    "minuteMark": 55,
+    "minuteMark": 43,
     "label": "Preliminary cockpit preparation",
     "type": "flow",
     "flowId": "prelim_cockpit_prep"
   },
   {
-    "minuteMark": 45,
+    "minuteMark": 35,
     "label": "PM walkaround",
-    "type": "flow",
-    "sound": "walkaround.ogg",
-    "flowId": "table_close"
+    "type": "reminder",
+    "sound": "walkaround.ogg"
   },
   {
-    "minuteMark": 33,
+    "minuteMark": 25,
     "label": "PM back from walkaround and cockpit preparation",
     "type": "flow",
     "sound": "walkaround_completed.ogg",
     "flowId": "cockpit_prep"
   },
   {
-    "minuteMark": 25,
+    "minuteMark": 20,
     "label": "Briefing",
     "type": "reminder"
   },
   {
-    "minuteMark": 20,
-    "label": "Cockpit preparation checklist",
+    "minuteMark": 10,
+    "label": "Before start checklist to the line",
     "type": "reminder"
   },
   {
     "minuteMark": 5,
-    "label": "FO closes table and APU start reminder",
-    "type": "flow",
-    "flowId": "table_close"
+    "label": "APU start reminder",
+    "type": "reminder"
   },
   {
-    "minuteMark": 3,
-    "label": "Before start procedure and checklist",
-    "type": "flow",
-    "flowId": "before_start"
+    "minuteMark": 1,
+    "label": "Before push rocedure and checklist below the line",
+    "type": "reminder"
   }
 ]

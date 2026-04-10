@@ -38,26 +38,35 @@ export function TakeoffWindow() {
 
   return (
     <div className="h-screen bg-black text-white p-3 flex flex-col gap-3">
-      {/*  V Speeds */}
-      <div className="grid grid-cols-3 gap-2">
-        {(["v1", "vr", "v2"] as const).map((speed) => (
-          <div key={speed} className="space-y-1">
-            <Label htmlFor={speed} className="text-[10px] font-mono text-cyan-400 uppercase tracking-widest">
-              {speed.toUpperCase()}
-            </Label>
-            <Input
-              type="number"
-              id={speed}
-              name={speed}
-              min={100}
-              max={200}
-              value={takeoff[speed] ?? ""}
-              onChange={handleNumberInput}
-              className="h-8 bg-slate-900/50 border-slate-600 text-white text-xs font-mono text-center px-1 focus-visible:ring-cyan-500"
-              placeholder="—"
-            />
-          </div>
-        ))}
+      <div className="space-y-1">
+        <div className={labelRow}>
+          <Label htmlFor="flaps" className="text-[10px] font-mono text-cyan-400 uppercase tracking-widest">
+            Flaps
+          </Label>
+
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                {/* Added h-full or block to ensure vertical alignment */}
+                <Info className="w-3.5 h-3.5 text-slate-400 cursor-help hover:text-cyan-400 transition-colors" />
+              </TooltipTrigger>
+              <TooltipContent className="text-xs max-w-[200px] bg-slate-800 border-slate-700">
+                A300/A310 flaps are formatted as (Slats/Flaps)
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        </div>
+        <select
+          id="flaps"
+          name="flaps"
+          value={takeoff.flaps}
+          onChange={handleSelectChange}
+          className="w-full h-9 bg-slate-900/50 border border-slate-600 text-white text-sm rounded-md px-3 focus:outline-none focus:ring-2 focus:ring-cyan-500"
+        >
+          <option value="1">15/0</option>
+          <option value="2">15/15</option>
+          <option value="3">20/20</option>
+        </select>
       </div>
 
       {/* Thrust + Packs + Anti Ice */}
@@ -91,7 +100,6 @@ export function TakeoffWindow() {
           <select id="packs" name="packs" value={takeoff.packs} onChange={handleSelectChange} className={selectCls}>
             <option value="on">ON</option>
             <option value="off">OFF</option>
-            <option value="apu">APU PACK</option>
           </select>
         </div>
 

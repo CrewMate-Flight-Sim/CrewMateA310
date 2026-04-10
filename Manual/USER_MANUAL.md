@@ -1,6 +1,6 @@
-# CrewmateA350 — User Manual
+# CrewmateA310 — User Manual
 
-**CrewmateA350** is a virtual First Officer companion for the **Airbus A350** in Microsoft Flight Simulator. It listens to your voice, responds with audio callouts, runs automated cockpit flows, and guides you through interactive checklists — just like a real crew member.
+**CrewmateA310** is a virtual First Officer companion for the **Airbus A310** in Microsoft Flight Simulator. It listens to your voice, responds with audio callouts, runs automated cockpit flows, and guides you through interactive checklists — just like a real crew member.
 
 ---
 
@@ -26,7 +26,7 @@
 
 ### Voice Modes
 
-CrewmateA350 supports two voice recognition modes:
+CrewmateA310 supports two voice recognition modes:
 
 | Mode                   | How it works                                         |
 | ---------------------- | ---------------------------------------------------- |
@@ -147,11 +147,11 @@ Speak these phrases clearly during flight. The FO uses partial matching — you 
 | "Let's prepare the aircraft" | Starts the preflight countdown timer to help you track preparation time. |
 
 ### Ground Engineer
-| Say                          | What happens                                                             |
-| ---------------------------- | ------------------------------------------------------------------------ |
-| "Ground from cockpit"        | Ground Engineer will ask whats your request                              |
-| "Cockpit to ground"          | Ground Engineer will ask whats your request                              |
 
+| Say                   | What happens                                |
+| --------------------- | ------------------------------------------- |
+| "Ground from cockpit" | Ground Engineer will ask whats your request |
+| "Cockpit to ground"   | Ground Engineer will ask whats your request |
 
 ### Gear
 
@@ -164,13 +164,13 @@ Speak these phrases clearly during flight. The FO uses partial matching — you 
 
 The FO will confirm speed limits before moving flaps while airborne.
 
-| Say           | Flap Setting        | Max Speed                                |
-| ------------- | ------------------- | ---------------------------------------- |
-| "flaps zero"  | Flaps 0 (retracted) | —                                        |
-| "flaps one"   | Flaps 1             | 255 kts (A350‑900) / 260 kts (A350‑1000) |
-| "flaps two"   | Flaps 2             | 212 kts / 219 kts                        |
-| "flaps three" | Flaps 3             | 195 kts / 206 kts                        |
-| "flaps full"  | Flaps Full          | 186 kts / 192 kts                        |
+| Say                         | Flap Setting          | Max Speed |
+| --------------------------- | --------------------- | --------- |
+| "slats retract"             | Flaps 0/0 (retracted) | —         |
+| "slats extend" or "flaps 0" | Flaps 15/0            | 245 kts   |
+| "flaps fifteen"             | Flaps 15/15           | 210 kts   |
+| "flaps twenty"              | Flaps 20/20           | 195 kts   |
+| "flaps fourty"              | Flaps 40              | 180 kts   |
 
 ### Engine Anti‑Ice
 

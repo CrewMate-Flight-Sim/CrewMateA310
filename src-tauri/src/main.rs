@@ -2,5 +2,5 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 fn main() {
-    crewmatea350_lib::run()
+    crewmatea310_lib::run()
 }

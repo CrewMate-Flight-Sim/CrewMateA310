@@ -203,19 +203,24 @@ Thread.Sleep(Timeout.Infinite);
 static void EmitSpeech(VoiceCommand command, float confidence)
 {
     // Detect pull vs set from the raw spoken text
-    var isPull = command.Raw.StartsWith("pull ", StringComparison.OrdinalIgnoreCase);
-    var verb = isPull ? "pull" : "set";
+var isPull = command.Raw.Contains("pull", StringComparison.OrdinalIgnoreCase);
+var verb = isPull ? "pull" : "set";
 
     // Reconstruct normalized text with correct verb so checklistRunner.ts still works
-    var text = command.Type switch
-    {
-        "heading" when command.Payload.TryGetValue("value", out var v) => $"{verb} heading {v}",
-        "altitude" when command.Payload.TryGetValue("flightLevel", out var fl) =>
-            $"{verb} flight level {fl}",
-        "altitude" when command.Payload.TryGetValue("value", out var v) => $"{verb} altitude {v}",
-        "speed" when command.Payload.TryGetValue("value", out var v) => $"{verb} speed {v}",
-        _ => command.Raw,
-    };
+var text = command.Type switch
+{
+    "heading" when command.Payload.TryGetValue("value", out var v) => $"{verb} heading {v}",
+    
+    "altitude" when command.Payload.TryGetValue("flightLevel", out var fl) => 
+        isPull ? $"flight level {fl} pull" : $"set flight level {fl}",
+
+    "altitude" when command.Payload.TryGetValue("value", out var v) => 
+        isPull ? $"altitude {v} pull" : $"set altitude {v}",
+
+    "speed" when command.Payload.TryGetValue("value", out var v) => $"{verb} speed {v}",
+
+    _ => command.Raw,
+};
 
     // Build enriched payload: original payload + verb for parametric commands
     Dictionary<string, object>? outPayload =

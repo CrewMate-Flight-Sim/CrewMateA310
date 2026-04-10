@@ -1,0 +1,25 @@
+{
+  "id": "climb_to_the_line",
+  "name": "After Takeoff Climb Checklist to the line",
+  "items": [
+    {
+      "challenge": "slats_flaps.ogg",
+      "response": ["retracted", "set and checked"],
+      "label": "Slats and Flaps",
+      "var": "(A:FLAPS HANDLE INDEX)",
+      "expected": 0,
+      "incorrect": "are_you_sure.ogg"
+    },
+    {
+      "challenge": "gear.ogg",
+      "response": ["up and neutral", "set and checked"],
+      "label": "Landing Gear"
+    },
+    {
+      "challenge": "packs.ogg",
+      "response": ["on", "set and checked"],
+      "label": "Packs"
+    }
+  ],
+  "completion": "climb_to_the_line_completed.ogg"
+}

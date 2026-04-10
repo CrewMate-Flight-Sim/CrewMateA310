@@ -2,7 +2,7 @@ import { simvarSet } from "@/API/simvarApi"
 import { playSound } from "@/services/playSounds"
 import { useTelemetryStore } from "@/store/telemetryStore"
 
-const gearLowerSpeedLimit = 255 // knots
+const gearLowerSpeedLimit = 270 // knots
 
 export async function setGearHandle(position: number) {
   try {
@@ -23,6 +23,12 @@ export async function setGearHandle(position: number) {
     } else {
       await simvarSet(commandExpression)
       playSound("gear_up.ogg")
+      setTimeout(() => {
+        simvarSet("1 (>L:A310_GEAR_HANDLE_STATUS)")
+        setTimeout(() => {
+          playSound("gear_neutral.ogg")
+        }, 2000)
+      }, 15000)
     }
   } catch (error) {
     console.error("Error sending gear key event:", error)

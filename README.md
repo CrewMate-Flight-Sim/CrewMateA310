@@ -1,4 +1,4 @@
-# CrewMate A350
+# CrewMate A310
 
 [![Latest Release](https://img.shields.io/github/v/release/marxio09dio/CrewMateA350?label=Latest%20Release)](https://github.com/marxio09dio/CrewMateA350/releases)
 ![GitHub all releases](https://img.shields.io/github/downloads/marxio09dio/CrewMateA350/total?label=Downloads&style=plastic)
@@ -10,7 +10,7 @@
 
 ![CrewMate Logo](./src-tauri/icons/icon.png)
 
-> **CrewMate A350** is a free and open-source alternative to Copilot-style apps for aircraft workflows.
+> **CrewMate A310** is a free and open-source alternative to Copilot-style apps for aircraft workflows.
 > All data from the voice recognition is processed locally on your machine.
 
 ---
@@ -34,8 +34,7 @@
 
 ## Requirements
 
-- Microsoft Flight Simulator 2020 or 2024
-- Inibuilds A350
+- Microsoft Flight Simulator 2020 or 2024 (A310 included with the sim)
 
 ## Voice Commands (Examples)
 
@@ -43,7 +42,7 @@
 <summary>Click to expand voice commands</summary>
 
 - Gear Down / Gear Up
-- Flaps 0, 1, 2, 3, Full
+- Flaps 0, 15, 20, 40
 - Engine anti ice on/off
 - Wing anti ice on/off
 - Landing lights on/off
@@ -72,7 +71,7 @@
 
 ## Reporting Bugs & Requesting Features
 
-If you encounter a problem or want to request a new feature, please [open an issue](https://github.com/marxio09dio/CrewMateA350/issues).
+If you encounter a problem or want to request a new feature, please [open an issue](https://github.com/alexlenh/CrewMateA310/issues).
 
 ---
 

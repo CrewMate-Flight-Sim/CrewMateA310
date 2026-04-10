@@ -1,27 +1,19 @@
-import { simvarGet } from "@/API/simvarApi"
-import afterControlsCheck from "@/data/flows/after_flight_controls_check.json"
-import afterLanding from "@/data/flows/after_landing.json"
-import afterStart from "@/data/flows/after_start.json"
-import afterStartE2 from "@/data/flows/after_start_e2.json"
-import afterTakeoff from "@/data/flows/after_takeoff.json"
-import beforeStart from "@/data/flows/before_start.json"
-import beforeTakeoff from "@/data/flows/before_takeoff.json"
-import clearLeft from "@/data/flows/clear_left.json"
-import climbTenThousand from "@/data/flows/climb_ten_thousand_flow.json"
-import cockpitPrep from "@/data/flows/cockpit_prep.json"
-import curtains_close from "@/data/flows/curtains_close.json"
-import curtains_open from "@/data/flows/curtains_open.json"
-import descTenThousand from "@/data/flows/desc_ten_thousand_flow.json"
-import landing from "@/data/flows/landing.json"
-import packsOn from "@/data/flows/packs_on.json"
-import prelimCockpitPrep from "@/data/flows/prelim_cockpit_prep.json"
-import parking from "@/data/flows/shutdown.json"
-import shutdown_e1 from "@/data/flows/shutdown_eng1.json"
-import shutdown_e2 from "@/data/flows/shutdown_eng2.json"
-import starteng2 from "@/data/flows/start_engine_two.json"
-import table_close from "@/data/flows/table_close.json"
-import table_open from "@/data/flows/table_open.json"
-import takeoff from "@/data/flows/takeoff.json"
+import afterTakeoffP2 from "@/data/flows/10_both_packs.json"
+import climbTenThousand from "@/data/flows/11_climb_ten_thousand_flow.json"
+import desPrep from "@/data/flows/12_des_prep.json"
+import descTenThousand from "@/data/flows/13_desc_ten_thousand_flow.json"
+import landing from "@/data/flows/14_landing.json"
+import afterLanding from "@/data/flows/15_after_landing.json"
+import parking from "@/data/flows/16_shutdown.json"
+import prelimCockpitPrep from "@/data/flows/1_prelim_cockpit_prep.json"
+import cockpitPrep from "@/data/flows/2_cockpit_prep.json"
+import beforeStart from "@/data/flows/3_before_pushback.json"
+import afterStart from "@/data/flows/4_after_start.json"
+import clearLeft from "@/data/flows/5_clear_left.json"
+import afterControlsCheck from "@/data/flows/6_after_flight_controls_check.json"
+import beforeTakeoff from "@/data/flows/7_before_takeoff.json"
+import takeoff from "@/data/flows/8_takeoff.json"
+import afterTakeoffP1 from "@/data/flows/9_thr_red.json"
 import { usePerformanceStore } from "@/store/performanceStore"
 import type { Flow, FlowStep } from "@/types/flow"
 
@@ -30,25 +22,18 @@ export const allFlows: Flow[] = [
   cockpitPrep,
   beforeStart,
   afterStart,
-  afterStartE2,
   clearLeft,
   afterControlsCheck,
   beforeTakeoff,
   takeoff,
-  packsOn,
-  afterTakeoff,
+  afterTakeoffP1,
+  afterTakeoffP2,
   climbTenThousand,
+  desPrep,
   descTenThousand,
   landing,
   afterLanding,
-  shutdown_e1,
-  shutdown_e2,
-  parking,
-  curtains_open,
-  curtains_close,
-  table_open,
-  table_close,
-  starteng2
+  parking
 ] as Flow[]
 
 export function getFlowById(id: string): Flow | undefined {
@@ -59,54 +44,41 @@ async function getTemplateVars(): Promise<Record<string, string>> {
   const { takeoff, landing } = usePerformanceStore.getState()
   const vars: Record<string, string> = {}
 
-  // TO_FLAPS_CONF mapping: 2 → flaps 1, 3 → flaps 2, 5 → flaps 3
-  const TO_FLAPS_MAP: Record<number, string> = { 2: "1", 3: "2", 5: "3" }
-  try {
-    const toFlapsConf = await simvarGet("(L:TO_FLAPS_CONF)")
-    vars["flaps"] = toFlapsConf !== null ? (TO_FLAPS_MAP[toFlapsConf] ?? "") : ""
-  } catch {
-    vars["flaps"] = ""
+  const flapsMap: Record<string, string> = {
+    "1": "1",
+    "2": "2",
+    "3": "3"
   }
+  vars["flaps"] = flapsMap[takeoff.flaps] ?? "1"
 
   const packsOn = takeoff.packs === "on"
-  const apuPacks = takeoff.packs === "apu"
-  vars["pack1_cmd"] = packsOn ? "1 (>L:INI_AIR_PACK1_BUTTON)" : "0 (>L:INI_AIR_PACK1_BUTTON)"
-  vars["pack2_cmd"] = packsOn ? "1 (>L:INI_AIR_PACK2_BUTTON)" : "0 (>L:INI_AIR_PACK2_BUTTON)"
+  vars["pack1_cmd"] = packsOn ? "1 (>L:A300_PACK1_BUTTON)" : "0 (>L:A300_PACK1_BUTTON)"
+  vars["pack2_cmd"] = packsOn ? "1 (>L:A300_PACK2_BUTTON)" : "0 (>L:A300_PACK2_BUTTON)"
   vars["pack1_expect"] = packsOn ? "1" : "0"
   vars["pack2_expect"] = packsOn ? "1" : "0"
-  vars["apu_bleed_cmd"] = apuPacks ? "1 (>L:INI_AIR_BLEED_APU)" : "0 (>L:INI_AIR_BLEED_APU)"
-  vars["apu_bleed_expect"] = apuPacks ? "1" : "0"
 
   const antiIce = takeoff.antiIce ?? "off"
   const engAntiIce = antiIce === "oneng" || antiIce === "onengwing"
   const wingAntiIce = antiIce === "onengwing"
 
-  vars["anti_ice_eng1_cmd"] = engAntiIce ? "1 (>L:INI_ENG_ANTI_ICE1_STATE)" : "0 (>L:INI_ENG_ANTI_ICE1_STATE)"
-  vars["anti_ice_eng2_cmd"] = engAntiIce ? "1 (>L:INI_ENG_ANTI_ICE2_STATE)" : "0 (>L:INI_ENG_ANTI_ICE2_STATE)"
-  vars["anti_ice_wing_cmd"] = wingAntiIce ? "1 (>L:INI_WING_ANTI_ICE1_STATE)" : "0 (>L:INI_WING_ANTI_ICE1_STATE)"
+  vars["anti_ice_eng1_cmd"] = engAntiIce ? "1 (>L:A310_ENG1_ANTI_ICE)" : "0 (>L:A310_ENG1_ANTI_ICE)"
+  vars["anti_ice_eng2_cmd"] = engAntiIce ? "1 (>L:A310_ENG2_ANTI_ICE)" : "0 (>L:A310_ENG2_ANTI_ICE)"
+  vars["anti_ice_wing_cmd"] = wingAntiIce ? "1 (>L:A310_WING_ANTI_ICE)" : "0 (>L:A310_WING_ANTI_ICE)"
   vars["anti_ice_eng1_expect"] = engAntiIce ? "1" : "0"
   vars["anti_ice_eng2_expect"] = engAntiIce ? "1" : "0"
   vars["anti_ice_wing_expect"] = wingAntiIce ? "1" : "0"
 
-  const landingAntiIceOn = (landing.antiIce ?? "off") === "oneng"
-  vars["landing_anti_ice_eng1_cmd"] = landingAntiIceOn
-    ? "1 (>L:INI_ENG_ANTI_ICE1_STATE)"
-    : "0 (>L:INI_ENG_ANTI_ICE1_STATE)"
-  vars["landing_anti_ice_eng2_cmd"] = landingAntiIceOn
-    ? "1 (>L:INI_ENG_ANTI_ICE2_STATE)"
-    : "0 (>L:INI_ENG_ANTI_ICE2_STATE)"
-  vars["landing_anti_ice_eng1_expect"] = landingAntiIceOn ? "1" : "0"
-  vars["landing_anti_ice_eng2_expect"] = landingAntiIceOn ? "1" : "0"
-
   const landingApuAutoStart = (landing.apuStart ?? "auto") === "auto"
-  vars["landing_apu_master_cmd"] = landingApuAutoStart ? "1 (>L:INI_APU_MASTER_SWITCH)" : "0 (>L:INI_APU_MASTER_SWITCH)"
+  vars["landing_apu_master_cmd"] = landingApuAutoStart
+    ? "1 (>L:A310_apu_master_switch)"
+    : "0 (>L:A310_apu_master_switch)"
   vars["landing_apu_master_expect"] = landingApuAutoStart ? "1" : "0"
-  vars["landing_apu_start_cmd"] = landingApuAutoStart ? "1 (>L:INI_APU_START_BUTTON)" : "0 (>L:INI_APU_START_BUTTON)"
+  vars["landing_apu_start_cmd"] = landingApuAutoStart ? "1 (>L:A310_apu_start_button)" : "0 (>L:A310_apu_start_button)"
   vars["landing_apu_start_expect"] = landingApuAutoStart ? "1" : "0"
 
   const landFlapsMap: Record<string, string> = {
-    "3": "3",
-    Full: "4"
+    "20/20": "3",
+    "30/40": "4"
   }
   vars["landing_flaps"] = landFlapsMap[landing.flaps] ?? "5"
 

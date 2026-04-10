@@ -26,7 +26,7 @@ $publishDir = "CopilotSpeechNew\bin\Release\net8.0-windows\win-x64\publish"
 Write-Host "Copying .exe..." -ForegroundColor Yellow
 Copy-Item "$publishDir\CopilotSpeech.exe" `
     "$binDir\copilot_speech-x86_64-pc-windows-msvc.exe" -Force
-Write-Host "✓ Copied copilot_speech-x86_64-pc-windows-msvc.exe" -ForegroundColor Green
+Write-Host "Copied copilot_speech-x86_64-pc-windows-msvc.exe" -ForegroundColor Green
 
 # Copy grammar file (required at runtime next to the exe)
 Write-Host "Copying grammar.xml..." -ForegroundColor Yellow
@@ -47,10 +47,10 @@ elseif (Test-Path $grammarLegacyPath) {
 
 if ($grammarFound) {
     Copy-Item $grammarFound "$binDir\grammar.xml" -Force
-    Write-Host "✓ Copied grammar.xml from $grammarFound" -ForegroundColor Green
+    Write-Host "Copied grammar.xml from $grammarFound" -ForegroundColor Green
 }
 else {
-    Write-Host "✗ Warning: grammar.xml not found in publish or project paths" -ForegroundColor Yellow
+    Write-Host "Warning: grammar.xml not found in publish or project paths" -ForegroundColor Yellow
 }
 
 Write-Host "`nSidecar build complete!" -ForegroundColor Green

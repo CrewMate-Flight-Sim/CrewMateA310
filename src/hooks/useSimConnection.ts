@@ -68,7 +68,9 @@ const simVars: { key: string; expression: string }[] = [
   { key: "foTerrOn", expression: "(L:INI_TERR_ON_FO)" },
   { key: "foWxr2On", expression: "(L:INI_WXR2_ON)" },
   { key: "autobrakeLevel", expression: "(L:INI_AUTOBRAKE_LEVEL)" },
-  { key: "thrredalt", expression: "(L:A310_REDUCTION_ALTITUDE)" }
+  { key: "thrredalt", expression: "(L:A310_REDUCTION_ALTITUDE)" },
+  { key: "v1", expression: "(L:A310_V1)" },
+  { key: "vr", expression: "(L:A310_VR)" }
 ]
 
 const RETRY_INTERVAL_MS = 5000

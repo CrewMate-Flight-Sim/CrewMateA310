@@ -82,6 +82,9 @@ async function getTemplateVars(): Promise<Record<string, string>> {
   }
   vars["landing_flaps"] = landFlapsMap[landing.flaps] ?? "5"
 
+  vars["pitch_trim_cmd"] = `${takeoff.trim} (>L:ELEV_TRIM_RATIO)`
+  vars["pitch_trim_expect"] = String(takeoff.trim)
+
   return vars
 }
 

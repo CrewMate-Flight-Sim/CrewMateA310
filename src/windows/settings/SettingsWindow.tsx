@@ -39,6 +39,9 @@ export function SettingsWindow() {
   const postLandingShutdownEnabled = useSettingsStore((s) => s.postLandingShutdownEnabled)
   const setPostLandingShutdownEnabled = useSettingsStore((s) => s.setPostLandingShutdownEnabled)
 
+  const v2CalloutEnabled = useSettingsStore((s) => s.v2CalloutEnabled)
+  const setV2CalloutEnabled = useSettingsStore((s) => s.setV2CalloutEnabled)
+
   const holdOnIncorrect = useChecklistStore((s) => s.holdOnIncorrect)
   const setHoldOnIncorrect = useChecklistStore((s) => s.setHoldOnIncorrect)
 
@@ -244,6 +247,17 @@ export function SettingsWindow() {
             id="postLandingShutdownEnabled"
             checked={postLandingShutdownEnabled}
             onCheckedChange={(checked) => setPostLandingShutdownEnabled(checked === true)}
+          />
+        </div>
+
+        <div className="grid grid-cols-[1fr_auto] items-center gap-3">
+          <Label htmlFor="v2CalloutEnabled" className="text-sm text-slate-300 cursor-pointer">
+            V2 callout on takeoff
+          </Label>
+          <Checkbox
+            id="v2CalloutEnabled"
+            checked={v2CalloutEnabled}
+            onCheckedChange={(checked) => setV2CalloutEnabled(checked === true)}
           />
         </div>
 

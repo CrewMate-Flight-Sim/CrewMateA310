@@ -330,7 +330,7 @@ export function useCallouts(v1Speed: number, vrSpeed: number) {
       al.oneToGo = true
     }
 
-    if (!t.onGround && t.alt <= mda + 100 && !al.above100mda) {
+    if (!t.onGround && t.alt <= mda + 100 && dh === 0 && !al.above100mda) {
       playSound("100_above.ogg")
       al.above100mda = true
     }

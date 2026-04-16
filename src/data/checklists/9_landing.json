@@ -9,7 +9,7 @@
     },
     {
       "challenge": "auto_brake.ogg",
-      "response": ["low", "med", "max", "set and checked"],
+      "response": ["low", "mid", "max", "set and checked"],
       "label": "Autobrake"
     },
     {

@@ -47,11 +47,10 @@
 
       <!-- Flight level -->
       <item>
-        <item repeat="0-1">
-          <ruleref uri="#VERB" />
-        </item>
+        <item repeat="0-1">set</item>
         <item>flight level</item>
         <ruleref uri="#HDG_SPD_FL_VALUE" />
+        <item repeat="0-1">pull</item>
         <tag>out.pid="2"; out.cval=rules.HDG_SPD_FL_VALUE;</tag>
       </item>
 
@@ -426,7 +425,7 @@
       <item>up and neutral<tag>out.pid="21"</tag></item>
       <item>standard set<tag>out.pid="41"</tag></item>
       <item>low<tag>out.pid="42"</tag></item>
-      <item>med<tag>out.pid="52"</tag></item>
+      <item>mid<tag>out.pid="52"</tag></item>
       <item>max<tag>out.pid="53"</tag></item>
       <item>confirm<tag>out.pid="70";</tag></item>
       <item>confirmed<tag>out.pid="70";</tag></item>

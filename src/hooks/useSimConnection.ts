@@ -71,6 +71,20 @@ const simVars: { key: string; expression: string }[] = [
   { key: "thrredalt", expression: "(L:A310_REDUCTION_ALTITUDE)" },
   { key: "v1", expression: "(L:A310_V1)" },
   { key: "vr", expression: "(L:A310_VR)" }
+  // { key: "linkedInstruments", expression: "(L:INI_LINKED_INSTRUMENTS)" },
+  // { key: "landingtrk", expression: "(L:INI_ARR_RUNWAY_HDG)" },
+  // { key: "foShowAirports", expression: "(L:INI_SHOW_AIRPORTS2)" },
+  // { key: "foShowConstraints", expression: "(L:INI_SHOW_CONSTRAINTS2)" },
+  // { key: "foVor1Active", expression: "(L:INI_FO_VOR1_ACTIVE)" },
+  // { key: "foVor2Active", expression: "(L:INI_FO_VOR2_ACTIVE)" },
+  // { key: "foTerrOn", expression: "(L:INI_TERR_ON_FO)" },
+  // { key: "foWxr2On", expression: "(L:INI_WXR2_ON)" },
+  { key: "autobrakeLevel", expression: "(L:A310_AUTOBRAKE_LEVEL)" },
+  { key: "thrredalt", expression: "(L:A310_REDUCTION_ALTITUDE)" },
+  { key: "v1", expression: "(L:A310_V1)" },
+  { key: "vr", expression: "(L:A310_VR)" },
+  { key: "mda", expression: "(L:A310_MDA)" },
+  { key: "dh", expression: "(L:A310_MINIMUMS_PILOT)" }
 ]
 
 const RETRY_INTERVAL_MS = 5000

@@ -345,7 +345,7 @@ namespace VoiceSidecar
             [21] = "up_neutral",
             [41] = "standard_set",
             [42] = "low",
-            [52] = "med",
+            [52] = "mid",
             [53] = "max",
             [54] = "check_zero",
             [66] = "brk_chk",

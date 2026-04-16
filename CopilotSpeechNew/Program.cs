@@ -209,8 +209,7 @@ var verb = isPull ? "pull" : "set";
     // Reconstruct normalized text with correct verb so checklistRunner.ts still works
 var text = command.Type switch
 {
-    "heading" when command.Payload.TryGetValue("value", out var v) => 
-        isPull ? $"pull heading {v}" : $"set heading {v}",
+    "heading" when command.Payload.TryGetValue("value", out var v) => $"{verb} heading {v}",
 
     "altitude" when command.Payload.TryGetValue("flightLevel", out var fl) => 
         isPull ? $"flight level {fl} pull" : $"set flight level {fl}",
@@ -218,8 +217,7 @@ var text = command.Type switch
     "altitude" when command.Payload.TryGetValue("value", out var v) => 
         isPull ? $"altitude {v} pull" : $"set altitude {v}",
 
-    "speed" when command.Payload.TryGetValue("value", out var v) => 
-        isPull ? $"pull speed {v}" : $"set speed {v}",
+    "speed" when command.Payload.TryGetValue("value", out var v) => $"{verb} speed {v}",
 
     _ => command.Raw,
 };

@@ -7,7 +7,7 @@
     {
       "label": "Autobrake set",
       "read": "(L:A310_AUTOBRAKE_LEVEL)",
-      "on": "1 (>L:A310_ABRK_HI_COMMAND)",
+      "on": "3 (>L:A310_AUTOBRAKE_LEVEL)",
       "expect": 3
     },
     {

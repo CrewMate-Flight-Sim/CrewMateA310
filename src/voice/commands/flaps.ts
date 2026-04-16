@@ -19,7 +19,7 @@ const keyEventMap: Record<number, string> = {
 
 const soundMap: Record<number, string> = {
   0: "slats_ret.ogg",
-  1: "slats_ext.ogg",
+  1: "flaps_0.ogg",
   2: "flaps_15.ogg",
   3: "flaps_20.ogg",
   4: "flaps_40.ogg"
@@ -34,9 +34,13 @@ export async function setFlaps(setting: number, skipAnnouncement = false) {
     const { telemetry } = useTelemetryStore.getState()
     const currentSpeed = telemetry?.ias ?? 0
     const isOnGround = telemetry?.onGround ?? 0
-
+    const currentFlapIndex = telemetry?.flapsIndex ?? 0
     const speedLimit = flapSpeedLimits[setting]
+    const isInitialExtension = currentFlapIndex === 0 && setting === 1
+    const isExtendingOrStatic = setting >= currentFlapIndex && setting > 0
+    const isTransition3to4 = currentFlapIndex === 3 && setting === 4
 
+    // 1. FO checks if you're too fast
     if (speedLimit && currentSpeed > speedLimit) {
       playSound("check_speed.ogg")
       return
@@ -49,22 +53,24 @@ export async function setFlaps(setting: number, skipAnnouncement = false) {
 
     const commandExpression = `(>K:${keyEvent})`
 
-    if (!isOnGround) {
+    // 2. FO says "Speed Checked" (Extension only, skip 3->4)
+    if (!isOnGround && isExtendingOrStatic && !isTransition3to4) {
       if (!skipAnnouncement) {
         playSound("speed_checked.ogg")
         await delay(1000)
       }
-      await simvarSet(commandExpression)
+    }
 
-      await delay(1000)
-      const sound = soundMap[setting]
-      if (sound) playSound(sound)
+    // 3. FO moves the lever
+    await simvarSet(commandExpression)
+
+    // 4. FO confirms the selection (e.g., "Slats Extend" or "Flaps 15")
+    await delay(1000)
+    if (isInitialExtension) {
+      playSound("slats_ext.ogg")
     } else {
-      await simvarSet(commandExpression)
-
-      await delay(1000)
-      const sound = soundMap[setting]
-      if (sound) playSound(sound)
+      const confirmation = soundMap[setting]
+      if (confirmation) playSound(confirmation)
     }
   } catch (error) {
     console.error("[Flaps] Error setting flaps:", error)

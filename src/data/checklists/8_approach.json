@@ -24,6 +24,11 @@
       "label": "Altimeters"
     },
     {
+      "challenge": "minimum.ogg",
+      "response": ["set", "set and checked"],
+      "label": "Minimums"
+    },
+    {
       "label": "Ignition",
       "challenge": "ign.ogg",
       "response": ["cont relight"],

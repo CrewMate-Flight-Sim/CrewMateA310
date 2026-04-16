@@ -15,7 +15,7 @@
     {
       "challenge": "diff_p.ogg",
       "response": ["check zero", "set and checked"],
-      "label": "External Power"
+      "label": "Differential pressure"
     },
     {
       "challenge": "light_sign.ogg",

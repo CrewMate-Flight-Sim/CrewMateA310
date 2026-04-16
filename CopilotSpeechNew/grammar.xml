@@ -441,6 +441,7 @@
       <item>t a r a<tag>out.pid="77";</tag></item>
       <item>normal<tag>out.pid="78";</tag></item>
       <item>normal and on<tag>out.pid="78";</tag></item>
+      <item>disarmed<tag>out.pid="11";</tag></item>
       <item>retracted<tag>out.pid="79";</tag></item>
       <item>down<tag>out.pid="80";</tag></item>
       <item>secured<tag>out.pid="81";</tag></item>

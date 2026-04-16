@@ -338,6 +338,7 @@ namespace VoiceSidecar
             [64] = "set_standard",
             // Generic checklist responses
             [10] = "completed",
+            [11] = "disarmed",
             [57] = "on_and_auto",
             [21] = "up_neutral",
             [41] = "standard_set",

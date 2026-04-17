@@ -23,15 +23,18 @@
         "validation_map": [
           {
             "sim_value": 1.0,
-            "expected_response": "fifteen zero"
+            "expected_response": "fifteen zero",
+            "copilot_confirmation": "15_0.ogg"
           },
           {
             "sim_value": 2.0,
-            "expected_response": "fifteen"
+            "expected_response": "fifteen",
+            "copilot_confirmation": "15.ogg"
           },
           {
             "sim_value": 3.0,
-            "expected_response": "twenty"
+            "expected_response": "twenty",
+            "copilot_confirmation": "20.ogg"
           }
         ]
       },

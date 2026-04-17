@@ -154,6 +154,9 @@ $phrases = @{
     "valve_open"                                = "Valve open"
     "valve_closed"                              = "Valve closed"
     "after_landing_checklist_completed"         = "After Landing checklist completed"
+    "15_0" = "Fifteen zero"
+    "15" = "Fifteen"
+    "20" = "Twenty"
 }
 # Derive folder name from voice: "en-US-JennyNeural" -> "Jenny"
 $voiceShortName = ($voiceName -replace '^.*-([A-Za-z]+)Neural$', '$1')

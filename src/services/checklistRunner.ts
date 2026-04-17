@@ -204,7 +204,6 @@ async function executeNormalItem(item: ChecklistItem, index: number, signal: Abo
       if (responseList.length === 0 || matchesAnyResponse(spoken, responseList)) {
         const s = spoken.toLowerCase().trim()
 
-
         // Baro/feet confirmation: require a numeric value (digits or word form).
         const expectsFeet = responseList.some((r) => r.toLowerCase().includes("feet"))
         if ((item.baro_confirmation || expectsFeet) && !s.includes("set and checked")) {

@@ -152,7 +152,7 @@ export function useCallouts() {
     calledVr: false,
     calledV1: false,
     vrInhibit: true,
-    v1Inhibit: true,
+    v1Inhibit: true
   })
 
   const altitude = useRef<AltitudeCalloutFlags>({
@@ -187,7 +187,6 @@ export function useCallouts() {
 
   const cabinReadyPrimed = useRef(false)
   const thrustSetPrimed = useRef(false)
-
 
   // Re-arm positive-climb callout on go-around
   const goAroundCount = useRef(useGoAroundStore.getState().count)

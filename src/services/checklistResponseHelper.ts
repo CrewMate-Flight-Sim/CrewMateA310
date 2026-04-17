@@ -1,5 +1,3 @@
-import { usePerformanceStore } from "@/store/performanceStore"
-import { useTelemetryStore } from "@/store/telemetryStore"
 import type { ChecklistItem } from "@/types/checklist"
 
 export const WEIGHT_UNITS = new Set(["tons", "kilograms", "pounds", "kilograms balanced", "pounds balanced"])

@@ -9,7 +9,7 @@
     },
     {
       "challenge": "rud_trim.ogg",
-      "response": ["zero", "set and checked"],
+      "response": ["check zero", "set and checked"],
       "label": "Rudder Trim"
     },
     {

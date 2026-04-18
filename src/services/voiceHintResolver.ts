@@ -245,7 +245,7 @@ export function resolveVoiceHints(args: ResolveVoiceHintsArgs): VoiceHintPhase |
     return {
       id: "prep_timeline",
       title: "Prepare",
-      phrases: ["before start checklist below the line", "start the apu", "start apu"]
+      phrases: ["before start checklist to the line", "start the apu", "start apu"]
     }
   }
 

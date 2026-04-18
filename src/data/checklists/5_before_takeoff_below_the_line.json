@@ -14,7 +14,7 @@
     },
     {
       "label": "Packs",
-      "challenge": "packs_one_and_two.ogg",
+      "challenge": "packs.ogg",
       "response": ["on", "on supplied by apu", "off", "set and checked"],
       "store_check": {
         "store": "takeoff.packs",

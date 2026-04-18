@@ -153,6 +153,8 @@ $phrases = @{
     "transponder"                          = "Transponder"
     "cabin"                                = "Cabin"
     "packs"                                = "Packs"
+    "go_around_alt"                        = "Go around altitude"
+    "feet_set"                             = "feet set"
 }
 # Derive folder name from voice: "en-US-JennyNeural" -> "Jenny"
 

@@ -1,3 +1,4 @@
+import { playSound } from "@/services/playSounds"
 import { useGoAroundStore } from "@/store/goAroundStore"
 import { useTelemetryStore } from "@/store/telemetryStore"
 
@@ -8,4 +9,6 @@ export async function executeGoAround() {
   const target = Math.max(1, flapsIndex - 1)
   useGoAroundStore.getState().trigger()
   await setFlaps(target, true)
+  await playSound("thrust.ogg")
+  await playSound("go_around.ogg")
 }

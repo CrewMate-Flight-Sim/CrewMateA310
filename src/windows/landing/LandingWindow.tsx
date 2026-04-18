@@ -98,6 +98,24 @@ export function LandingWindow() {
             placeholder="—"
           />
         </div>
+        <div className="space-y-1">
+          <div className={labelRow}>
+            <Label htmlFor="missedAltitude" className="text-[10px] font-mono text-cyan-400 uppercase tracking-widest">
+              Missed App (ft)
+            </Label>
+          </div>
+          <Input
+            type="number"
+            min={1000}
+            max={20000}
+            id="missedAltitude"
+            name="missedAltitude"
+            value={landing.missedAltitude}
+            onChange={handleNumberInput}
+            className="h-8 bg-slate-900/50 border-slate-600 text-white text-xs font-mono text-center px-1 focus-visible:ring-cyan-500"
+            placeholder="-"
+          />
+        </div>
       </div>
 
       {/* APU + Auto Brake */}

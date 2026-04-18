@@ -353,12 +353,14 @@ export async function dispatchFoCommand(commandType: string, payload: Record<str
       if ((payload.mode as string) === "auto") {
         const alt = usePerformanceStore.getState().landing?.["missedAltitude"]
         if (alt != null) {
-          playSound("go_around_alt_set.ogg")
           setAltitudeDial(alt)
+          playSound("go_around_alt_set.ogg")
         }
       } else if (payload.value != null) {
-        playSound("go_around_alt_set.ogg")
-        setAltitudeDial(payload.value as number)
+        const altValue = payload.value as number
+        const leadingNumber = Math.floor(altValue / 1000).toString()
+        setAltitudeDial(altValue)
+        playSoundSequence(["go_around_alt.ogg", `${leadingNumber}.ogg`, "thousand.ogg", "feet_set.ogg"])
       }
       return true
     }

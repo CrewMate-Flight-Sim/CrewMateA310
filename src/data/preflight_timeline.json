@@ -11,7 +11,7 @@
     "flowId": "prelim_cockpit_prep"
   },
   {
-    "minuteMark": 40,
+    "minuteMark": 42,
     "label": "PM walkaround and captain (your) cockpit preparation",
     "type": "reminder",
     "sound": "walkaround.ogg"

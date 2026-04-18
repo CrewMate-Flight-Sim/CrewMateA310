@@ -22,7 +22,6 @@ async function monitorEngineStart(engineNum: number) {
     if (isOpen !== null && isOpen > 0.5) {
       await delay(800)
       playSound("valve_open.ogg")
-      console.log(`Engine ${engineNum} valve OPENED.`)
       break // Move to Phase 2
     }
     await delay(100)
@@ -39,7 +38,6 @@ async function monitorEngineStart(engineNum: number) {
     if (isClosed !== null && isClosed < 0.1) {
       await delay(800)
       playSound("valve_closed.ogg")
-      console.log(`Engine ${engineNum} valve CLOSED.`)
       break // Exit loop, we're done
     }
     await delay(100)

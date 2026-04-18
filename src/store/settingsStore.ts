@@ -48,7 +48,7 @@ export const useSettingsStore = create<SettingsStore>()(
       voiceMode: "continuous",
       pttShortcut: "CmdOrCtrl+Shift+Space",
       soundPack: "Jenny",
-      geSoundPack: "GE_Davis",
+      geSoundPack: "GE_Christopher",
       soundVolume: 100,
       outputDevice: null,
       inputDevice: null,

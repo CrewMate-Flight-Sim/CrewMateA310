@@ -4,12 +4,12 @@
   "items": [
     {
       "challenge": "cockpit_prep.ogg",
-      "response": ["completed"],
+      "response": ["completed", "set and checked"],
       "label": "Cockpit Prep"
     },
     {
       "challenge": "signs.ogg",
-      "response": ["on and auto"],
+      "response": ["on and auto", "set and checked"],
       "label": "Signs"
     },
     {
@@ -35,7 +35,7 @@
     },
     {
       "challenge": "brakes.ogg",
-      "response": ["normal and on"],
+      "response": ["normal and on", "set and checked"],
       "label": "Brake and Anti Skid"
     }
   ],

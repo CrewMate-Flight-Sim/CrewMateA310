@@ -4,13 +4,13 @@
   "items": [
     {
       "challenge": "flight_controls.ogg",
-      "response": ["checked"],
+      "response": ["checked", "set and checked"],
       "label": "Flight Controls",
       "copilot_confirmation": "checked.ogg"
     },
     {
       "challenge": "briefing.ogg",
-      "response": ["confirmed"],
+      "response": ["confirmed", "set and checked"],
       "label": "Briefing"
     },
     {
@@ -50,17 +50,17 @@
     },
     {
       "challenge": "performance_fmas.ogg",
-      "response": ["check and read"],
+      "response": ["check and read", "set and checked"],
       "label": "Performance and FMAs"
     },
     {
       "challenge": "takeoff_config.ogg",
-      "response": ["checked"],
+      "response": ["checked", "set and checked"],
       "label": "Takeoff Config"
     },
     {
       "challenge": "transponder.ogg",
-      "response": ["set"],
+      "response": ["set", "set and checked"],
       "label": "Transponder"
     }
   ],

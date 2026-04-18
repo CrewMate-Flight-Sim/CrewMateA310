@@ -1,3 +1,4 @@
+import { usePerformanceStore } from "@/store/performanceStore"
 import type { Telemetry } from "@/store/telemetryStore"
 
 // Result for VoiceGuide UI — phrases must match CopilotSpeech grammar
@@ -65,6 +66,7 @@ export function resolveVoiceHints(args: ResolveVoiceHintsArgs): VoiceHintPhase |
   const flapsIndex = num(t, "flapsIndex") ?? 0
   const ground = isOnGround(t)
   const engOff = enginesOff(t)
+  const perfTA = usePerformanceStore.getState().takeoff.transitionAltitude || 5000
 
   // ── AIRBORNE ────────────────────────────────────────────────────────────────
   if (!ground) {
@@ -75,7 +77,23 @@ export function resolveVoiceHints(args: ResolveVoiceHintsArgs): VoiceHintPhase |
       return {
         id: "initial_climb",
         title: "Initial climb",
-        phrases: ["gear up", "flaps X", "autopilot on"]
+        phrases: ["gear up", "flaps X", "slats retract", "autopilot on"]
+      }
+    }
+
+    if (!descending && alt > perfTA && lastCl !== "after_takeoff_climb_below_the_line") {
+      return {
+        id: "after_takeoff_below_line",
+        title: "After takeoff climb",
+        phrases: ["after takeoff climb checklist below the line"]
+      }
+    }
+
+    if (!descending && flapsIndex === 0 && radioAlt > 1000 && lastCl !== "after_takeoff_climb_to_the_line") {
+      return {
+        id: "after_takeoff_to_line",
+        title: "After takeoff climb",
+        phrases: ["after takeoff climb checklist to the line"]
       }
     }
 
@@ -94,7 +112,7 @@ export function resolveVoiceHints(args: ResolveVoiceHintsArgs): VoiceHintPhase |
       return {
         id: "descent_approach",
         title: "Descent / approach",
-        phrases: ["approach checklist", "gear down", "flaps X"]
+        phrases: ["approach checklist", "gear down", "slats extend", "flaps X"]
       }
     }
 
@@ -117,7 +135,7 @@ export function resolveVoiceHints(args: ResolveVoiceHintsArgs): VoiceHintPhase |
     return {
       id: "after_landing_hints",
       title: "After landing",
-      phrases: ["shutdown engine X", "taxi lights off"]
+      phrases: ["taxi lights off"]
     }
   }
 
@@ -126,12 +144,12 @@ export function resolveVoiceHints(args: ResolveVoiceHintsArgs): VoiceHintPhase |
     return {
       id: "takeoff_thrust",
       title: "Takeoff",
-      phrases: ["man flex XX srs runway autothrust blue", "man toga srs autothrust blue", "stop"]
+      phrases: ["stop"]
     }
   }
 
   // After line_up checklist → say "takeoff" to start takeoff flow
-  if (lastCl === "line_up" && slowGround) {
+  if (lastCl === "before_takeoff_below_the_line" && slowGround) {
     return {
       id: "call_takeoff",
       title: "Takeoff",
@@ -143,17 +161,17 @@ export function resolveVoiceHints(args: ResolveVoiceHintsArgs): VoiceHintPhase |
   if (lastFl === "before_takeoff" && slowGround) {
     return {
       id: "call_lineup_checklist",
-      title: "Line up",
-      phrases: ["lineup checklist"]
+      title: "Before takeoff checklist below the line",
+      phrases: ["before takeoff checklist below the line"]
     }
   }
 
   // After taxi checklist → line-up / runway entry
-  if (lastCl === "taxi" && ias <= LINEUP_MAX_IAS) {
+  if (lastCl === "before_takeoff_to_the_line" && ias <= LINEUP_MAX_IAS) {
     return {
       id: "after_taxi",
       title: "Line up",
-      phrases: ["runway entry procedure", "clear to line up", "lineup checklist"]
+      phrases: ["runway entry procedure", "clear to line up", "before takeoff checklist below the line"]
     }
   }
 
@@ -161,8 +179,8 @@ export function resolveVoiceHints(args: ResolveVoiceHintsArgs): VoiceHintPhase |
   if (lastFl === "after_flight_controls_check" && ias <= TAXI_MAX_IAS) {
     return {
       id: "pre_taxi",
-      title: "Taxi",
-      phrases: ["taxi checklist"]
+      title: "Before takeoff checklist to the line",
+      phrases: ["before takeoff checklist to the line"]
     }
   }
 
@@ -171,7 +189,7 @@ export function resolveVoiceHints(args: ResolveVoiceHintsArgs): VoiceHintPhase |
     return {
       id: "post_clear_left",
       title: "Taxi",
-      phrases: ["flight controls check", "taxi checklist"]
+      phrases: ["flight controls check", "before takeoff checklist to the line"]
     }
   }
 
@@ -180,7 +198,7 @@ export function resolveVoiceHints(args: ResolveVoiceHintsArgs): VoiceHintPhase |
     return {
       id: "taxi_phase",
       title: "Taxi",
-      phrases: ["clear left", "flight controls check", "taxi checklist"]
+      phrases: ["clear left", "flight controls check", "before takeoff checklist to the line"]
     }
   }
 
@@ -194,29 +212,29 @@ export function resolveVoiceHints(args: ResolveVoiceHintsArgs): VoiceHintPhase |
   }
 
   // After before_start checklist done → engine start
-  if (lastCl === "before_start" && lastFl !== "after_start" && ias <= TAXI_MAX_IAS) {
+  if (lastCl === "before_start_below_the_line" && lastFl !== "after_start" && ias <= TAXI_MAX_IAS) {
     return {
       id: "engine_start",
       title: "Engine start",
-      phrases: ["starting engine X", "starting number X"]
+      phrases: ["start engine X"]
     }
   }
 
   // After before_start flow done, checklist not yet called → call for before start
-  if (lastFl === "before_start" && lastCl !== "before_start" && ias <= TAXI_MAX_IAS) {
+  if (lastFl === "before_pushback" && lastCl !== "before_start" && ias <= TAXI_MAX_IAS) {
     return {
       id: "call_before_start_checklist",
       title: "Ready for before start",
-      phrases: ["before start checklist"]
+      phrases: ["before start checklist below the line"]
     }
   }
 
   // After cockpit_preparation checklist → ready to call before start / arm slides
-  if (lastCl === "cockpit_preparation") {
+  if (lastCl === "before_start_to_the_line") {
     return {
       id: "post_cockpit_prep",
       title: "Before start",
-      phrases: ["before start checklist", "cabin crew arm slides"]
+      phrases: ["before start checklist below the line"]
     }
   }
 
@@ -227,7 +245,7 @@ export function resolveVoiceHints(args: ResolveVoiceHintsArgs): VoiceHintPhase |
     return {
       id: "prep_timeline",
       title: "Prepare",
-      phrases: ["cockpit preparation checklist", "start the apu", "start apu"]
+      phrases: ["before start checklist below the line", "start the apu", "start apu"]
     }
   }
 

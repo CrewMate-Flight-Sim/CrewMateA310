@@ -93,11 +93,13 @@ async function getTemplateVars(): Promise<Record<string, string>> {
   }
 
   const autoBrakeMapped = autoBrakeMap[landing.autoBrake ?? "med"] ?? "2"
+  const roundedElev = Math.round(landing.landingElevation / 50) * 50
+
   vars["autobrake_set"] = `${autoBrakeMapped} (>L:A310_AUTOBRAKE_LEVEL)`
   vars["autobrake_expect"] = autoBrakeMapped
 
-  vars["landing_elevation_cmd"] = `${landing.landingElevation} (>L:A310_LANDING_ELEVATION)`
-  vars["landing_elevation_expect"] = String(landing.landingElevation)
+  vars["landing_elevation_cmd"] = `${roundedElev} (>L:A310_LANDING_ELEVATION)`
+  vars["landing_elevation_expect"] = String(roundedElev)
 
   return vars
 }

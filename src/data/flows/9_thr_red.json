@@ -19,7 +19,8 @@
       "label": "Runway turnoff Light",
       "read": "(L:A310_RWY_TURNOFF_L_SWITCH)",
       "on": "0 (>L:A310_RWY_TURNOFF_L_SWITCH)",
-      "expect": 0
+      "expect": 0,
+      "skip_delay": true
     },
     {
       "label": "Runway turnoff Light",

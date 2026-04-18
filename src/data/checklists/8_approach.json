@@ -9,12 +9,12 @@
     },
     {
       "challenge": "briefing.ogg",
-      "response": ["confirmed"],
+      "response": ["confirmed", "set and checked"],
       "label": "Briefing"
     },
     {
       "challenge": "ecam_stat.ogg",
-      "response": ["checked"],
+      "response": ["checked", "set and checked"],
       "label": "ECAM status"
     },
     {
@@ -31,7 +31,7 @@
     {
       "label": "Ignition",
       "challenge": "ign.ogg",
-      "response": ["cont relight"],
+      "response": ["cont relight", "set and checked"],
       "var": "(L:A310_eng_ignition_switch, Number)",
       "expected": 4,
       "incorrect": "are_you_sure.ogg"

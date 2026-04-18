@@ -18,7 +18,7 @@ interface LandingData {
   antiIce?: string
   apuStart?: string
   autoBrake?: string
-  landingElevation?: number
+  landingElevation: number
 }
 
 interface PerformanceStore {

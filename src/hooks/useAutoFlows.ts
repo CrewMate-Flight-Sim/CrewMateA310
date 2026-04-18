@@ -46,7 +46,7 @@ export function useAutoFlows() {
 
   const prev = useRef<PrevValues>({
     onGround: 1,
-    ignitionKnob: 0,
+    ignitionKnob: 3,
     flapsIndex: 0,
     spoilersArmed: 0,
     landingGear: 1,
@@ -79,7 +79,7 @@ export function useAutoFlows() {
     if (!primed.current) {
       primed.current = true
       prev.current.onGround = t.onGround
-      prev.current.ignitionKnob = t.ignitionKnob ?? 0
+      prev.current.ignitionKnob = t.ignitionKnob ?? 3
       prev.current.flapsIndex = t.flapsIndex ?? 0
       prev.current.spoilersArmed = t.spoilersArmed ?? 0
       prev.current.alt = t.alt ?? 0
@@ -114,13 +114,13 @@ export function useAutoFlows() {
 
     if (!isRunning) {
       // After Start: ignition knob 0 → 1 while on ground
-      if (!fl.afterStart && t.onGround && !p.ignitionKnob && t.ignitionKnob === 3) {
+      if (!fl.afterStart && t.onGround && p.ignitionKnob < 3 && t.ignitionKnob === 3) {
         fl.afterStart = true
         executeFlow("after_start")
       }
 
       // Thrust Reduction
-      else if (!fl.afterTakeoffP1 && !t.onGround && !p.alt && t.alt > t.thrredalt) {
+      else if (!fl.afterTakeoffP1 && !t.onGround && p.alt <= t.thrredalt && t.alt >= t.thrredalt) {
         fl.afterTakeoffP1 = true
         executeFlow("thr_red")
       } else if (!fl.afterTakeoffP2 && !t.onGround && p.flapsIndex > 0 && t.flapsIndex === 0) {
@@ -161,7 +161,7 @@ export function useAutoFlows() {
 
     p.thrredalt = t.thrredalt ?? 1024
     p.onGround = t.onGround
-    p.ignitionKnob = t.ignitionKnob ?? 0
+    p.ignitionKnob = t.ignitionKnob ?? 3
     p.flapsIndex = t.flapsIndex ?? 0
     p.spoilersArmed = t.spoilersArmed ?? 0
     p.alt = t.alt ?? 0

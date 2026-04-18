@@ -4,12 +4,12 @@
   "items": [
     {
       "challenge": "cabin.ogg",
-      "response": ["secure"],
+      "response": ["secure", "set and checked"],
       "label": "Cabin Advisory"
     },
     {
       "challenge": "tcas.ogg",
-      "response": ["tara"],
+      "response": ["t a r a", "set and checked"],
       "label": "TCAS"
     },
     {
@@ -42,9 +42,9 @@
     {
       "label": "Ignition",
       "challenge": "ign.ogg",
-      "response": ["cont relight"],
-      "var": "(L:A310_eng_ignition_switch, Number)",
-      "expected": 4,
+      "response": ["cont relight", "set and checked"],
+      "var": "(L:A310_eng_ignition_switch)",
+      "expected": 4.0,
       "incorrect": "are_you_sure.ogg"
     },
     {

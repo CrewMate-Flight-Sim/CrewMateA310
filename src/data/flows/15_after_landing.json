@@ -6,7 +6,8 @@
       "label": "Engine 1 Anti Ice",
       "read": "(L:A310_ENG_ANTI_ICE1)",
       "on": "{landing_anti_ice_eng1_cmd}",
-      "expect": "{landing_anti_ice_eng1_expect}"
+      "expect": "{landing_anti_ice_eng1_expect}",
+      "skip_delay": true
     },
     {
       "label": "Engine 2 Anti Ice",
@@ -24,7 +25,8 @@
       "label": "APU",
       "read": "(L:A310_apu_master_switch)",
       "on": "{landing_apu_master_cmd}",
-      "expect": "{landing_apu_master_expect}"
+      "expect": "{landing_apu_master_expect}",
+      "wait_ms": 2000
     },
     {
       "label": "APU Start",

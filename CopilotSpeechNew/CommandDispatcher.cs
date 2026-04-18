@@ -42,8 +42,10 @@ namespace VoiceSidecar
                 13 => FuelTons(cval, balanced: true, raw),
                 16 => MissedApproachFeet(cval, raw),
                 17 => MissedApproachFL(cval, raw),
-                18 => Minimums(cval, "baro", raw),
-                19 => Minimums(cval, "radio", raw),
+                18 => Minimums(cval, "mda", raw),
+                19 => Minimums(cval, "dh", raw),
+                20 => PitchTrim(cval, raw),
+                21 => LdgElev(cval, raw),
                 _ => null,
             };
         }
@@ -224,6 +226,51 @@ namespace VoiceSidecar
                 }
             );
         }
+
+        private static VoiceCommand? PitchTrim(string cval, string raw)
+                {
+                    if (
+                        !double.TryParse(
+                            cval,
+                            System.Globalization.NumberStyles.Any,
+                            System.Globalization.CultureInfo.InvariantCulture,
+                            out var trimValue
+                        )
+                    )
+                        return null;
+                        
+
+                    // Sanity check for A310 green band: roughly -3.0 to 4.0
+                    if (trimValue < -5.0 || trimValue > 5.0)
+                        return null;
+
+                    return Cmd(
+                        "pitch_trim",
+                        raw,
+                        new()
+                        {
+                            ["value"] = trimValue,
+                            ["direction"] = trimValue >= 0 ? "up" : "down"
+                        }
+                    );
+                }
+
+private static VoiceCommand? LdgElev(string cval, string raw)
+{
+    // cval = plain integer string: "50", "650", "1050", "6000"
+    if (!int.TryParse(cval, out var v) || v < -1000 || v > 15000)
+        return null;
+
+    return Cmd(
+        "landing_elev",
+        raw,
+        new()
+        {
+            ["value"] = v,
+            ["unit"] = "feet"
+        }
+    );
+}
 
         private static VoiceCommand DispatchFma(string cval, string raw)
         {

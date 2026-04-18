@@ -6,7 +6,7 @@ export const WEIGHT_UNITS = new Set(["tons", "kilograms", "pounds", "kilograms b
 export function renderResponseToken(token: string): string {
   if (WEIGHT_UNITS.has(token)) return `xxx.x ${token}`
   if (token === "feet") return "xxxx feet"
-  return token
+  return token.replace("#.#", "x.x")
 }
 
 export function formatResponseToken(token: string): string {
@@ -31,9 +31,12 @@ export function getDisplayResponses(item: ChecklistItem): string[] {
 
   // If an item expects feet (minimums), show BARO/RADIO examples
   if ((item.response ?? []).some((r) => r.toLowerCase().includes("feet"))) {
-    extras.push("baro #3 feet", "radio #3 feet")
+    extras.push("mda #3 feet", "dh #3 feet")
   }
 
+  if (item.label?.toLowerCase().includes("pitch trim")) {
+    extras.push("#.# up set", "#.# down set")
+  }
   // Merge, preserve order, remove duplicates
   const combined = [...extras, ...base]
   const seen = new Set<string>()

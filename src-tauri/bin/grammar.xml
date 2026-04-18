@@ -74,6 +74,16 @@
         <tag>out.pid="4"; out.cval=rules.HDG_SPD_FL_VALUE;</tag>
       </item>
 
+      <item>
+        <item repeat="0-1">
+          <ruleref uri="#VERB" />
+        </item>
+        <item>qnh</item>
+        <ruleref uri="#ALTIMETER_VALUE" />
+        <item repeat="0-1">set</item>
+        <tag>out.pid="7"; out.cval=rules.ALTIMETER_VALUE;</tag>
+      </item>
+
       <!-- Altimeter — prefixed "altimeter XXXX [set]" -->
       <item>
         <item>altimeter</item>
@@ -180,19 +190,69 @@
 
       <!-- BARO minimums — "baro four hundred fifty [feet]" → "450" -->
       <item>
-        <item>baro</item>
+        <item>mda</item>
         <ruleref uri="#MINIMUMS_VALUE" />
         <item repeat="0-1">feet</item>
+        <item>set</item>
         <tag>out.pid="18"; out.cval=rules.MINIMUMS_VALUE;</tag>
       </item>
 
       <!-- RADIO minimums — "radio one hundred sixty [feet]" → "160" -->
       <item>
-        <item>radio</item>
+        <item>dh</item>
         <ruleref uri="#MINIMUMS_VALUE" />
         <item repeat="0-1">feet</item>
+        <item>set</item>
         <tag>out.pid="19"; out.cval=rules.MINIMUMS_VALUE;</tag>
       </item>
+
+
+      <!-- PITCH TRIM -->
+      <item>
+        <ruleref uri="#NUMBERS"/><tag>var n1=rules.NUMBERS;</tag>
+        <item>point</item>
+        <ruleref uri="#NUMBERS"/><tag>var n2=rules.NUMBERS;</tag>
+        <one-of>
+          <item>up<tag>out.cval = n1 + "." + n2;</tag></item>
+          <item>down<tag>out.cval = "-" + n1 + "." + n2;</tag></item>
+        </one-of>
+        <item>set</item>
+        <tag>out.pid="20";</tag>
+      </item>
+
+
+      <item>
+          <one-of>
+          <!-- Path 1: Thousand, Hundred, and Fifty increments -->
+          <item>
+            <item repeat="0-1">
+              <ruleref uri="#ALTV_THOUSANDS"/> thousand
+            </item>
+            <item repeat="0-1">
+              <ruleref uri="#ALTV_HUNDREDS"/>
+            </item>
+            <item repeat="0-1">
+              fifty <tag>var hasFifty = 50;</tag>
+            </item>
+          </item>
+
+          <!-- Path 2: Just "zero" -->
+          <item>zero <tag>var isZero = true;</tag></item>
+        </one-of>
+        <item>feet set</item>
+        <tag>
+          out.pid = "21";
+          if (typeof isZero !== 'undefined') {
+              out.cval = "0";
+          } else {
+              var k = rules.ALTV_THOUSANDS ? (parseInt(rules.ALTV_THOUSANDS) * 1000) : 0;
+              var h = rules.ALTV_HUNDREDS ? parseInt(rules.ALTV_HUNDREDS) : 0;
+              var f = typeof hasFifty !== 'undefined' ? 50 : 0;
+              out.cval = (k + h + f).toString();
+          }
+        </tag>
+      </item>
+
     </one-of>
   </rule>
 

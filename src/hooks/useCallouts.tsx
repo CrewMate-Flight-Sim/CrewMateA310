@@ -258,7 +258,7 @@ export function useCallouts() {
       al.above100dh = false
     }
 
-    if (t.onGround && !sp.v1Inhibit && v1 && !isNaN(v1) && t.ias >= v1 && t.ias < v1 + 5 && !sp.calledV1) {
+    if (t.onGround && !sp.v1Inhibit && v1 && !isNaN(v1) && t.ias >= v1 && !sp.calledV1) {
       playSound("v_one.ogg")
       sp.calledV1 = true
       sp.v1Inhibit = true
@@ -272,7 +272,7 @@ export function useCallouts() {
     }
 
     // VR callout
-    if (t.onGround && !sp.vrInhibit && vr > 0 && t.ias >= vr && t.ias < vr + 5 && !sp.calledVr) {
+    if (t.onGround && !sp.vrInhibit && vr > 0 && t.ias >= vr && !sp.calledVr) {
       playSound("rotate.ogg")
       sp.calledVr = true
     }

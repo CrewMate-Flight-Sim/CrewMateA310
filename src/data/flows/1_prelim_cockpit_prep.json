@@ -12,19 +12,22 @@
       "label": "Battery 1 Check",
       "read": "(L:A310_elec_ind_dc_selector)",
       "on": "0 (>L:A310_elec_ind_dc_selector)",
-      "expect": 0
+      "expect": 0,
+      "wait_ms": 5000
     },
     {
       "label": "Battery 2 Check",
       "read": "(L:A310_elec_ind_dc_selector)",
       "on": "1 (>L:A310_elec_ind_dc_selector)",
-      "expect": 1
+      "expect": 1,
+      "wait_ms": 5000
     },
     {
       "label": "Battery 3 Check",
       "read": "(L:A310_elec_ind_dc_selector)",
       "on": "2 (>L:A310_elec_ind_dc_selector)",
-      "expect": 2
+      "expect": 2,
+      "wait_ms": 5000
     },
     {
       "label": "Battery 1 On",

@@ -9,13 +9,13 @@
     },
     {
       "challenge": "rud_trim.ogg",
-      "response": ["zero"],
+      "response": ["zero", "set and checked"],
       "label": "Rudder Trim"
     },
     {
       "label": "Spoilers Armed",
       "challenge": "spoilers.ogg",
-      "response": ["armed"],
+      "response": ["armed", "set and checked"],
       "var": "(L:A310_SPOILERS_ARMED)",
       "expected": 1,
       "incorrect": "are_you_sure.ogg"
@@ -28,18 +28,9 @@
         "var_name": "(A:FLAPS HANDLE INDEX, number)",
         "var_type": "simvar",
         "validation_map": [
-          {
-            "sim_value": 1.0,
-            "expected_response": "fifteen zero"
-          },
-          {
-            "sim_value": 2.0,
-            "expected_response": "fifteen"
-          },
-          {
-            "sim_value": 3.0,
-            "expected_response": "twenty"
-          }
+          { "sim_value": 1.0, "expected_response": "fifteen zero" },
+          { "sim_value": 2.0, "expected_response": "fifteen" },
+          { "sim_value": 3.0, "expected_response": "twenty" }
         ]
       },
       "store_check": {
@@ -54,7 +45,7 @@
     },
     {
       "challenge": "ecam_stat.ogg",
-      "response": ["checked"],
+      "response": ["checked", "set and checked"],
       "label": "ECAM status"
     },
     {
@@ -97,7 +88,7 @@
     },
     {
       "challenge": "hand_signal.ogg",
-      "response": ["received"],
+      "response": ["received", "set and checked"],
       "label": "Hand Signal"
     }
   ],

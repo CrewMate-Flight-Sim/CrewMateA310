@@ -16,7 +16,8 @@
       "label": "Fuel pumps on",
       "read": "(L:A310_OUTER_TANK1_LEFT)",
       "on": "1 (>L:A310_OUTER_TANK1_LEFT)",
-      "expect": 1
+      "expect": 1,
+      "skip_delay": true
     },
     {
       "label": "Fuel pumps on",
@@ -34,7 +35,8 @@
       "label": "Fuel pumps on",
       "read": "(L:A310_OUTER_TANK2_RIGHT)",
       "on": "1 (>L:A310_OUTER_TANK2_RIGHT)",
-      "expect": 1
+      "expect": 1,
+      "skip_delay": true
     },
     {
       "label": "Fuel pumps on",
@@ -46,7 +48,8 @@
       "label": "Fuel pumps on",
       "read": "(L:A310_INNER_TANK1_RIGHT)",
       "on": "1 (>L:A310_INNER_TANK1_RIGHT)",
-      "expect": 1
+      "expect": 1,
+      "skip_delay": true
     },
     {
       "label": "Fuel pumps on",
@@ -58,7 +61,8 @@
       "label": "Fuel pumps on",
       "read": "(L:A310_CENTER_TANK1)",
       "on": "1 (>L:A310_CENTER_TANK1)",
-      "expect": 1
+      "expect": 1,
+      "skip_delay": true
     },
     {
       "label": "Fuel pumps on",
@@ -70,7 +74,8 @@
       "label": "Fuel pumps on",
       "read": "(L:A310_TRIM_TANK1)",
       "on": "1 (>L:A310_TRIM_TANK1)",
-      "expect": 1
+      "expect": 1,
+      "skip_delay": true
     },
     {
       "label": "Fuel pumps on",

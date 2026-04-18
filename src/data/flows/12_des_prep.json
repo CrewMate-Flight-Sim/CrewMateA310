@@ -12,7 +12,8 @@
       "label": "Engine 1 Anti Ice",
       "read": "(L:A310_ENG1_ANTI_ICE)",
       "on": "{anti_ice_eng1_cmd}",
-      "expect": "{anti_ice_eng1_expect}"
+      "expect": "{anti_ice_eng1_expect}",
+      "skip_delay": true
     },
     {
       "label": "Engine 2 Anti Ice",

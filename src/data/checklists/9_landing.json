@@ -5,6 +5,8 @@
     {
       "challenge": "gear.ogg",
       "response": ["down", "set and checked"],
+      "var": "(L:A310_GEAR_HANDLE_STATUS)",
+      "expected": 2,
       "label": "Landing Gear"
     },
     {
@@ -39,6 +41,8 @@
     {
       "challenge": "spoilers.ogg",
       "response": ["armed", "set and checked"],
+      "var": "(L:A310_SPOILERS_ARMED)",
+      "expected": 1,
       "label": "Spoilers"
     }
   ],

@@ -5,11 +5,17 @@
     {
       "challenge": "pitch_trim.ogg",
       "response": ["set", "set and checked"],
+      "var": "(L:ELEV_TRIM_RATIO)",
+      "expected": { "store": "takeoff.trim" },
+      "incorrect": "are_you_sure.ogg",
       "label": "Pitch Trim"
     },
     {
       "challenge": "rud_trim.ogg",
       "response": ["check zero", "set and checked"],
+      "var": "(L:A310_TOTAL_RUDDER_TRIM)",
+      "expected": 0,
+      "incorrect": "are_you_sure.ogg",
       "label": "Rudder Trim"
     },
     {

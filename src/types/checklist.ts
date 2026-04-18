@@ -7,7 +7,7 @@ export interface ChecklistItem {
 
   // SimVar boolean check (e.g. parking brake, spoilers armed)
   var?: string // SimVar expression, e.g. "A:SPOILERS ARMED,Bool"
-  expected?: boolean | number // expected SimVar value
+  expected?: boolean | number | { store: string } // expected SimVar value
   incorrect?: string // audio to play when var check fails
 
   // SimVar index check (e.g. flap handle position)
@@ -24,7 +24,7 @@ export interface ChecklistItem {
     validation_map: {
       store_value: string
       expected_response?: string // used in normal (challenge/response) mode
-      simvar_checks?: { var: string; expected: number }[] // aircraft state verification after verbal match
+      simvar_checks?: SimvarCheck[] // aircraft state verification after verbal match
       simvar_name?: string // used in silent mode: SimVar to read
       expected_simvar?: number // used in silent mode: expected SimVar value
     }[]
@@ -39,7 +39,7 @@ export interface ChecklistItem {
   }
 
   // Direct list of SimVar checks applied after the verbal response is accepted
-  simvar_checks?: { var: string; expected: number }[]
+  simvar_checks?: SimvarCheck[]
 
   // Audio the copilot plays after the pilot's response is accepted
   copilot_confirmation?: string
@@ -47,6 +47,11 @@ export interface ChecklistItem {
   // Baro confirmation: after the pilot's response, the copilot reads back the live
   // baro value digit-by-digit (inHg as "29.92", hPa as "1013") from telemetry.
   baro_confirmation?: true
+}
+
+export interface SimvarCheck {
+  var: string
+  expected: number
 }
 
 export interface Checklist {

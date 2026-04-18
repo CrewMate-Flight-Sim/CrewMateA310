@@ -15,11 +15,15 @@
     {
       "challenge": "radar.ogg",
       "response": ["off", "set and checked"],
+      "var": "(L:A310_WXR_ON)",
+      "expected": 0,
       "label": "WXR"
     },
     {
       "challenge": "spoilers.ogg",
       "response": ["disarmed", "set and checked"],
+      "var": "(L:A310_SPOILERS_ARMED)",
+      "expected": 0,
       "label": "Spoilers"
     },
     {

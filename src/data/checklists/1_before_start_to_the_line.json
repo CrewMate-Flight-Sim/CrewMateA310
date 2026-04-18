@@ -10,6 +10,11 @@
     {
       "challenge": "signs.ogg",
       "response": ["on and auto", "set and checked"],
+      "simvar_checks": [
+        { "var": "(L:A310_SEATBELTS_SWITCH)", "expected": 1 },
+        { "var": "(L:A310_NO_SMOKING_SWITCH)", "expected": 1 }
+      ],
+      "incorrect": "are_you_sure.ogg",
       "label": "Signs"
     },
     {
@@ -36,6 +41,9 @@
     {
       "challenge": "brakes.ogg",
       "response": ["normal and on", "set and checked"],
+      "var": "(L:A300DR_BRAKE_SYSTEM)",
+      "expected": 0,
+      "incorrect": "are_you_sure.ogg",
       "label": "Brake and Anti Skid"
     }
   ],

@@ -5,6 +5,12 @@
     {
       "challenge": "altimeters.ogg",
       "response": ["standard set", "set and checked"],
+      "simvar_checks": [
+        { "var": "(L:XMLVAR_BARO1_MODE)", "expected": 1 },
+        { "var": "(L:XMLVAR_BARO2_MODE)", "expected": 1 },
+        { "var": "(L:XMLVAR_BARO3_MODE)", "expected": 1 }
+      ],
+      "incorrect": "are_you_sure.ogg",
       "label": "Altimeters",
       "copilot_confirmation": "standard_set.ogg"
     }

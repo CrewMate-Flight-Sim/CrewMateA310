@@ -87,6 +87,20 @@ function getStoreValue(storePath: string): string | undefined {
   return state[section]?.[key]
 }
 
+/**
+ * Resolve an `expected` field that may be a static boolean/number or a
+ * dot-path reference into the performance store ({ store: "takeoff.trim" }).
+ * Returns null when the store path cannot be resolved.
+ */
+function resolveExpected(expected: boolean | number | { store: string }): number | null {
+  if (typeof expected === "boolean") return expected ? 1 : 0
+  if (typeof expected === "number") return expected
+  const raw = getStoreValue(expected.store)
+  if (raw === undefined) return null
+  const n = parseFloat(String(raw))
+  return isNaN(n) ? null : n
+}
+
 async function readSimVar(expression: string): Promise<number | null> {
   // On first registration the SimConnect cache may not be populated yet.
   // Retry a few times with a short delay before giving up.
@@ -125,8 +139,8 @@ async function executeSilentItem(item: ChecklistItem, index: number, signal: Abo
     const raw = await readSimVar(item.var)
     checkAbort(signal)
 
-    const expected = typeof item.expected === "boolean" ? (item.expected ? 1 : 0) : item.expected
-    const ok = raw !== null && Math.abs(raw - expected) < 0.5
+    const expected = resolveExpected(item.expected)
+    const ok = raw !== null && expected !== null && Math.abs(raw - expected) < 0.5
 
     if (!ok) {
       if (item.incorrect) {
@@ -356,8 +370,8 @@ async function executeNormalItem(item: ChecklistItem, index: number, signal: Abo
       const raw = await readSimVar(item.var)
       checkAbort(signal)
 
-      const expected = typeof item.expected === "boolean" ? (item.expected ? 1 : 0) : item.expected
-      if (raw === null || Math.abs(raw - expected) >= 0.5) {
+      const expected = resolveExpected(item.expected)
+      if (raw === null || expected === null || Math.abs(raw - expected) >= 0.5) {
         await playSound(item.incorrect ?? "are_you_sure.ogg")
         await waitForSoundFinished()
         if (hold()) continue

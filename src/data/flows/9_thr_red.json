@@ -3,6 +3,13 @@
   "name": "After Takeoff part 1",
   "steps": [
     {
+      "label": "Gear neutral",
+      "read": "(L:A310_GEAR_HANDLE_STATUS)",
+      "on": "1 (>L:A310_GEAR_HANDLE_STATUS)",
+      "expect": 1,
+      "sound_on_execute": "gear_neutral.ogg"
+    },
+    {
       "label": "Ground Spoilers",
       "read": "(L:A310_SPOILERS_ARMED)",
       "on": "1 (>K:SPOILERS_ARM_OFF)",

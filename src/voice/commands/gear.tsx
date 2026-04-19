@@ -19,17 +19,10 @@ export async function setGearHandle(position: number) {
 
     if (position === 1) {
       await simvarSet(commandExpression)
-      setTimeout(() => {
-        playSound("gear_down.ogg")
-      }, 1500)
+      playSound("gear_down.ogg")
     } else {
       await simvarSet(commandExpression)
-      setTimeout(() => {
-        simvarSet("1 (>L:A310_GEAR_HANDLE_STATUS)")
-        setTimeout(() => {
-          playSound("gear_neutral.ogg")
-        }, 2000)
-      }, 15000)
+      playSound("gear_up.ogg")
     }
   } catch (error) {
     console.error("Error sending gear key event:", error)

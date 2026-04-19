@@ -38,6 +38,13 @@
       "skip_verify": true
     },
     {
+      "label": "Reset Rudder Trim",
+      "read": "(L:A310_RESET_RUDDER_TRIM_COMMAND)",
+      "on": "0 (>L:A310_RESET_RUDDER_TRIM_COMMAND)",
+      "expect": 0,
+      "skip_verify": true
+    },
+    {
       "label": "Pitch trim",
       "read": "(L:ELEV_TRIM_RATIO)",
       "on": "{pitch_trim_cmd}",

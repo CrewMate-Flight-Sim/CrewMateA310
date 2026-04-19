@@ -48,22 +48,24 @@ This tutorial assumes you are parked at the gate with engines off. You are the C
 
 ### Typical preflight timeline (example)
 
-- 60 min: Cockpit door and curtains opened.
-- 58 min: PM takes their seat.
-- 55 min: PM starts preliminary cockpit preparation.
-- 45 min: PM departs for external walkaround. PF starts cockpit preparation.
-  ![Cockpit Preparation flow pattern](Images/COCKPIT%20PREPARATION%20FLOW%20PATTERN.png)
-- 33 min: PM returns and starts cockpit preparation on his side.
+- 45 min: Crew arrives at aircraft and PM takes their seat.
+- 43 min: PM starts preliminary cockpit preparation.
+- 42 min: PM departs for external walkaround. PF starts cockpit preparation on their side.
+  ![Cockpit Preparation flow pattern 1](Images/COCKPIT%20PREPARATION%20FLOW%20PATTERN1.png)
+  ![Cockpit Preparation flow pattern 2](Images/COCKPIT%20PREPARATION%20FLOW%20PATTERN2.png)
+- 30 min: PM returns and starts cockpit preparation on their side.
+  ![Cockpit Preparation flow pattern 3](Images/COCKPIT%20PREPARATION%20FLOW%20PATTERN3.png)
+  ![Cockpit Preparation flow pattern 4](Images/COCKPIT%20PREPARATION%20FLOW%20PATTERN4.png)
 - 25 min: PF conducts the departure briefing (enter takeoff data in the Takeoff Performance window).
-- 20 min: PF calls for the COCKPIT PREPARATION checklist.
-- 1 min: CrewMate closes the cockpit door. PF and PM perform before start flow, after that PF calls for the BEFORE START checklist.
+- 10 min: PF calls for the BEFORE START checklist to the line.
+- 1 min: CrewMate closes the cockpit door. PF and PM perform before start flow, after that PF calls for the BEFORE START checklist below the line.
 
 ![Before Start flow pattern](Images/BEFORE%20START%20FLOW%20PATTERN.png)
 
 ### Pushback and Engine Start
 
-- Announce each engine start (e.g., “Starting engine one”).
-- When ignition is set to NORMAL, PF and PM will start the AFTER START flow pattern. If anti‑ice will be used, flaps may be left as required.
+- Command PM to start engines (e.g., “Start engine 2). PM will set ignition knob to Start A or B and press the starter.
+- When ignition is set to OFF, PF and PM will start the AFTER START flow pattern. If anti‑ice will be used, flaps may be left as required.
 - On hand signal from ground personnel, call for the AFTER START checklist.
 
 ![After Start flow pattern](Images/AFTER%20START%20FLOW%20PATTERN.png)
@@ -73,34 +75,38 @@ This tutorial assumes you are parked at the gate with engines off. You are the C
 - PM announces when the cabin is ready.
 - Check flight controls at a convenient time before or during taxi (this is done before arming the autobrake).
 - Control check sequence: Full Up, Full Down, Full Left, Full Right, Rudder Full Left, Rudder Full Right.
-- After the controls check, PM performs the TAXI flow pattern.
-- After T.O. CONFIG pushbutton is pressed and a cabin report is received, PF calls for the TAXI checklist.
+- After the controls check, PM performs the 2nd part of the TAXI flow pattern.
+- After T.O. CONFIG pushbutton is pressed and a cabin report is received, PF calls for the BEFORE TAKEOFF to the line checklist.
 
 ![Taxi flow pattern](Images/TAXI%20FLOW%20PATTERN.png)
 
 ### Line‑up & Takeoff
 
 - PF calls for the Line‑up flow.
-- When line‑up clearance is received and the Line‑up flow pattern is complete, PF calls for the LINE‑UP checklist.
+- When line‑up clearance is received and the Line‑up flow pattern is complete, PF calls for the BEFORE TAKEOFF below the line checklist.
 - When cleared for takeoff, announce “TAKEOFF.”
 
 ![Line‑up flow pattern](Images/LINE-UP%20FLOW%20PATTERN.png)
 
 ### Acceleration
 
-- The After‑Takeoff flow is triggered when flaps are retracted to zero.
+- The First part of the After‑Takeoff flow is triggered when you are above thrust reduction altitude.
+- The Second part of the After‑Takeoff flow is triggered when the aircraft is clean.
+- When the aircraft is clean call for the AFTER TAKEOFF CLIMB checklist to the line.
+- When the aircraft is above transition altitude and altimeters are standard call for the AFTER TAKEOFF CLIMB checklist below the line.
 
+![Takeoff flow pattern](Images/TAKEOFF%20FLOW%20PATTERN.png)
 ![Acceleration flow pattern](Images/ACCELERATION%20FLOW%20PATTERN.png)
 
 ### Climb to 10,000 ft
 
-![10,000 ft flow pattern](Images/AT%2010%20000%20FT%20AAL%20FLOW%20PATTERN.png)
+![Climb/10,000 ft flow pattern](Images/AT%2010%20000%20FT%20AAL%20FLOW%20PATTERN.png)
 
 ### Descent Preparation
 
 - PF should insert landing data in the Landing Performance window.
 
-![PF Descent preparation items](Images/PF%20DESCENT%20PREP%20ITEMS.png)
+![Descent preparation items](Images/PF%20DESCENT%20PREP%20ITEMS.png)
 
 ### 10k Descent
 
@@ -119,6 +125,7 @@ This tutorial assumes you are parked at the gate with engines off. You are the C
 
 - Disarming the ground spoilers will trigger the After‑Landing flow.
 - If anti‑ice is used, flaps may remain at LDG CONF per procedure.
+- Once flows done call for the AFTER LANDING checklist.
 
 ![After landing flow pattern](Images/AFTER%20LANDING%20FLOW%20PATTERN.png)
 
@@ -126,7 +133,7 @@ This tutorial assumes you are parked at the gate with engines off. You are the C
 
 - Turn off taxi lights when turning into the gate, or ask the PM to confirm.
 - Shutting down the engines will trigger the Parking flow.
-- After the Parking flow pattern completes, PM calls for the SHUTDOWN checklist.
+- After the Parking flow pattern completes, PM calls for the PARKING checklist.
 
 ![Parking flow pattern](Images/PARKING%20FLOW%20PATTERN.png)
 
@@ -157,7 +164,7 @@ Speak these phrases clearly during flight. The FO uses partial matching — you 
 
 | Say         | What happens                                                      |
 | ----------- | ----------------------------------------------------------------- |
-| "gear down" | Lowers the landing gear. **Speed must be at or below 255 knots.** |
+| "gear down" | Lowers the landing gear. **Speed must be at or below 270 knots.** |
 | "gear up"   | Raises the landing gear.                                          |
 
 ### Flaps
@@ -201,32 +208,29 @@ The FO will confirm speed limits before moving flaps while airborne.
 
 ### Flight Director
 
-| Say                           | What happens                                         |
-| ----------------------------- | ---------------------------------------------------- |
-| "Flight Director on"          | Activates the Flight Director.                       |
-| "Flight Director off"         | Deactivates the Flight Director.                     |
-| "Flight Director off bird on" | Deactivates FD and selects TRK/FPA on the autopilot. |
-| "Bird on"                     | Selects TRK/FPA on the autopilot.                    |
-| "Bird off"                    | Deselects TRK/FPA on the autopilot.                  |
+| Say                   | What happens                     |
+| --------------------- | -------------------------------- |
+| "Flight Director on"  | Activates the Flight Director.   |
+| "Flight Director off" | Deactivates the Flight Director. |
 
 ### Autopilot
 
-| Say                                                                                                | What happens                                       |
-| -------------------------------------------------------------------------------------------------- | -------------------------------------------------- |
-| "Autopilot on"                                                                                     | Engages Autopilot 1.                               |
-| "Set speed **_ or speed select _**"                                                                | Sets commanded speed.                              |
-| "Set heading **\_ or heading select \_\_**"                                                        | Sets commanded heading.                            |
-| "Set altitude **\_** or altitude select **\_** or set flight level **_ or flight level select _**" | Sets commanded altitude.                           |
-| "Pull speed"                                                                                       | Pulls speed knob to select selected speed.         |
-| "Pull speed \_\_\_"                                                                                | Pulls speed knob and sets the commanded speed.     |
-| "Manage speed"                                                                                     | Pushes speed knob to select managed speed.         |
-| "Pull heading"                                                                                     | Pulls heading knob to select selected heading.     |
-| "Pull heading \_\_\_"                                                                              | Pulls heading knob and sets the commanded heading. |
-| "Manage nav"                                                                                       | Pushes heading knob to select LNAV.                |
-| "Altitude **\_** pull or Flight level \_\_\_ pull"                                                 | Sets commanded altitude and pulls altitude knob.   |
-| "Altitude **\_** manage or Flight level \_\_\_ manage"                                             | Sets commanded altitude and pushes altitude knob.  |
-| "Altitude pull or Flight level pull"                                                               | Pulls altitude knob.                               |
-| "Altitude manage or Flight level manage"                                                           | Pushes altitude knob.                              |
+| Say                                                                                                | What happens                                                         |
+| -------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------- |
+| "Autopilot on"                                                                                     | Engages Autopilot 1.                                                 |
+| "Set speed **_ or speed select _**"                                                                | Sets commanded speed.                                                |
+| "Set heading **\_ or heading select \_\_**"                                                        | Sets commanded heading.                                              |
+| "Set altitude **\_** or altitude select **\_** or set flight level **_ or flight level select _**" | Sets commanded altitude.                                             |
+| "Pull speed"                                                                                       | Pulls speed knob to select selected speed.                           |
+| "Pull speed \_\_\_"                                                                                | Pulls speed knob and sets the commanded speed.                       |
+| "Pull heading"                                                                                     | Pulls heading knob to select selected heading.                       |
+| "Pull heading \_\_\_"                                                                              | Pulls heading knob and sets the commanded heading.                   |
+| "Heading push"                                                                                     | Pushes heading knob to synchronize FCU heading with aircraft heading |
+| "Engage nav"                                                                                       | Selects NAV mode.                                                    |
+| "Arm land"                                                                                         | Selects LAND mode.                                                   |
+| "Arm loc"                                                                                          | Selects V/L mode.                                                    |
+| "Altitude **\_** pull or Flight level \_\_\_ pull"                                                 | Sets commanded altitude and pulls altitude knob.                     |
+| "Altitude pull or Flight level pull"                                                               | Pulls altitude knob.                                                 |
 
 ### Flight Controls Check
 
@@ -240,22 +244,25 @@ The FO will confirm speed limits before moving flaps while airborne.
 | ---------------------------------------------- | ------------------- |
 | "Clear left" or "Left side clear"              | Clear Left flow     |
 | "Runway entry procedure" or "Clear to line up" | Before Takeoff flow |
+| "Before start procedure"                       | Before Start flow   |
 
 ### Launching Checklists by Voice
 
-| Say                                                         | Checklist launched          |
-| ----------------------------------------------------------- | --------------------------- |
-| "Cockpit preparation checklist"                             | Cockpit Preparation         |
-| "Before start checklist"                                    | Before Start                |
-| "After start checklist"                                     | After Start                 |
-| "Taxi checklist"                                            | Taxi                        |
-| "Lineup checklist"                                          | Line Up                     |
-| "Approach checklist"                                        | Approach                    |
-| "Landing checklist"                                         | Landing                     |
-| "Parking checklist"                                         | Parking                     |
-| "Secure aircraft checklist"                                 | Secure Aircraft             |
-| "Departure change checklist"                                | Departure Change Checklist  |
-| "Stop checklist" or "Abort checklist" or "Cancel checklist" | Aborts the active checklist |
+| Say                                                         | Checklist launched            |
+| ----------------------------------------------------------- | ----------------------------- |
+| "Before start checklist to the line"                        | Before start to the line      |
+| "Before start checklist below the line"                     | Before start below the line   |
+| "After start checklist"                                     | After Start                   |
+| "Before takeoff checklist to the line"                      | Before takeoff to the line    |
+| "Before takeoff checklist below the line"                   | Before takeoff below the line |
+| "After takeoff climb checklist to the line"                 | Climb to the line             |
+| "After takeoff climb checklist below the line"              | Climb below the line          |
+| "Approach checklist"                                        | Approach                      |
+| "Landing checklist"                                         | Landing                       |
+| "After landing checklist"                                   | After Landing                 |
+| "Parking checklist"                                         | Parking                       |
+| "Secure aircraft checklist"                                 | Secure Aircraft               |
+| "Stop checklist" or "Abort checklist" or "Cancel checklist" | Aborts the active checklist   |
 
 ---
 

@@ -19,10 +19,11 @@ export async function setGearHandle(position: number) {
 
     if (position === 1) {
       await simvarSet(commandExpression)
-      playSound("gear_down.ogg")
+      setTimeout(() => {
+        playSound("gear_down.ogg")
+      }, 1500)
     } else {
       await simvarSet(commandExpression)
-      playSound("gear_up.ogg")
       setTimeout(() => {
         simvarSet("1 (>L:A310_GEAR_HANDLE_STATUS)")
         setTimeout(() => {

@@ -118,7 +118,7 @@ function handleSpoilersPhase(ls: LandingSequenceState, t: Telemetry, elapsed: nu
 }
 
 function handleReverserPhase(ls: LandingSequenceState, t: Telemetry, elapsed: number, now: number) {
-  if (t.throttleLever1 < -0.1 || t.throttleLever2 < -0.1) {
+  if (t.eng1_reverse > 0.1 || t.eng2_reverse > 0.1) {
     playSound("reverse_green.ogg")
     advancePhase(ls, "decel", now)
   } else if (elapsed >= REVERSER_TIMEOUT) {

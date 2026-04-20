@@ -368,10 +368,12 @@ private static VoiceCommand? LdgElev(string cval, string raw)
             [62] = "cabin_crew_disarm_slides",
             [63] = "brake_check",
             [64] = "set_standard",
-            [65] = "brk_chk_response",
-
+            [65] = "eng_ai_on",
+            [66] = "norm_on",
             // 70-98: Standard Responses
-            [69] = "confirmed",
+            [67] = "fifteen zero",
+            [68] = "fifteen",
+            [69] = "twenty",
             [70] = "completed",
             [71] = "confirm",
             [72] = "negative",
@@ -423,7 +425,14 @@ private static VoiceCommand? LdgElev(string cval, string raw)
             [117] = "disconnect_asu",
             [118] = "connect_acu",
             [119] = "disconnect_acu",
-            [120] = "disconnect_all_ground"
+            [120] = "disconnect_all_ground",
+            [121] = "confirmed",
+            [122] = "ta_ra",
+            [123] = "cont_relight",
+            [124] = "secure",
+            [125] = "on_apu",
+            [126] = "apu_tbs",
+            [127] = "brakes_on_chocks_on",
         };
 
         private static VoiceCommand? DispatchDiscrete(int pid, string raw)

@@ -206,12 +206,13 @@
         <tag>out.pid="19"; out.cval=rules.MINIMUMS_VALUE;</tag>
       </item>
 
-
       <!-- PITCH TRIM -->
       <item>
-        <ruleref uri="#NUMBERS"/><tag>var n1=rules.NUMBERS;</tag>
+        <ruleref uri="#NUMBERS" />
+        <tag>var n1=rules.NUMBERS;</tag>
         <item>point</item>
-        <ruleref uri="#NUMBERS"/><tag>var n2=rules.NUMBERS;</tag>
+        <ruleref uri="#NUMBERS" />
+        <tag>var n2=rules.NUMBERS;</tag>
         <one-of>
           <item>up<tag>out.cval = n1 + "." + n2;</tag></item>
           <item>down<tag>out.cval = "-" + n1 + "." + n2;</tag></item>
@@ -220,16 +221,16 @@
         <tag>out.pid="20";</tag>
       </item>
 
-
       <item>
-          <one-of>
+        <one-of>
           <!-- Path 1: Thousand, Hundred, and Fifty increments -->
           <item>
             <item repeat="0-1">
-              <ruleref uri="#ALTV_THOUSANDS"/> thousand
-            </item>
+              <ruleref uri="#ALTV_THOUSANDS" /> thousand
+            </item
+            >
             <item repeat="0-1">
-              <ruleref uri="#ALTV_HUNDREDS"/>
+              <ruleref uri="#ALTV_HUNDREDS" />
             </item>
             <item repeat="0-1">
               fifty <tag>var hasFifty = 50;</tag>
@@ -252,7 +253,6 @@
           }
         </tag>
       </item>
-
     </one-of>
   </rule>
 
@@ -380,7 +380,7 @@
   <!-- ═══════════════════════════════════════════════════════════════════════════
        DISCRETE_COMMANDS  (no numeric value)
   ════════════════════════════════════════════════════════════════════════════ -->
- <rule id="DISCRETE_COMMANDS">
+  <rule id="DISCRETE_COMMANDS">
     <one-of>
       <!-- 1-9: Primary Flight Controls -->
       <item>gear up<tag>out.pid="1";</tag></item>
@@ -513,6 +513,13 @@
     </one-of>
 </rule>
 
+      <item>confirmed<tag>out.pid="121";</tag></item>
+
+      <item>t a r a<tag>out.pid="122";</tag></item>
+
+      <item>cont relight<tag>out.pid="123";</tag></item>
+    </one-of>
+  </rule>
 
   <!-- ═══════════════════════════════════════════════════════════════════════════
        SHARED VERB

@@ -228,49 +228,36 @@ namespace VoiceSidecar
         }
 
         private static VoiceCommand? PitchTrim(string cval, string raw)
-                {
-                    if (
-                        !double.TryParse(
-                            cval,
-                            System.Globalization.NumberStyles.Any,
-                            System.Globalization.CultureInfo.InvariantCulture,
-                            out var trimValue
-                        )
-                    )
-                        return null;
-                        
-
-                    // Sanity check for A310 green band: roughly -3.0 to 4.0
-                    if (trimValue < -5.0 || trimValue > 5.0)
-                        return null;
-
-                    return Cmd(
-                        "pitch_trim",
-                        raw,
-                        new()
-                        {
-                            ["value"] = trimValue,
-                            ["direction"] = trimValue >= 0 ? "up" : "down"
-                        }
-                    );
-                }
-
-private static VoiceCommand? LdgElev(string cval, string raw)
-{
-    // cval = plain integer string: "50", "650", "1050", "6000"
-    if (!int.TryParse(cval, out var v) || v < -1000 || v > 15000)
-        return null;
-
-    return Cmd(
-        "landing_elev",
-        raw,
-        new()
         {
-            ["value"] = v,
-            ["unit"] = "feet"
+            if (
+                !double.TryParse(
+                    cval,
+                    System.Globalization.NumberStyles.Any,
+                    System.Globalization.CultureInfo.InvariantCulture,
+                    out var trimValue
+                )
+            )
+                return null;
+
+            // Sanity check for A310 green band: roughly -3.0 to 4.0
+            if (trimValue < -5.0 || trimValue > 5.0)
+                return null;
+
+            return Cmd(
+                "pitch_trim",
+                raw,
+                new() { ["value"] = trimValue, ["direction"] = trimValue >= 0 ? "up" : "down" }
+            );
         }
-    );
-}
+
+        private static VoiceCommand? LdgElev(string cval, string raw)
+        {
+            // cval = plain integer string: "50", "650", "1050", "6000"
+            if (!int.TryParse(cval, out var v) || v < -1000 || v > 15000)
+                return null;
+
+            return Cmd("landing_elev", raw, new() { ["value"] = v, ["unit"] = "feet" });
+        }
 
         private static VoiceCommand DispatchFma(string cval, string raw)
         {

@@ -363,7 +363,7 @@
       <item>land<tag>out="LAND";</tag></item>
       <item>flare<tag>out="FLARE";</tag></item>
       <item>roll out<tag>out="ROLL OUT";</tag></item>
-      <item>go around<tag>out="GO AROUND"</tag></item>
+      <item>go around<tag>out="GO AROUND";</tag></item>
     </one-of>
   </rule>
 
@@ -445,7 +445,11 @@
       <item>disarm slides<tag>out.pid="62";</tag></item>
       <item>brake check<tag>out.pid="63";</tag></item>
       <item>set standard<tag>out.pid="64";</tag></item>
-
+      <item>engine anti ice is on<tag>out.pid="65";</tag></item>
+      <item>normal and on<tag>out.pid="66";</tag></item>
+      <item>fifteen zero<tag>out.pid="67";</tag></item>
+      <item>fifteen<tag>out.pid="68";</tag></item>
+      <item>twenty<tag>out.pid="69";</tag></item>
       <item>completed<tag>out.pid="70";</tag></item>
       <item>confirm<tag>out.pid="71";</tag></item>
       <item>negative<tag>out.pid="72";</tag></item>
@@ -473,9 +477,9 @@
       <item>running<tag>out.pid="94";</tag></item>
       <item>advised<tag>out.pid="95";</tag></item>
       <item>closed<tag>out.pid="96";</tag></item>
-      <item>check and read<tag>out.pid="97"</tag></item>
+      <item>check and read<tag>out.pid="97";</tag></item>
       <item>fourty<tag>out.pid="98";</tag></item>
-      <item>twenty<tag>out.pid="99"</tag></item>
+      <item>twenty<tag>out.pid="99";</tag></item>
 
       <item>autopilot on<tag>out.pid="100";</tag></item>
       <item>autopilot off<tag>out.pid="101";</tag></item>
@@ -496,12 +500,13 @@
       <item>connect air conditioning<tag>out.pid="118";</tag></item>
       <item>disconnect air conditioning<tag>out.pid="119";</tag></item>
       <item>disconnect all<tag>out.pid="120";</tag></item>
-
       <item>confirmed<tag>out.pid="121";</tag></item>
-
       <item>t a r a<tag>out.pid="122";</tag></item>
-
       <item>cont relight<tag>out.pid="123";</tag></item>
+      <item>secure<tag>out.pid="124";</tag></item>
+      <item>on supplied by apu<tag>out.pid="125";</tag></item>
+      <item>to be started<tag>out.pid="126";</tag></item>
+      <item>chocks in and brakes on<tag>out.pid="127";</tag></item>
     </one-of>
   </rule>
 

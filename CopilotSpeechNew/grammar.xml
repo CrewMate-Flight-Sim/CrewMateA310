@@ -446,6 +446,8 @@
       <item>brake check<tag>out.pid="63";</tag></item>
       <item>set standard<tag>out.pid="64";</tag></item>
 
+
+      <item>confirmed<tag>out.pid="69";</tag></item>
       <item>completed<tag>out.pid="70";</tag></item>
       <item>confirm<tag>out.pid="71";</tag></item>
       <item>negative<tag>out.pid="72";</tag></item>

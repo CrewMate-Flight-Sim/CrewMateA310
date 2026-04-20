@@ -371,6 +371,7 @@ private static VoiceCommand? LdgElev(string cval, string raw)
             [65] = "brk_chk_response",
 
             // 70-98: Standard Responses
+            [69] = "confirmed",
             [70] = "completed",
             [71] = "confirm",
             [72] = "negative",

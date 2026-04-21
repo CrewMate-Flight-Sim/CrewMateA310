@@ -82,6 +82,7 @@ export function useAutoFlows() {
       prev.current.ignitionKnob = t.ignitionKnob ?? 3
       prev.current.flapsIndex = t.flapsIndex ?? 0
       prev.current.spoilersArmed = t.spoilersArmed ?? 0
+      prev.current.landingGear = t.landingGear ?? 1
       prev.current.alt = t.alt ?? 0
       prev.current.mixture1 = t.mixture1 ?? 1
       prev.current.mixture2 = t.mixture2 ?? 1
@@ -138,7 +139,7 @@ export function useAutoFlows() {
       else if (!fl.climbTenK && !t.onGround && t.vs > 100 && p.alt < 10000 && t.alt >= 10000) {
         fl.climbTenK = true
         executeFlow("climb_ten_thousand_flow")
-      } else if (!fl.landing && !t.onGround && !p.flapsIndex && !p.landingGear && t.flapsIndex === 3 && t.landingGear) {
+      } else if (!fl.landing && !t.onGround && p.landingGear === 0 && t.landingGear === 1) {
         fl.landing = true
         executeFlow("landing")
       }
@@ -167,6 +168,7 @@ export function useAutoFlows() {
     p.ignitionKnob = t.ignitionKnob ?? 3
     p.flapsIndex = t.flapsIndex ?? 0
     p.spoilersArmed = t.spoilersArmed ?? 0
+    p.landingGear = t.landingGear ?? 1
     p.alt = t.alt ?? 0
     p.mixture1 = t.mixture1 ?? 1
     p.mixture2 = t.mixture2 ?? 1

@@ -38,7 +38,7 @@
   },
   "plugins": {
     "updater": {
-      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IEEzNTdDOTBFMkE1NjNCNEMKUldSTU8xWXFEc2xYbzNXbXdQUDRzbEErZ3VVdnM3UTZ5MFZTcnkvYzRrOS9pSklmVmpVYVAwSXAK",
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IEIzQkJDNUU5MjY1QjE1ODIKUldTQ0ZWc202Y1c3c3oyT1hnNlgzd0lrVDFvdTZXL3dqWEViaDBMdEQ3Yk1uZ3owZnB0OTRLb1EK",
       "endpoints": ["https://github.com/alexlenh/CrewMateA310/releases/latest/download/latest.json"]
     }
   }

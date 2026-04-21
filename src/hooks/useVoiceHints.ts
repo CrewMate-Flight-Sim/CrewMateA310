@@ -69,8 +69,6 @@ export function useVoiceHints({ voiceEnabled, connected }: UseVoiceHintsOptions)
           "disconnect GPU",
           "connect ASU",
           "disconnect ASU",
-          "connect ACU",
-          "disconnect ACU",
           "disconnect all"
         ]
       }

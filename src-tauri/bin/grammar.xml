@@ -417,6 +417,7 @@
       <item>after landing checklist<tag>out.pid="30";</tag></item>
       <item>cancel checklist<tag>out.pid="31";</tag></item>
 
+      <item>set and checked<tag>out.pid="32";</tag></item>
       <item>lets prepare the aircraft<tag>out.pid="33";</tag></item>
       <item>start engine one<tag>out.pid="34";</tag></item>
       <item>start engine two<tag>out.pid="35";</tag></item>
@@ -493,12 +494,17 @@
       <item>arm localizer<tag>out.pid="109";</tag></item>
 
       <item>ground from cockpit<tag>out.pid="113";</tag></item>
+      <item>cockpit to ground<tag>out.pid="113";</tag></item>
+      <item>ground from flight deck<tag>out.pid="113";</tag></item>
+      <item>flight deck to ground<tag>out.pid="113";</tag></item>
       <item>connect ground power<tag>out.pid="114";</tag></item>
       <item>disconnect ground power<tag>out.pid="115";</tag></item>
+      <item>connect G P U<tag>out.pid="114";</tag></item>
+      <item>disconnect G P U<tag>out.pid="115";</tag></item>
       <item>connect air starter<tag>out.pid="116";</tag></item>
       <item>disconnect air starter<tag>out.pid="117";</tag></item>
-      <item>connect air conditioning<tag>out.pid="118";</tag></item>
-      <item>disconnect air conditioning<tag>out.pid="119";</tag></item>
+      <item>connect A S U<tag>out.pid="116";</tag></item>
+      <item>disconnect A S U<tag>out.pid="117";</tag></item>
       <item>disconnect all<tag>out.pid="120";</tag></item>
       <item>confirmed<tag>out.pid="121";</tag></item>
       <item>t a r a<tag>out.pid="122";</tag></item>

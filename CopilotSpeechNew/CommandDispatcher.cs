@@ -338,6 +338,7 @@ namespace VoiceSidecar
             [42] = "continue",
             [43] = "shutdown_procedure",
             [44] = "flight_controls_check",
+            [45] = "des_prep",
 
             // 50-69: Systems & Safety
             [50] = "wing_anti_ice_on",

@@ -137,9 +137,15 @@ async function shouldExecuteStep(step: FlowStep): Promise<boolean> {
 // Post-landing silent timer (announces when it expires)
 let postLandingTimerExpiresAt: number | null = null
 let postLandingTimerTimeoutId: ReturnType<typeof setTimeout> | null = null
+let cabinReadyTimerExpiresAt: number | null = null
+let cabinReadyTimerTimeoutId: ReturnType<typeof setTimeout> | null = null
 
 function isPostLandingTimerActive(): boolean {
   return postLandingTimerExpiresAt !== null && Date.now() < postLandingTimerExpiresAt
+}
+
+function isCabinReadyTimerActive(): boolean {
+  return cabinReadyTimerExpiresAt !== null && Date.now() < cabinReadyTimerExpiresAt
 }
 
 function clearPostLandingTimer(): void {
@@ -148,6 +154,31 @@ function clearPostLandingTimer(): void {
     postLandingTimerTimeoutId = null
   }
   postLandingTimerExpiresAt = null
+}
+
+function clearCabinReadyTimer(): void {
+  if (cabinReadyTimerTimeoutId) {
+    clearTimeout(cabinReadyTimerTimeoutId as unknown as number)
+    cabinReadyTimerTimeoutId = null
+  }
+  cabinReadyTimerExpiresAt = null
+}
+
+export function startCabinReadyTimer(delayMinutes: number): void {
+  clearCabinReadyTimer()
+  const delayMs = Math.max(1, delayMinutes) * 60 * 1000
+  cabinReadyTimerExpiresAt = Date.now() + delayMs
+
+  cabinReadyTimerTimeoutId = setTimeout(async () => {
+    cabinReadyTimerExpiresAt = null
+    cabinReadyTimerTimeoutId = null
+    try {
+      // Assuming you have a sound file for this
+      await playSound("cabin_secure.ogg")
+    } catch (err) {
+      console.error("[FlowRunner] Failed to play cabin ready announcement:", err)
+    }
+  }, delayMs)
 }
 
 function startPostLandingTimer(delayMinutes: number): void {
@@ -195,6 +226,11 @@ export async function executeFlow(flowId: string): Promise<void> {
   }
 
   const flow: Flow = await resolveFlow(rawFlow)
+
+  if (flow.id === "before_takeoff" && isCabinReadyTimerActive()) {
+    await playSound("cabin_is_not_secure.ogg")
+    return
+  }
 
   store.setFlow(flow)
 

@@ -52,7 +52,8 @@
       "only_if": {
         "option": "settings.lightsControlMode",
         "one_of": ["virtual"]
-      }
+      },
+      "skip_delay": true
     },
     {
       "label": "Landing Lights",

@@ -1,18 +1,26 @@
 # Build and deploy CopilotSpeechNew sidecar (Windows SAPI engine)
 
+# Get the directory where this script is located
+$ScriptDir = Split-Path -Parent $MyInvocation.MyCommand.Definition
+# Set the root project directory (one level up from 'scripts')
+$ProjectRoot = Split-Path -Parent $ScriptDir
+
 Write-Host "Building CopilotSpeechNew sidecar..." -ForegroundColor Cyan
 
+# Move to the actual project folder
+Set-Location "$ProjectRoot\CopilotSpeechNew"
+
 # Build project
-Set-Location "CopilotSpeechNew"
 dotnet publish -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -p:EnableCompressionInSingleFile=true
 
 if ($LASTEXITCODE -ne 0) {
     Write-Host "Build failed!" -ForegroundColor Red
-    Set-Location ".."
+    Set-Location $ProjectRoot
     exit 1
 }
 
-Set-Location ".."
+# Return to Project Root for the copy operations
+Set-Location $ProjectRoot
 
 # Create the bin directory if it doesn't exist
 $binDir = "src-tauri\bin"

@@ -429,7 +429,7 @@
       <item>continue<tag>out.pid="42";</tag></item>
       <item>shutdown procedure<tag>out.pid="43";</tag></item>
       <item>flight controls check<tag>out.pid="44";</tag></item>
-
+      <item>let's prepare for descent<tag>out.pid="45"</tag></item>
       <item>wing anti ice on<tag>out.pid="50";</tag></item>
       <item>wing anti ice off<tag>out.pid="51";</tag></item>
       <item>engine anti ice on<tag>out.pid="52";</tag></item>

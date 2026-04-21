@@ -65,7 +65,8 @@ export function useAutoFlows() {
     return useGoAroundStore.subscribe((s) => {
       if (s.count !== goAroundCount.current) {
         goAroundCount.current = s.count
-        // triggered.current.afterTakeoff = false  A310 has it's own go around flow, will be implemented later
+        triggered.current.afterTakeoffP1 = false
+        triggered.current.afterTakeoffP2 = false
       }
     })
   }, [])

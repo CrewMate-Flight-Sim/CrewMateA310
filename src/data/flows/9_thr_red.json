@@ -39,8 +39,7 @@
       "label": "Pack 1",
       "read": "(L:A300_PACK1_BUTTON)",
       "on": "1 (>L:A300_PACK1_BUTTON)",
-      "expect": 1,
-      "sound_on_execute": "pack_1_on.ogg"
+      "expect": 1
     },
     {
       "label": "Chrono",

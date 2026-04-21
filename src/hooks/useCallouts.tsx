@@ -317,12 +317,12 @@ export function useCallouts() {
 
     // Ten thousand feet
     if (!t.onGround && t.vs > 100 && !al.tenThousandClimb && crossedUp(p.alt, t.alt, 10000)) {
-      playSound(t.transitionAltitude < 10000 ? "fl_100.ogg" : "ten_thousand.ogg")
+      playSound(transitionAltitude < 10000 ? "fl_100.ogg" : "ten_thousand.ogg")
       al.tenThousandClimb = true
     }
 
     if (!t.onGround && t.vs < -100 && !al.tenThousandDescent && crossedDown(p.alt, t.alt, 10000)) {
-      playSound(t.transitionLevel > 10000 ? "fl_100.ogg" : "ten_thousand.ogg")
+      playSound(transitionLevel > 10000 ? "fl_100.ogg" : "ten_thousand.ogg")
       al.tenThousandDescent = true
     }
 
@@ -344,7 +344,6 @@ export function useCallouts() {
         al.above100mda = true
       }
 
-      // 2. Minimums trigger: ONLY if mda or dh is actually set
       if (mda > 0 && dh === 0 && !al.minimum) {
         if (t.alt <= mda) {
           playSound("minimum.ogg")

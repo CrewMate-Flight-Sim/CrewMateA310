@@ -269,12 +269,6 @@ export async function executeFlow(flowId: string): Promise<void> {
         continue
       }
 
-      if (step.sound) {
-        await waitForSoundFinished()
-        await playSound(step.sound)
-        await waitForSoundFinished()
-      }
-
       const currentValue = await readValue(step.read)
       checkAbort(signal)
 
@@ -312,6 +306,14 @@ export async function executeFlow(flowId: string): Promise<void> {
 
       if (step.skip_verify) {
         setStepStatus(i, "done")
+        // Play sound_on_complete if step was successful (after 2 second delay)
+        if (step.sound_on_complete) {
+          await abortableSleep(2000, signal)
+          await waitForSoundFinished()
+          await playSound(step.sound_on_complete)
+          await waitForSoundFinished()
+          checkAbort(signal)
+        }
       } else {
         setStepStatus(i, "verifying")
         let verified = false
@@ -328,6 +330,15 @@ export async function executeFlow(flowId: string): Promise<void> {
         setStepStatus(i, verified ? "done" : "failed")
         if (!verified) {
           console.warn(`[FlowRunner] Step "${step.label}" verification failed (expected ${expectedValue})`)
+        } else {
+          // Play sound_on_complete if step was successful (after 2 second delay)
+          if (step.sound_on_complete) {
+            await abortableSleep(2000, signal)
+            await waitForSoundFinished()
+            await playSound(step.sound_on_complete)
+            await waitForSoundFinished()
+            checkAbort(signal)
+          }
         }
       }
 

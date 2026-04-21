@@ -93,6 +93,7 @@ export function LandingWindow() {
             id="transitionLevel"
             name="transitionLevel"
             value={landing.transitionLevel ?? ""}
+            step={500}
             onChange={handleNumberInput}
             className="h-8 bg-slate-900/50 border-slate-600 text-white text-xs font-mono text-center px-1 focus-visible:ring-cyan-500"
             placeholder="—"

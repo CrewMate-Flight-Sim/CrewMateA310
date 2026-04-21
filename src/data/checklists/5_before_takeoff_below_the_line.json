@@ -18,7 +18,7 @@
     {
       "label": "Packs",
       "challenge": "packs.ogg",
-      "response": ["on", "on supplied by apu", "off", "set and checked"],
+      "response": ["on", "off", "set and checked"],
       "store_check": {
         "store": "takeoff.packs",
         "validation_map": [
@@ -32,7 +32,7 @@
           },
           {
             "store_value": "off",
-            "expected_response": "off, on supplied by apu",
+            "expected_response": "off",
             "simvar_checks": [
               { "var": "(L:A300_PACK1_BUTTON)", "expected": 0 },
               { "var": "(L:A300_PACK2_BUTTON)", "expected": 0 }

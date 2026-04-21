@@ -9,8 +9,6 @@ import { useTelemetryStore } from "@/store/telemetryStore"
 import { useVoiceHintProgressStore } from "@/store/voiceHintProgressStore"
 import type { ChecklistItem } from "@/types/checklist"
 
-import { startCabinReadyTimer } from "./flowRunner"
-
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms))
@@ -464,12 +462,6 @@ export async function executeChecklist(checklistId: string): Promise<void> {
   const { signal } = abortController
 
   const silent = checklist.mode === "silent"
-
-  if (checklist.id === "before_start") {
-    // Generates a random number between 8 and 12
-    const randomTime = Math.random() * 4 + 8
-    startCabinReadyTimer(randomTime)
-  }
 
   try {
     if (silent) {

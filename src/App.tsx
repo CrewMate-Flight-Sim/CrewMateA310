@@ -1,3 +1,4 @@
+import { invoke } from "@tauri-apps/api/core"
 import { getCurrentWindow } from "@tauri-apps/api/window"
 import { useEffect } from "react"
 
@@ -51,6 +52,13 @@ function App() {
 
   const currentEvent = usePreflightTimerStore((s) => s.currentEvent)
 
+  // Sync mute state to the sidecar on startup — persisted voiceEnabled may be false
+  // but the sidecar always starts unmuted.
+  useEffect(() => {
+    invoke("set_muted", { muted: !voiceEnabled }).catch(() => {})
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
   return (
     <div className="flex bg-black flex-col min-h-screen">
       <main className="flex-1 text-white p-2 flex flex-col">
@@ -59,7 +67,7 @@ function App() {
             <div className="flex-1 flex items-center justify-center">
               <SpeechEngineError message={speechEngineError} />
             </div>
-          ) : !connected ? (
+          ) : connected ? (
             <div className="flex-1 flex items-center justify-center">
               <ConnectionError />
             </div>

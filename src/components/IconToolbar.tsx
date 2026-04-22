@@ -50,7 +50,7 @@ export function IconToolbar({ voiceEnabled, onToggleVoice, voiceDisabled }: Icon
   }
 
   return (
-    <div className="flex items-center gap-5">
+    <div className="flex items-center gap-6">
       <TooltipProvider>
         <Tooltip>
           <TooltipTrigger asChild>

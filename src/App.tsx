@@ -67,7 +67,7 @@ function App() {
             <div className="flex-1 flex items-center justify-center">
               <SpeechEngineError message={speechEngineError} />
             </div>
-          ) : connected ? (
+          ) : !connected ? (
             <div className="flex-1 flex items-center justify-center">
               <ConnectionError />
             </div>

@@ -51,7 +51,7 @@
       "label": "APU Fire Test",
       "read": "(L:A310_APU_LOOP_TEST_SWITCH)",
       "on": "1 (>L:A310_APU_LOOP_TEST_SWITCH)",
-      "sound": "fire_test.ogg",
+      "sound_on_execute": "fire_test.ogg",
       "expect": 1,
       "hold_ms": 10000
     },

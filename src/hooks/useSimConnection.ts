@@ -76,7 +76,8 @@ const simVars: { key: string; expression: string }[] = [
   { key: "mda", expression: "(L:A310_MDA)" },
   { key: "dh", expression: "(L:A310_MINIMUMS_PILOT)" },
   { key: "eng1_reverse", expression: "(L:A310_REVERSE1_HANDLE_PERCENT)" },
-  { key: "eng2_reverse", expression: "(L:A310_REVERSE2_HANDLE_PERCENT)" }
+  { key: "eng2_reverse", expression: "(L:A310_REVERSE2_HANDLE_PERCENT)" },
+  { key: "trp", expression:"(L:A310_TRP_MODE)"}
 ]
 
 const RETRY_INTERVAL_MS = 5000

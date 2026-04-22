@@ -6,7 +6,8 @@
       "label": "Pack 2",
       "read": "(L:A300_PACK2_BUTTON)",
       "on": "1 (>L:A300_PACK2_BUTTON)",
-      "expect": 1
+      "expect": 1,
+      "sound_after_execute": "pack_2_on.ogg"
     },
     {
       "label": "APU Bleed",

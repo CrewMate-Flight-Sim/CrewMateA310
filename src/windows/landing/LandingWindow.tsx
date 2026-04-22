@@ -12,6 +12,14 @@ import { usePerformanceStore } from "@/store/performanceStore"
 const selectCls =
   "w-full h-8 bg-slate-900/50 border border-slate-600 text-white text-xs rounded-md px-2 focus:outline-none focus:ring-2 focus:ring-cyan-500"
 
+const formatToFL = (value: number | undefined | null) => {
+  if (!value) return ""
+  // Converts 18000 -> "FL180"
+  return `FL${Math.floor(value / 100)
+    .toString()
+    .padStart(3, "0")}`
+}
+
 export function LandingWindow() {
   const { landing, setLandingData } = usePerformanceStore()
 
@@ -92,12 +100,23 @@ export function LandingWindow() {
             type="number"
             id="transitionLevel"
             name="transitionLevel"
-            value={landing.transitionLevel ?? ""}
+            value={landing.transitionLevel ?? 0}
             step={500}
-            onChange={handleNumberInput}
+            min={3000}
+            max={22000}
+            onChange={(e) => {
+              const numericValue = Number(e.target.value)
+
+              if (numericValue <= 21000) {
+                handleChange("transitionLevel", numericValue)
+              }
+            }}
             className="h-8 bg-slate-900/50 border-slate-600 text-white text-xs font-mono text-center px-1 focus-visible:ring-cyan-500"
-            placeholder="—"
+            placeholder="0"
           />
+          <div className="text-[10px] text-slate-400 text-center mt-1 font-mono">
+          {formatToFL(landing.transitionLevel)}
+        </div>
         </div>
         <div className="space-y-1">
           <div className={labelRow}>
@@ -133,7 +152,6 @@ export function LandingWindow() {
             id="landingElevation"
             name="landingElevation"
             value={landing.landingElevation ?? ""}
-            step={50}
             onChange={handleNumberInput}
             className="h-8 bg-slate-900/50 border-slate-600 text-white text-xs font-mono text-center px-1 focus-visible:ring-cyan-500"
             placeholder="—"

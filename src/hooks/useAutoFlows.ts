@@ -116,7 +116,7 @@ export function useAutoFlows() {
 
     if (!isRunning) {
       // After Start: ignition knob 0 → 1 while on ground
-      if (!fl.afterStart && t.onGround && p.ignitionKnob < 3 && t.ignitionKnob === 3) {
+      if (!fl.afterStart && t.onGround && p.ignitionKnob !== 3 && t.ignitionKnob === 3) {
         fl.afterStart = true
         executeFlow("after_start")
       }

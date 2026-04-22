@@ -122,6 +122,8 @@ export function TakeoffWindow() {
             name="transitionAltitude"
             value={takeoff.transitionAltitude ?? ""}
             onChange={handleNumberInput}
+            min={2000}
+            max={20000}
             step={500}
             className="h-8 bg-slate-900/50 border-slate-600 text-white text-xs font-mono text-center px-1 focus-visible:ring-cyan-500"
             placeholder="—"

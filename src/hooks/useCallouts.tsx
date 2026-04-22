@@ -50,13 +50,15 @@ interface PreviousValues {
   dh: number
 }
 
-const THRUST_SET_MARGIN = 3
+const THRUST_SET_MARGIN = 1
 
 const getTakeoffThrustTarget = (t: Telemetry) => {
-  if ((t.iniFlexTemperature ?? 0) > 1) {
-    return t.iniThrustFlexN1 ?? 0
+  // A310 TRP_MODE: 5 = TOGA, 6 = FLEX
+  if (t.trp === 6) {
+    // FLEX mode - use flex thrust if flex temp is set (>1)
+    return (t.iniFlexTemperature ?? 0) > 1 ? t.iniThrustFlexN1 ?? 0 : t.iniThrustTogaN1 ?? 0
   }
-
+  // TOGA mode (5) or unknown mode
   return t.iniThrustTogaN1 ?? 0
 }
 

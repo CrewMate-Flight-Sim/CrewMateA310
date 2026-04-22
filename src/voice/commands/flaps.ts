@@ -65,7 +65,7 @@ export async function setFlaps(setting: number, skipAnnouncement = false) {
     await simvarSet(commandExpression)
 
     // 4. FO confirms the selection (e.g., "Slats Extend" or "Flaps 15")
-    await delay(1000)
+    await delay(5000)
     if (isInitialExtension) {
       playSound("slats_ext.ogg")
     } else {

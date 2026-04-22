@@ -11,7 +11,7 @@ export async function setStartAPU(position: number) {
 
     await simvarSet(expression1)
 
-    await new Promise((resolve) => setTimeout(resolve, 45000)) // 45 seconds
+    await new Promise((resolve) => setTimeout(resolve, 5000)) // 5 seconds
     await simvarSet(expression2)
   } catch (error) {
     console.error("Error setting APU (LVAR):", error)

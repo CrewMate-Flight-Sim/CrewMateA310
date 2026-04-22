@@ -29,7 +29,7 @@ import {
 import { setStdBaro } from "./commands/baro"
 import { startEngine1, startEngine2, setIgnKnob } from "./commands/engine"
 import { setFlaps } from "./commands/flaps"
-import { flightControlsCheck } from "./commands/flight_controls_check"
+import { flightControlsCheck, opencloseFCTLECAM } from "./commands/flight_controls_check"
 import { setGearHandle } from "./commands/gear"
 import { executeGoAround } from "./commands/goAround"
 import { disconnectAllGround, setASU, setGPU } from "./commands/groundServices"
@@ -211,8 +211,11 @@ export const discreteCommandMap: Record<string, () => void | Promise<void>> = {
 
   // ── Flight controls ───────────────────────────────────────────────────────
   flight_controls_check: async () => {
+    await opencloseFCTLECAM(1)
+    await delay(1000)
     await playSound("ready.ogg")
     await flightControlsCheck()
+    await opencloseFCTLECAM(1)
   },
 
   // ── Preflight timer ───────────────────────────────────────────────────────

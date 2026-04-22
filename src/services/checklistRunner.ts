@@ -3,6 +3,7 @@ import { listen } from "@tauri-apps/api/event"
 import { simvarGet } from "@/API/simvarApi"
 import { getChecklistById } from "@/services/checklistLoader"
 import { isSoundPlaying, playSound, playSoundSequence } from "@/services/playSounds"
+import { useCabinReadyTimerStore } from "@/store/cabinReadyTimerStore"
 import { useChecklistStore } from "@/store/checklistStore"
 import { usePerformanceStore } from "@/store/performanceStore"
 import { useTelemetryStore } from "@/store/telemetryStore"
@@ -441,6 +442,12 @@ async function executeNormalItem(item: ChecklistItem, index: number, signal: Abo
 
 // ─── Public API ───────────────────────────────────────────────────────────────
 
+// Blocked checklists while cabin ready timer is running
+const BLOCKED_CHECKLISTS = new Set([
+  "before_takeoff_to_the_line",
+  "before_takeoff_below_the_line",
+])
+
 export async function executeChecklist(checklistId: string): Promise<void> {
   const store = useChecklistStore.getState()
 
@@ -453,6 +460,13 @@ export async function executeChecklist(checklistId: string): Promise<void> {
   const checklist = getChecklistById(checklistId)
   if (!checklist) {
     store.setError(`Checklist "${checklistId}" not found`)
+    return
+  }
+
+  // Block before takeoff checklists if cabin ready timer is running
+  const cabinTimer = useCabinReadyTimerStore.getState()
+  if (cabinTimer.isRunning && BLOCKED_CHECKLISTS.has(checklistId)) {
+    store.setError("Cannot start before takeoff checklist - cabin ready timer is running")
     return
   }
 
@@ -499,6 +513,13 @@ export async function executeChecklist(checklistId: string): Promise<void> {
       await waitForSoundFinished()
       useChecklistStore.getState().setExecutionState("completed")
       useVoiceHintProgressStore.getState().recordChecklistCompleted(checklist.id)
+
+      // Start cabin ready timer after before_start_below_the_line is completed
+      if (checklistId === "before_start_below_the_line") {
+        const duration = 5 + Math.random() * 4 // Random duration between 5 and 9 minutes
+        cabinTimer.startTimer(duration)
+        console.log(`[CabinReadyTimer] Started with ${duration.toFixed(1)} minutes duration`)
+      }
     }
   } catch (err) {
     const message = String(err)

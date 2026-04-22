@@ -26,6 +26,19 @@
       "read": "(L:A310_TAXI_LIGHTS_SWITCH)",
       "on": "1 (>L:A310_TAXI_LIGHTS_SWITCH)",
       "expect": 1
+    },
+    {
+      "label": "Runway turnoff Light",
+      "read": "(L:A310_RWY_TURNOFF_L_SWITCH)",
+      "on": "1 (>L:A310_RWY_TURNOFF_L_SWITCH)",
+      "expect": 1,
+      "skip_delay": true
+    },
+    {
+      "label": "Runway turnoff Light",
+      "read": "(L:A310_RWY_TURNOFF_R_SWITCH)",
+      "on": "1 (>L:A310_RWY_TURNOFF_R_SWITCH)",
+      "expect": 1
     }
   ]
 }

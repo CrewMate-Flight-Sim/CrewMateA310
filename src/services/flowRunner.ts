@@ -1,6 +1,7 @@
 import { simvarGet, simvarSet } from "@/API/simvarApi"
 import { getFlowById, resolveFlow } from "@/services/flowLoader"
 import { playSound, isSoundPlaying } from "@/services/playSounds"
+import { useCabinReadyTimerStore } from "@/store/cabinReadyTimerStore"
 import { useFlowStore } from "@/store/flowStore"
 import { usePerformanceStore } from "@/store/performanceStore"
 import { useSettingsStore } from "@/store/settingsStore"
@@ -166,6 +167,9 @@ function startPostLandingTimer(delayMinutes: number): void {
   }, delayMs)
 }
 
+// Blocked flows while cabin ready timer is running
+const BLOCKED_FLOWS = new Set(["before_takeoff"])
+
 export async function executeFlow(flowId: string): Promise<void> {
   const store = useFlowStore.getState()
 
@@ -177,6 +181,14 @@ export async function executeFlow(flowId: string): Promise<void> {
   const rawFlow = getFlowById(flowId)
   if (!rawFlow) {
     store.setError(`Flow "${flowId}" not found`)
+    return
+  }
+
+  // Block before takeoff flow if cabin ready timer is running
+  const cabinTimer = useCabinReadyTimerStore.getState()
+  if (cabinTimer.isRunning && BLOCKED_FLOWS.has(flowId)) {
+    playSound("cabin_not_secure.ogg")
+    store.setError("Cannot start before takeoff flow - cabin ready timer is running")
     return
   }
 

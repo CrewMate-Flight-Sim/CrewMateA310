@@ -26,6 +26,13 @@
       "read": "(L:A310_eng_ignition_switch)",
       "on": "3 (>L:A310_eng_ignition_switch)",
       "expect": 3
+    },
+    {
+      "label": "Gear neutral",
+      "read": "(L:A310_GEAR_HANDLE_STATUS)",
+      "on": "1 (>L:A310_GEAR_HANDLE_STATUS)",
+      "expect": 1,
+      "sound_on_execute": "gear_neutral.ogg"
     }
   ]
 }

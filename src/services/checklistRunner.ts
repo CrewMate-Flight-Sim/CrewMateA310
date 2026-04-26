@@ -153,14 +153,49 @@ async function runChecks(checks: Check[], signal: AbortSignal): Promise<boolean>
   return true
 }
 
-function findMatchingRule(validations: ValidationRule[], spoken: string): ValidationRule | undefined {
-  return validations.find((rule) => {
+async function findPassingRule(
+  validations: ValidationRule[],
+  spoken: string,
+  signal: AbortSignal
+): Promise<ValidationRule | null> {
+  // Find the rule whose response token best (longest) matches spoken
+  let bestMatch: ValidationRule | undefined
+  let bestLen = -1
+
+  for (const rule of validations) {
     const w = rule.when
-    if (w.responses) return w.responses.some((r) => matchesResponse(spoken, r))
-    if (w.store) return getStoreValue(w.store.path) === w.store.equals
-    if (w.always) return true
-    return false
-  })
+
+    if (w.responses) {
+      for (const token of w.responses) {
+        if (matchesResponse(spoken, token) && token.length > bestLen) {
+          bestLen = token.length
+          bestMatch = rule
+        }
+      }
+    }
+  }
+
+  // If a response-based rule matched, only check that one
+  if (bestMatch) {
+    const ok = await runChecks(bestMatch.checks ?? [], signal)
+    return ok ? bestMatch : null
+  }
+
+  // No response matched — try always/store rules in order (handles silent mode
+  // and items with no response-based validations)
+  for (const rule of validations) {
+    const w = rule.when
+    const conditionMet =
+      (w.store && getStoreValue(w.store.path) === w.store.equals) ||
+      w.always === true
+
+    if (!conditionMet) continue
+
+    const ok = await runChecks(rule.checks ?? [], signal)
+    if (ok) return rule
+  }
+
+  return null
 }
 
 // ─── Abort controller ─────────────────────────────────────────────────────────
@@ -211,14 +246,11 @@ async function executeNormalItem(item: ChecklistItem, index: number, signal: Abo
     checkAbort(signal)
 
     // ── Run validations ───────────────────────────────────────────────────
-    if (item.validations?.length) {
-      const rule = findMatchingRule(item.validations, s)
+      if (item.validations?.length) {
+        const rule = await findPassingRule(item.validations, s, signal)
 
-      if (rule) {
-        const ok = await runChecks(rule.checks ?? [], signal)
-
-        if (!ok) {
-          await playSound(rule.incorrect ?? item.incorrect ?? "are_you_sure.ogg")
+        if (!rule) {
+          await playSound(item.incorrect ?? "are_you_sure.ogg")
           await waitForSoundFinished()
           if (hold()) continue
           else break
@@ -231,7 +263,6 @@ async function executeNormalItem(item: ChecklistItem, index: number, signal: Abo
 
         break
       }
-    }
 
     // ── Baro confirmation ─────────────────────────────────────────────────
     if (item.baro_confirmation) {

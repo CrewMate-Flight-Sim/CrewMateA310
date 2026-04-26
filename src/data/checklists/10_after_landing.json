@@ -15,16 +15,24 @@
     {
       "challenge": "radar.ogg",
       "response": ["off", "set and checked"],
-      "var": "(L:A310_WXR_ON)",
-      "expected": 0,
-      "label": "WXR"
+      "label": "WXR",
+      "validations": [
+        {
+          "when": { "always": true },
+          "checks": [{ "type": "simvar", "var": "(L:A310_WXR_ON)", "expected": 0 }]
+        }
+      ]
     },
     {
       "challenge": "spoilers.ogg",
       "response": ["disarmed", "set and checked"],
-      "var": "(L:A310_SPOILERS_ARMED)",
-      "expected": 0,
-      "label": "Spoilers"
+      "label": "Spoilers",
+      "validations": [
+        {
+          "when": { "always": true },
+          "checks": [{ "type": "simvar", "var": "(L:A310_SPOILERS_ARMED)", "expected": 0 }]
+        }
+      ]
     },
     {
       "challenge": "apu.ogg",

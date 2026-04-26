@@ -6,7 +6,7 @@
       "challenge": "flight_controls.ogg",
       "response": ["checked", "set and checked"],
       "label": "Flight Controls",
-      "copilot_confirmation": "checked.ogg"
+      "copilot_response": "checked.ogg"
     },
     {
       "challenge": "briefing.ogg",
@@ -17,36 +17,55 @@
       "challenge": "slats_flaps.ogg",
       "response": ["fifteen zero", "fifteen", "twenty", "set and checked"],
       "label": "Slats and flaps",
-      "simvar_check": {
-        "var_name": "(A:FLAPS HANDLE INDEX, number)",
-        "var_type": "simvar",
-        "validation_map": [
-          {
-            "sim_value": 1.0,
-            "expected_response": "fifteen zero",
-            "copilot_confirmation": "15_0.ogg"
-          },
-          {
-            "sim_value": 2.0,
-            "expected_response": "fifteen",
-            "copilot_confirmation": "15.ogg"
-          },
-          {
-            "sim_value": 3.0,
-            "expected_response": "twenty",
-            "copilot_confirmation": "20.ogg"
-          }
-        ]
-      },
-      "store_check": {
-        "store": "takeoff.flaps",
-        "validation_map": [
-          { "store_value": "1", "expected_response": "fifteen zero" },
-          { "store_value": "2", "expected_response": "fifteen" },
-          { "store_value": "3", "expected_response": "twenty" }
-        ],
-        "incorrect": "are_you_sure.ogg"
-      }
+      "incorrect": "are_you_sure.ogg",
+      "validations": [
+        {
+          "when": { "responses": ["fifteen zero"] },
+          "checks": [
+            { "type": "simvar", "var": "(A:FLAPS HANDLE INDEX, number)", "expected": 1 },
+            { "type": "store", "store": "takeoff.flaps", "equals": "1" }
+          ],
+          "copilot_response": "15_0.ogg"
+        },
+        {
+          "when": { "responses": ["fifteen"] },
+          "checks": [
+            { "type": "simvar", "var": "(A:FLAPS HANDLE INDEX, number)", "expected": 2 },
+            { "type": "store", "store": "takeoff.flaps", "equals": "2" }
+          ],
+          "copilot_response": "15.ogg"
+        },
+        {
+          "when": { "responses": ["twenty"] },
+          "checks": [
+            { "type": "simvar", "var": "(A:FLAPS HANDLE INDEX, number)", "expected": 3 },
+            { "type": "store", "store": "takeoff.flaps", "equals": "3" }
+          ],
+          "copilot_response": "20.ogg"
+        },
+        {
+          "when": { "responses": ["set and checked"] },
+          "checks": [
+            {
+              "type": "any",
+              "groups": [
+                [
+                  { "type": "simvar", "var": "(A:FLAPS HANDLE INDEX, number)", "expected": 1 },
+                  { "type": "store", "store": "takeoff.flaps", "equals": "1" }
+                ],
+                [
+                  { "type": "simvar", "var": "(A:FLAPS HANDLE INDEX, number)", "expected": 2 },
+                  { "type": "store", "store": "takeoff.flaps", "equals": "2" }
+                ],
+                [
+                  { "type": "simvar", "var": "(A:FLAPS HANDLE INDEX, number)", "expected": 3 },
+                  { "type": "store", "store": "takeoff.flaps", "equals": "3" }
+                ]
+              ]
+            }
+          ]
+        }
+      ]
     },
     {
       "challenge": "performance_fmas.ogg",

@@ -5,49 +5,89 @@
     {
       "challenge": "pitch_trim.ogg",
       "response": ["set", "set and checked"],
-      "var": "(L:ELEV_TRIM_RATIO)",
-      "expected": { "store": "takeoff.trim" },
+      "label": "Pitch Trim",
       "incorrect": "are_you_sure.ogg",
-      "label": "Pitch Trim"
+      "validations": [
+        {
+          "when": { "always": true },
+          "checks": [{ "type": "simvar", "var": "(L:ELEV_TRIM_RATIO)", "expected": { "store": "takeoff.trim" } }]
+        }
+      ]
     },
     {
       "challenge": "rud_trim.ogg",
       "response": ["check zero", "set and checked"],
-      "var": "(L:A310_TOTAL_RUDDER_TRIM)",
-      "expected": 0,
+      "label": "Rudder Trim",
       "incorrect": "are_you_sure.ogg",
-      "label": "Rudder Trim"
+      "validations": [
+        {
+          "when": { "always": true },
+          "checks": [{ "type": "simvar", "var": "(L:A310_TOTAL_RUDDER_TRIM)", "expected": 0 }]
+        }
+      ]
     },
     {
-      "label": "Spoilers Armed",
       "challenge": "spoilers.ogg",
       "response": ["armed", "set and checked"],
-      "var": "(L:A310_SPOILERS_ARMED)",
-      "expected": 1,
-      "incorrect": "are_you_sure.ogg"
+      "label": "Spoilers Armed",
+      "incorrect": "are_you_sure.ogg",
+      "validations": [
+        {
+          "when": { "always": true },
+          "checks": [{ "type": "simvar", "var": "(L:A310_SPOILERS_ARMED)", "expected": 1 }]
+        }
+      ]
     },
     {
       "challenge": "slats_flaps.ogg",
       "response": ["fifteen zero", "fifteen", "twenty", "set and checked"],
       "label": "Slats and flaps",
-      "simvar_check": {
-        "var_name": "(A:FLAPS HANDLE INDEX, number)",
-        "var_type": "simvar",
-        "validation_map": [
-          { "sim_value": 1.0, "expected_response": "fifteen zero" },
-          { "sim_value": 2.0, "expected_response": "fifteen" },
-          { "sim_value": 3.0, "expected_response": "twenty" }
-        ]
-      },
-      "store_check": {
-        "store": "takeoff.flaps",
-        "validation_map": [
-          { "store_value": "1", "expected_response": "fifteen zero" },
-          { "store_value": "2", "expected_response": "fifteen" },
-          { "store_value": "3", "expected_response": "twenty" }
-        ],
-        "incorrect": "are_you_sure.ogg"
-      }
+      "incorrect": "are_you_sure.ogg",
+      "validations": [
+        {
+          "when": { "responses": ["fifteen zero"] },
+          "checks": [
+            { "type": "simvar", "var": "(A:FLAPS HANDLE INDEX, number)", "expected": 1 },
+            { "type": "store", "store": "takeoff.flaps", "equals": "1" }
+          ]
+        },
+        {
+          "when": { "responses": ["fifteen"] },
+          "checks": [
+            { "type": "simvar", "var": "(A:FLAPS HANDLE INDEX, number)", "expected": 2 },
+            { "type": "store", "store": "takeoff.flaps", "equals": "2" }
+          ]
+        },
+        {
+          "when": { "responses": ["twenty"] },
+          "checks": [
+            { "type": "simvar", "var": "(A:FLAPS HANDLE INDEX, number)", "expected": 3 },
+            { "type": "store", "store": "takeoff.flaps", "equals": "3" }
+          ]
+        },
+        {
+          "when": { "responses": ["set and checked"] },
+          "checks": [
+            {
+              "type": "any",
+              "groups": [
+                [
+                  { "type": "simvar", "var": "(A:FLAPS HANDLE INDEX, number)", "expected": 1 },
+                  { "type": "store", "store": "takeoff.flaps", "equals": "1" }
+                ],
+                [
+                  { "type": "simvar", "var": "(A:FLAPS HANDLE INDEX, number)", "expected": 2 },
+                  { "type": "store", "store": "takeoff.flaps", "equals": "2" }
+                ],
+                [
+                  { "type": "simvar", "var": "(A:FLAPS HANDLE INDEX, number)", "expected": 3 },
+                  { "type": "store", "store": "takeoff.flaps", "equals": "3" }
+                ]
+              ]
+            }
+          ]
+        }
+      ]
     },
     {
       "challenge": "ecam_stat.ogg",
@@ -55,42 +95,67 @@
       "label": "ECAM status"
     },
     {
-      "label": "Anti Ice",
       "challenge": "anti_ice.ogg",
       "response": ["engine anti ice is on", "on", "off", "set and checked"],
-      "store_check": {
-        "store": "takeoff.antiIce",
-        "validation_map": [
-          {
-            "store_value": "off",
-            "expected_response": "off",
-            "simvar_checks": [
-              { "var": "(L:A310_ENG1_ANTI_ICE)", "expected": 0 },
-              { "var": "(L:A310_ENG2_ANTI_ICE)", "expected": 0 },
-              { "var": "(L:A310_WING_ANTI_ICE)", "expected": 0 }
-            ]
-          },
-          {
-            "store_value": "oneng",
-            "expected_response": "engine anti ice is on",
-            "simvar_checks": [
-              { "var": "(L:A310_ENG1_ANTI_ICE)", "expected": 1 },
-              { "var": "(L:A310_ENG2_ANTI_ICE)", "expected": 1 },
-              { "var": "(L:A310_WING_ANTI_ICE)", "expected": 0 }
-            ]
-          },
-          {
-            "store_value": "onengwing",
-            "expected_response": "on",
-            "simvar_checks": [
-              { "var": "(L:A310_ENG1_ANTI_ICE)", "expected": 1 },
-              { "var": "(L:A310_ENG2_ANTI_ICE)", "expected": 1 },
-              { "var": "(L:A310_WING_ANTI_ICE)", "expected": 1 }
-            ]
-          }
-        ],
-        "incorrect": "are_you_sure.ogg"
-      }
+      "label": "Anti Ice",
+      "incorrect": "are_you_sure.ogg",
+      "validations": [
+        {
+          "when": { "responses": ["off"] },
+          "checks": [
+            { "type": "store", "store": "takeoff.antiIce", "equals": "off" },
+            { "type": "simvar", "var": "(L:A310_ENG1_ANTI_ICE)", "expected": 0 },
+            { "type": "simvar", "var": "(L:A310_ENG2_ANTI_ICE)", "expected": 0 },
+            { "type": "simvar", "var": "(L:A310_WING_ANTI_ICE)", "expected": 0 }
+          ]
+        },
+        {
+          "when": { "responses": ["engine anti ice is on"] },
+          "checks": [
+            { "type": "store", "store": "takeoff.antiIce", "equals": "oneng" },
+            { "type": "simvar", "var": "(L:A310_ENG1_ANTI_ICE)", "expected": 1 },
+            { "type": "simvar", "var": "(L:A310_ENG2_ANTI_ICE)", "expected": 1 },
+            { "type": "simvar", "var": "(L:A310_WING_ANTI_ICE)", "expected": 0 }
+          ]
+        },
+        {
+          "when": { "responses": ["on"] },
+          "checks": [
+            { "type": "store", "store": "takeoff.antiIce", "equals": "onengwing" },
+            { "type": "simvar", "var": "(L:A310_ENG1_ANTI_ICE)", "expected": 1 },
+            { "type": "simvar", "var": "(L:A310_ENG2_ANTI_ICE)", "expected": 1 },
+            { "type": "simvar", "var": "(L:A310_WING_ANTI_ICE)", "expected": 1 }
+          ]
+        },
+        {
+          "when": { "responses": ["set and checked"] },
+          "checks": [
+            {
+              "type": "any",
+              "groups": [
+                [
+                  { "type": "store", "store": "takeoff.antiIce", "equals": "off" },
+                  { "type": "simvar", "var": "(L:A310_ENG1_ANTI_ICE)", "expected": 0 },
+                  { "type": "simvar", "var": "(L:A310_ENG2_ANTI_ICE)", "expected": 0 },
+                  { "type": "simvar", "var": "(L:A310_WING_ANTI_ICE)", "expected": 0 }
+                ],
+                [
+                  { "type": "store", "store": "takeoff.antiIce", "equals": "oneng" },
+                  { "type": "simvar", "var": "(L:A310_ENG1_ANTI_ICE)", "expected": 1 },
+                  { "type": "simvar", "var": "(L:A310_ENG2_ANTI_ICE)", "expected": 1 },
+                  { "type": "simvar", "var": "(L:A310_WING_ANTI_ICE)", "expected": 0 }
+                ],
+                [
+                  { "type": "store", "store": "takeoff.antiIce", "equals": "onengwing" },
+                  { "type": "simvar", "var": "(L:A310_ENG1_ANTI_ICE)", "expected": 1 },
+                  { "type": "simvar", "var": "(L:A310_ENG2_ANTI_ICE)", "expected": 1 },
+                  { "type": "simvar", "var": "(L:A310_WING_ANTI_ICE)", "expected": 1 }
+                ]
+              ]
+            }
+          ]
+        }
+      ]
     },
     {
       "challenge": "hand_signal.ogg",

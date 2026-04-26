@@ -6,23 +6,31 @@
       "challenge": "windows.ogg",
       "response": ["closed", "set and checked"],
       "label": "Windows and doors",
-      "copilot_confirmation": "closed.ogg"
+      "copilot_response": "closed.ogg"
     },
     {
       "challenge": "beacon.ogg",
-      "var": "(L:A310_BEACON_LIGHT_SWITCH)",
-      "expected": 1.0,
-      "incorrect": "check_beacon.ogg",
       "response": ["on", "set and checked"],
-      "label": "Beacon"
+      "label": "Beacon",
+      "incorrect": "check_beacon.ogg",
+      "validations": [
+        {
+          "when": { "always": true },
+          "checks": [{ "type": "simvar", "var": "(L:A310_BEACON_LIGHT_SWITCH)", "expected": 1 }]
+        }
+      ]
     },
     {
       "challenge": "parking_brake.ogg",
-      "var": "(A:BRAKE PARKING INDICATOR, Bool)",
-      "expected": true,
-      "incorrect": "are_you_sure.ogg",
       "response": ["on", "set and checked"],
-      "label": "Parking Brake"
+      "label": "Parking Brake",
+      "incorrect": "are_you_sure.ogg",
+      "validations": [
+        {
+          "when": { "always": true },
+          "checks": [{ "type": "simvar", "var": "(A:BRAKE PARKING INDICATOR, Bool)", "expected": true }]
+        }
+      ]
     }
   ],
   "completion": "before_start_checklist_completed.ogg"

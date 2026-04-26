@@ -5,9 +5,13 @@
     {
       "challenge": "gear.ogg",
       "response": ["down", "set and checked"],
-      "var": "(L:A310_GEAR_HANDLE_STATUS)",
-      "expected": 2,
-      "label": "Landing Gear"
+      "label": "Landing Gear",
+      "validations": [
+        {
+          "when": { "always": true },
+          "checks": [{ "type": "simvar", "var": "(L:A310_GEAR_HANDLE_STATUS)", "expected": 2 }]
+        }
+      ]
     },
     {
       "challenge": "auto_brake.ogg",
@@ -23,27 +27,31 @@
       "challenge": "slats_flaps.ogg",
       "response": ["twenty", "fourty", "set and checked"],
       "label": "Slats and flaps",
-      "simvar_check": {
-        "var_name": "(L:A310_GPWS_LANDING_SWITCH)",
-        "var_type": "simvar",
-        "validation_map": [
-          {
-            "sim_value": 1.0,
-            "expected_response": "twenty"
-          },
-          {
-            "sim_value": 0.0,
-            "expected_response": "fourty"
-          }
-        ]
-      }
+      "incorrect": "are_you_sure.ogg",
+      "validations": [
+        {
+          "when": { "responses": ["twenty"] },
+          "checks": [{ "type": "simvar", "var": "(L:A310_GPWS_LANDING_SWITCH)", "expected": 1 }]
+        },
+        {
+          "when": { "responses": ["fourty"] },
+          "checks": [{ "type": "simvar", "var": "(L:A310_GPWS_LANDING_SWITCH)", "expected": 0 }]
+        },
+        {
+          "when": { "responses": ["set and checked"] }
+        }
+      ]
     },
     {
       "challenge": "spoilers.ogg",
       "response": ["armed", "set and checked"],
-      "var": "(L:A310_SPOILERS_ARMED)",
-      "expected": 1,
-      "label": "Spoilers"
+      "label": "Spoilers",
+      "validations": [
+        {
+          "when": { "always": true },
+          "checks": [{ "type": "simvar", "var": "(L:A310_SPOILERS_ARMED)", "expected": 1 }]
+        }
+      ]
     }
   ],
   "completion": "landing_checklist_completed.ogg"

@@ -47,7 +47,6 @@
       "read": "(A:AILERON RIGHT DEFLECTION PCT, Percent Over 100)",
       "on": "-16384 (>K:AILERON_SET)",
       "expect": 0.75,
-
       "sound_after_execute": "full_right.ogg"
     },
     {

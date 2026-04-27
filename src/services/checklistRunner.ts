@@ -6,6 +6,7 @@ import { isSoundPlaying, playSound, playSoundSequence } from "@/services/playSou
 import { useCabinReadyTimerStore } from "@/store/cabinReadyTimerStore"
 import { useChecklistStore } from "@/store/checklistStore"
 import { usePerformanceStore } from "@/store/performanceStore"
+import { useSettingsStore } from "@/store/settingsStore"
 import { useTelemetryStore } from "@/store/telemetryStore"
 import { useVoiceHintProgressStore } from "@/store/voiceHintProgressStore"
 import type { Check, ChecklistItem, ValidationRule } from "@/types/checklist"
@@ -212,7 +213,7 @@ async function executeNormalItem(item: ChecklistItem, index: number, signal: Abo
   }
 
   const responseList = item.response ?? []
-  const hold = () => useChecklistStore.getState().holdOnIncorrect
+  const hold = () => useSettingsStore.getState().holdOnIncorrect
 
   while (true) {
     checkAbort(signal)

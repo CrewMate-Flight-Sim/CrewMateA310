@@ -141,7 +141,7 @@ async function runChecks(checks: Check[], signal: AbortSignal): Promise<boolean>
       const val = getStoreValue(check.store!)
       pass = val === check.equals
     }
-    
+
     if (!pass) {
       console.log(
         `[ChecklistRunner] check FAILED: type="${check.type}" var="${check.var ?? check.store}" expected="${check.expected ?? check.equals}"`
@@ -185,9 +185,7 @@ async function findPassingRule(
   // and items with no response-based validations)
   for (const rule of validations) {
     const w = rule.when
-    const conditionMet =
-      (w.store && getStoreValue(w.store.path) === w.store.equals) ||
-      w.always === true
+    const conditionMet = (w.store && getStoreValue(w.store.path) === w.store.equals) || w.always === true
 
     if (!conditionMet) continue
 
@@ -246,23 +244,23 @@ async function executeNormalItem(item: ChecklistItem, index: number, signal: Abo
     checkAbort(signal)
 
     // ── Run validations ───────────────────────────────────────────────────
-      if (item.validations?.length) {
-        const rule = await findPassingRule(item.validations, s, signal)
+    if (item.validations?.length) {
+      const rule = await findPassingRule(item.validations, s, signal)
 
-        if (!rule) {
-          await playSound(item.incorrect ?? "are_you_sure.ogg")
-          await waitForSoundFinished()
-          if (hold()) continue
-          else break
-        }
-
-        if (rule.copilot_response) {
-          await playSound(rule.copilot_response)
-          await waitForSoundFinished()
-        }
-
-        break
+      if (!rule) {
+        await playSound(item.incorrect ?? "are_you_sure.ogg")
+        await waitForSoundFinished()
+        if (hold()) continue
+        else break
       }
+
+      if (rule.copilot_response) {
+        await playSound(rule.copilot_response)
+        await waitForSoundFinished()
+      }
+
+      break
+    }
 
     // ── Baro confirmation ─────────────────────────────────────────────────
     if (item.baro_confirmation) {

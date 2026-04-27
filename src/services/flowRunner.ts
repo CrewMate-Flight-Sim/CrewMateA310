@@ -287,7 +287,7 @@ export async function executeFlow(flowId: string): Promise<void> {
         setStepStatus(i, "done")
         // Play sound_after_execute if step was successful (after 2 second delay)
         if (step.sound_after_execute) {
-          await abortableSleep(2000, signal)
+          await abortableSleep(1000, signal)
           await waitForSoundFinished()
           await playSound(step.sound_after_execute)
           await waitForSoundFinished()
@@ -312,7 +312,7 @@ export async function executeFlow(flowId: string): Promise<void> {
         } else {
           // Play sound_after_execute if step was successful (after 2 second delay)
           if (step.sound_after_execute) {
-            if (!step.skip_delay) await abortableSleep(2000, signal)
+            if (!step.skip_delay) await abortableSleep(1000, signal)
             await waitForSoundFinished()
             await playSound(step.sound_after_execute)
             await waitForSoundFinished()

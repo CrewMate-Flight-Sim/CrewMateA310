@@ -6,44 +6,57 @@ import { useFlowStore } from "@/store/flowStore"
 import { usePerformanceStore } from "@/store/performanceStore"
 import { useSettingsStore } from "@/store/settingsStore"
 import { useVoiceHintProgressStore } from "@/store/voiceHintProgressStore"
-import type { Flow } from "@/types/flow"
-import type { FlowStep } from "@/types/flow"
-import type { FlowConditionValue } from "@/types/flow"
+import type { Flow, FlowStep, FlowConditionValue } from "@/types/flow"
 
-const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms))
+// ---------------------------------------------------------------------------
+// Constants
+// ---------------------------------------------------------------------------
 
-function getRandomDelay(): number {
-  // Random delay between 500ms and 1500ms
-  return Math.random() * 1000 + 500
+const STEP_DELAY_MIN_MS = 500
+const STEP_DELAY_MAX_MS = 1500
+const STEP_DELAY_RANGE_MS = STEP_DELAY_MAX_MS - STEP_DELAY_MIN_MS
+
+const SIMVAR_READ_RETRIES = 5
+const SIMVAR_READ_RETRY_DELAY_MS = 150
+const STEP_VERIFY_RETRIES = 5
+const STEP_VERIFY_DELAY_MS = 300
+const STEP_SOUND_AFTER_DELAY_MS = 1000
+
+const POST_LANDING_TIMER_MINUTES = 5
+const FUZZY_EQUALS_EPSILON = 0.5
+
+const BLOCKED_FLOWS = new Set(["before_takeoff"])
+
+// ---------------------------------------------------------------------------
+// Utilities
+// ---------------------------------------------------------------------------
+
+const sleep = (ms: number): Promise<void> => new Promise((r) => setTimeout(r, ms))
+
+function getRandomStepDelay(): number {
+  return Math.random() * STEP_DELAY_RANGE_MS + STEP_DELAY_MIN_MS
 }
 
-let abortController: AbortController | null = null
+function fuzzyEquals(a: number, b: number, epsilon = FUZZY_EQUALS_EPSILON): boolean {
+  return Math.abs(a - b) < epsilon
+}
 
-async function waitForSoundFinished() {
+function toNumber(value: number | string): number {
+  return typeof value === "string" ? parseFloat(value) : value
+}
+
+async function waitForSoundFinished(): Promise<void> {
   while (await isSoundPlaying()) {
     await sleep(100)
   }
 }
 
-function checkAbort(signal: AbortSignal) {
-  if (signal.aborted) throw new Error("Flow aborted")
-}
+// ---------------------------------------------------------------------------
+// SimVar I/O
+// ---------------------------------------------------------------------------
 
-async function abortableSleep(ms: number, signal: AbortSignal) {
-  const interval = 100
-  let elapsed = 0
-  while (elapsed < ms) {
-    checkAbort(signal)
-    const chunk = Math.min(interval, ms - elapsed)
-    await sleep(chunk)
-    elapsed += chunk
-  }
-}
-
-async function readValue(expression: string): Promise<number | null> {
-  // On first registration the SimConnect cache may not be populated yet.
-  // Retry a few times with a short delay before giving up.
-  for (let attempt = 0; attempt < 5; attempt++) {
+async function readSimvar(expression: string): Promise<number | null> {
+  for (let attempt = 0; attempt < SIMVAR_READ_RETRIES; attempt++) {
     try {
       const value = await simvarGet(expression)
       if (value !== null) return value
@@ -51,12 +64,12 @@ async function readValue(expression: string): Promise<number | null> {
       console.warn(`[FlowRunner] Failed to read "${expression}":`, err)
       return null
     }
-    await sleep(150)
+    await sleep(SIMVAR_READ_RETRY_DELAY_MS)
   }
   return null
 }
 
-async function writeValue(expression: string): Promise<void> {
+async function writeSimvar(expression: string): Promise<void> {
   try {
     await simvarSet(expression)
   } catch (err) {
@@ -65,16 +78,9 @@ async function writeValue(expression: string): Promise<void> {
   }
 }
 
-function toNumber(value: number | string): number {
-  return typeof value === "string" ? parseFloat(value) : value
-}
-
-function matchesValue(actual: number | null, expected: FlowConditionValue): boolean {
-  if (typeof expected !== "number" && typeof expected !== "string") {
-    return false
-  }
-  return actual !== null && Math.abs(actual - toNumber(expected)) < 0.5
-}
+// ---------------------------------------------------------------------------
+// Condition evaluation
+// ---------------------------------------------------------------------------
 
 function resolveFlowOption(path: string): unknown {
   const { takeoff, landing } = usePerformanceStore.getState()
@@ -85,37 +91,31 @@ function resolveFlowOption(path: string): unknown {
     settings: { lightsControlMode }
   }
   return path.split(".").reduce<unknown>((acc, key) => {
-    if (!acc || typeof acc !== "object") {
-      return undefined
-    }
+    if (!acc || typeof acc !== "object") return undefined
     return (acc as Record<string, unknown>)[key]
   }, root)
 }
 
-function matchesOptionValue(actual: unknown, expected: FlowConditionValue): boolean {
+function optionMatchesExpected(actual: unknown, expected: FlowConditionValue): boolean {
   if (typeof actual === "number" && typeof expected === "number") {
-    return Math.abs(actual - expected) < 0.5
+    return fuzzyEquals(actual, expected)
   }
-
-  if (
-    (typeof actual === "number" || typeof actual === "string") &&
-    (typeof expected === "number" || typeof expected === "string")
-  ) {
-    const actualNum = Number(actual)
-    const expectedNum = Number(expected)
-    if (!Number.isNaN(actualNum) && !Number.isNaN(expectedNum)) {
-      return Math.abs(actualNum - expectedNum) < 0.5
-    }
+  const actualNum = Number(actual)
+  const expectedNum = Number(expected)
+  if (!Number.isNaN(actualNum) && !Number.isNaN(expectedNum)) {
+    return fuzzyEquals(actualNum, expectedNum)
   }
-
   return String(actual) === String(expected)
+}
+
+function simvarMatchesExpected(actual: number | null, expected: FlowConditionValue): boolean {
+  if (typeof expected !== "number" && typeof expected !== "string") return false
+  return actual !== null && fuzzyEquals(actual, toNumber(expected))
 }
 
 async function shouldExecuteStep(step: FlowStep): Promise<boolean> {
   const condition = step.only_if
-  if (!condition) {
-    return true
-  }
+  if (!condition) return true
 
   if ("option" in condition) {
     const optionValue = resolveFlowOption(condition.option)
@@ -123,113 +123,138 @@ async function shouldExecuteStep(step: FlowStep): Promise<boolean> {
       console.warn(`[FlowRunner] Step "${step.label}" condition option not found: "${condition.option}"`)
       return false
     }
-    return condition.one_of.some((expected) => matchesOptionValue(optionValue, expected))
+    return condition.one_of.some((expected) => optionMatchesExpected(optionValue, expected))
   }
 
-  const conditionValue = await readValue(condition.read)
+  const conditionValue = await readSimvar(condition.read)
   if (conditionValue === null) {
     console.warn(`[FlowRunner] Step "${step.label}" condition read failed for "${condition.read}"`)
     return false
   }
 
-  return condition.one_of.some((expected) => matchesValue(conditionValue, expected))
+  return condition.one_of.some((expected) => simvarMatchesExpected(conditionValue, expected))
 }
 
-// Post-landing silent timer (announces when it expires)
-let postLandingTimerExpiresAt: number | null = null
-let postLandingTimerTimeoutId: ReturnType<typeof setTimeout> | null = null
+// ---------------------------------------------------------------------------
+// Post-landing timer
+// ---------------------------------------------------------------------------
 
-function isPostLandingTimerActive(): boolean {
-  return postLandingTimerExpiresAt !== null && Date.now() < postLandingTimerExpiresAt
-}
+class PostLandingTimer {
+  private expiresAt: number | null = null
+  private timeoutId: ReturnType<typeof setTimeout> | null = null
 
-function clearPostLandingTimer(): void {
-  if (postLandingTimerTimeoutId) {
-    clearTimeout(postLandingTimerTimeoutId as unknown as number)
-    postLandingTimerTimeoutId = null
+  get isActive(): boolean {
+    return this.expiresAt !== null && Date.now() < this.expiresAt
   }
-  postLandingTimerExpiresAt = null
-}
 
-function startPostLandingTimer(delayMinutes: number): void {
-  clearPostLandingTimer()
-  const safeMinutes = Math.max(1, Math.floor(delayMinutes))
-  const delayMs = safeMinutes * 60 * 1000
-  postLandingTimerExpiresAt = Date.now() + delayMs
-  postLandingTimerTimeoutId = setTimeout(async () => {
-    postLandingTimerExpiresAt = null
-    postLandingTimerTimeoutId = null
-    try {
-      await playSound("five_minutes.ogg")
-    } catch (err) {
-      console.error("[FlowRunner] Failed to play post-landing expiry announcement:", err)
+  clear(): void {
+    if (this.timeoutId !== null) {
+      clearTimeout(this.timeoutId as unknown as number)
+      this.timeoutId = null
     }
-  }, delayMs)
+    this.expiresAt = null
+  }
+
+  start(minutes: number): void {
+    this.clear()
+    const safeMinutes = Math.max(1, Math.floor(minutes))
+    const delayMs = safeMinutes * 60 * 1000
+    this.expiresAt = Date.now() + delayMs
+    this.timeoutId = setTimeout(async () => {
+      this.expiresAt = null
+      this.timeoutId = null
+      try {
+        await playSound("five_minutes.ogg")
+      } catch (err) {
+        console.error("[FlowRunner] Failed to play post-landing expiry announcement:", err)
+      }
+    }, delayMs)
+  }
 }
 
-// Blocked flows while cabin ready timer is running
-const BLOCKED_FLOWS = new Set(["before_takeoff"])
+// ---------------------------------------------------------------------------
+// Flow runner
+// ---------------------------------------------------------------------------
 
-export async function executeFlow(flowId: string): Promise<void> {
-  const store = useFlowStore.getState()
+class FlowRunner {
+  private abortController: AbortController | null = null
+  private readonly postLandingTimer = new PostLandingTimer()
 
-  if (abortController) {
-    abortController.abort()
-    abortController = null
+  // ── Public API ────────────────────────────────────────────────────────────
+
+  abort(): void {
+    this.abortController?.abort()
+    this.abortController = null
+    useFlowStore.getState().setExecutionState("aborted")
   }
 
-  const rawFlow = getFlowById(flowId)
-  if (!rawFlow) {
-    store.setError(`Flow "${flowId}" not found`)
-    return
-  }
+  async execute(flowId: string): Promise<void> {
+    if (this.abortController) {
+      this.abortController.abort()
+      this.abortController = null
+    }
 
-  // Block before takeoff flow if cabin ready timer is running
-  const cabinTimer = useCabinReadyTimerStore.getState()
-  if (cabinTimer.isRunning && BLOCKED_FLOWS.has(flowId)) {
-    playSound("cabin_not_secure.ogg")
-    store.setError("Cannot start before takeoff flow - cabin ready timer is running")
-    return
-  }
+    const store = useFlowStore.getState()
 
-  // Guard engine shutdown flows while post-landing timer is active
-  const engineShutdownIds = new Set(["shutdown_eng1", "shutdown_eng2"])
-  if (engineShutdownIds.has(flowId)) {
-    const settings = useSettingsStore.getState()
-    if (settings.postLandingShutdownEnabled && isPostLandingTimerActive()) {
-      try {
-        await playSound("five_minutes_not_passed.ogg")
-      } catch (err) {
-        console.error("[FlowRunner] Failed to play blocked shutdown announcement:", err)
-      }
+    const rawFlow = getFlowById(flowId)
+    if (!rawFlow) {
+      store.setError(`Flow "${flowId}" not found`)
       return
     }
-  }
 
-  const flow: Flow = await resolveFlow(rawFlow)
+    const blocked = await this.checkPreconditions(flowId, store)
+    if (blocked) return
 
-  store.setFlow(flow)
+    const flow: Flow = await resolveFlow(rawFlow)
+    store.setFlow(flow)
 
-  // If this is the after-landing flow, start the silent post-landing timer
-  if (flow.id === "after_landing") {
-    const settings = useSettingsStore.getState()
-    if (settings.postLandingShutdownEnabled) {
-      startPostLandingTimer(5)
+    if (flow.id === "after_landing") {
+      const { postLandingShutdownEnabled } = useSettingsStore.getState()
+      if (postLandingShutdownEnabled) {
+        this.postLandingTimer.start(POST_LANDING_TIMER_MINUTES)
+      }
+    }
+
+    this.abortController = new AbortController()
+    const { signal } = this.abortController
+
+    try {
+      await this.playFlowStartSound(flow, signal)
+      await this.runSteps(flow, signal)
+
+      useFlowStore.getState().setExecutionState("completed")
+      this.onFlowCompleted(flow)
+
+      await this.playFlowEndSound(flow)
+    } catch (err) {
+      if (signal.aborted) {
+        useFlowStore.getState().setExecutionState("aborted")
+      } else {
+        useFlowStore.getState().setError(err instanceof Error ? err.message : String(err))
+      }
+    } finally {
+      this.abortController = null
     }
   }
 
-  abortController = new AbortController()
-  const { signal } = abortController
+  // ── Precondition checks ───────────────────────────────────────────────────
 
-  try {
-    if (flow.sound_start) {
-      await waitForSoundFinished()
-      await playSound(flow.sound_start)
-      await waitForSoundFinished()
+  private async checkPreconditions(flowId: string, store: ReturnType<typeof useFlowStore.getState>): Promise<boolean> {
+    const cabinTimer = useCabinReadyTimerStore.getState()
+    if (cabinTimer.isRunning && BLOCKED_FLOWS.has(flowId)) {
+      playSound("cabin_not_secure.ogg")
+      store.setError("Cannot start before takeoff flow - cabin ready timer is running")
+      return true
     }
 
+    return false
+  }
+
+  // ── Step iteration ────────────────────────────────────────────────────────
+
+  private async runSteps(flow: Flow, signal: AbortSignal): Promise<void> {
     for (let i = 0; i < flow.steps.length; i++) {
-      checkAbort(signal)
+      this.checkAbort(signal)
 
       const step = flow.steps[i]
       const { setStepIndex, setStepStatus } = useFlowStore.getState()
@@ -240,117 +265,161 @@ export async function executeFlow(flowId: string): Promise<void> {
       if (!(await shouldExecuteStep(step))) {
         setStepStatus(i, "skipped")
         if (i < flow.steps.length - 1 && !step.skip_delay) {
-          await abortableSleep(getRandomDelay(), signal)
+          await this.abortableSleep(getRandomStepDelay(), signal)
         }
         continue
       }
 
-      if (i > 0 && flow.steps[i - 1].skip_delay) {
-        await abortableSleep(100, signal)
-      }
-      const currentValue = await readValue(step.read)
-      checkAbort(signal)
-
-      const expectedValue = toNumber(step.expect)
-      console.log(`[FlowRunner] Step "${step.label}": read=${currentValue}, expect=${expectedValue}`)
-      if (matchesValue(currentValue, expectedValue)) {
-        // Already in correct state — skip but still honour wait_ms
-        if (step.wait_ms) {
-          await abortableSleep(step.wait_ms, signal)
-        }
-        setStepStatus(i, "skipped")
-        continue
-      }
-
-      await writeValue(step.on)
-      checkAbort(signal)
-
-      if (step.sound_on_execute) {
-        await waitForSoundFinished()
-        await playSound(step.sound_on_execute)
-        await waitForSoundFinished()
-        checkAbort(signal)
-      }
-
-      if (step.hold_ms) {
-        await abortableSleep(step.hold_ms, signal)
-        const releaseExpr = step.on.replace(/^-?\d+\s+/, "0 ")
-        await writeValue(releaseExpr)
-        checkAbort(signal)
-      }
-
-      if (step.wait_ms) {
-        await abortableSleep(step.wait_ms, signal)
-      }
-
-      if (step.skip_verify) {
-        setStepStatus(i, "done")
-        // Play sound_after_execute if step was successful (after 2 second delay)
-        if (step.sound_after_execute) {
-          await abortableSleep(2000, signal)
-          await waitForSoundFinished()
-          await playSound(step.sound_after_execute)
-          await waitForSoundFinished()
-          checkAbort(signal)
-        }
-      } else {
-        setStepStatus(i, "verifying")
-        let verified = false
-        for (let attempt = 0; attempt < 5; attempt++) {
-          checkAbort(signal)
-          if (!step.skip_delay) await sleep(300)
-          const newValue = await readValue(step.read)
-          if (matchesValue(newValue, expectedValue)) {
-            verified = true
-            break
-          }
-        }
-
-        setStepStatus(i, verified ? "done" : "failed")
-        if (!verified) {
-          console.warn(`[FlowRunner] Step "${step.label}" verification failed (expected ${expectedValue})`)
-        } else {
-          // Play sound_after_execute if step was successful (after 2 second delay)
-          if (step.sound_after_execute) {
-            if (!step.skip_delay) await abortableSleep(2000, signal)
-            await waitForSoundFinished()
-            await playSound(step.sound_after_execute)
-            await waitForSoundFinished()
-            checkAbort(signal)
-          }
-        }
-      }
+      await this.executeStep(step, i, flow, signal)
 
       if (i < flow.steps.length - 1 && !step.skip_delay) {
-        await abortableSleep(getRandomDelay(), signal)
+        await this.abortableSleep(getRandomStepDelay(), signal)
+      }
+    }
+  }
+
+  // ── Single step execution ─────────────────────────────────────────────────
+
+  private async executeStep(step: FlowStep, index: number, flow: Flow, signal: AbortSignal): Promise<void> {
+    const { setStepStatus } = useFlowStore.getState()
+
+    const prevStep = flow.steps[index - 1]
+    if (index > 0 && prevStep?.skip_delay) {
+      await this.abortableSleep(100, signal)
+    }
+
+    const currentValue = await readSimvar(step.read)
+    this.checkAbort(signal)
+
+    console.log(`[FlowRunner] Step "${step.label}": read=${currentValue}, expect=${step.expect}`)
+
+    if (simvarMatchesExpected(currentValue, step.expect)) {
+      if (step.wait_ms) await this.abortableSleep(step.wait_ms, signal)
+      setStepStatus(index, "skipped")
+      return
+    }
+
+    await writeSimvar(step.on)
+    this.checkAbort(signal)
+
+    await this.handlePostWrite(step, signal)
+    await this.verifyAndFinish(step, index, signal)
+  }
+
+  // ── Post-write phase ──────────────────────────────────────────────────────
+
+  private async handlePostWrite(step: FlowStep, signal: AbortSignal): Promise<void> {
+    if (step.sound_on_execute) {
+      await waitForSoundFinished()
+      await playSound(step.sound_on_execute)
+      await waitForSoundFinished()
+      this.checkAbort(signal)
+    }
+
+    if (step.hold_ms) {
+      await this.abortableSleep(step.hold_ms, signal)
+      const releaseExpr = step.on.replace(/^-?\d+\s+/, "0 ")
+      await writeSimvar(releaseExpr)
+      this.checkAbort(signal)
+    }
+
+    if (step.wait_ms) {
+      await this.abortableSleep(step.wait_ms, signal)
+    }
+  }
+
+  // ── Verify phase ──────────────────────────────────────────────────────────
+
+  private async verifyAndFinish(step: FlowStep, index: number, signal: AbortSignal): Promise<void> {
+    const { setStepStatus } = useFlowStore.getState()
+
+    if (step.skip_verify) {
+      setStepStatus(index, "done")
+      await this.playSoundAfterExecute(step, signal)
+      return
+    }
+
+    setStepStatus(index, "verifying")
+
+    let verified = false
+    for (let attempt = 0; attempt < STEP_VERIFY_RETRIES; attempt++) {
+      this.checkAbort(signal)
+      if (!step.skip_delay) await sleep(STEP_VERIFY_DELAY_MS)
+      const newValue = await readSimvar(step.read)
+      if (simvarMatchesExpected(newValue, step.expect)) {
+        verified = true
+        break
       }
     }
 
-    useFlowStore.getState().setExecutionState("completed")
-    useVoiceHintProgressStore.getState().recordFlowCompleted(flow.id)
+    if (!verified) {
+      console.warn(`[FlowRunner] Step "${step.label}" verification failed (expected ${step.expect})`)
+      setStepStatus(index, "failed")
+      return
+    }
+
+    setStepStatus(index, "done")
+    await this.playSoundAfterExecute(step, signal)
+  }
+
+  // ── Sound helpers ─────────────────────────────────────────────────────────
+
+  private async playFlowStartSound(flow: Flow, signal: AbortSignal): Promise<void> {
+    if (!flow.sound_start) return
+    await waitForSoundFinished()
+    await playSound(flow.sound_start)
+    await waitForSoundFinished()
+    this.checkAbort(signal)
+  }
+
+  private async playFlowEndSound(flow: Flow): Promise<void> {
+    if (!flow.sound_end) return
+    await waitForSoundFinished()
+    await playSound(flow.sound_end)
+  }
+
+  private async playSoundAfterExecute(step: FlowStep, signal: AbortSignal): Promise<void> {
+    if (!step.sound_after_execute) return
+    if (!step.skip_delay) await this.abortableSleep(STEP_SOUND_AFTER_DELAY_MS, signal)
+    await waitForSoundFinished()
+    await playSound(step.sound_after_execute)
+    await waitForSoundFinished()
+    this.checkAbort(signal)
+  }
+
+  // ── Flow completion side-effects ──────────────────────────────────────────
+
+  private onFlowCompleted(flow: Flow): void {
+    const voiceHints = useVoiceHintProgressStore.getState()
+    voiceHints.recordFlowCompleted(flow.id)
     if (flow.id === "shutdown") {
-      useVoiceHintProgressStore.getState().resetForColdGround()
+      voiceHints.resetForColdGround()
     }
+  }
 
-    if (flow.sound_end) {
-      await waitForSoundFinished()
-      await playSound(flow.sound_end)
+  // ── Abort / sleep helpers ─────────────────────────────────────────────────
+
+  private checkAbort(signal: AbortSignal): void {
+    if (signal.aborted) throw new Error("Flow aborted")
+  }
+
+  private async abortableSleep(ms: number, signal: AbortSignal): Promise<void> {
+    const interval = 100
+    let elapsed = 0
+    while (elapsed < ms) {
+      this.checkAbort(signal)
+      const chunk = Math.min(interval, ms - elapsed)
+      await sleep(chunk)
+      elapsed += chunk
     }
-  } catch (err) {
-    if (signal.aborted) {
-      useFlowStore.getState().setExecutionState("aborted")
-    } else {
-      useFlowStore.getState().setError(err instanceof Error ? err.message : String(err))
-    }
-  } finally {
-    abortController = null
   }
 }
 
-export function abortFlow(): void {
-  if (abortController) {
-    abortController.abort()
-    abortController = null
-  }
-  useFlowStore.getState().setExecutionState("aborted")
-}
+// ---------------------------------------------------------------------------
+// Module-level singleton + public API
+// ---------------------------------------------------------------------------
+
+const runner = new FlowRunner()
+
+export const executeFlow = (flowId: string): Promise<void> => runner.execute(flowId)
+export const abortFlow = (): void => runner.abort()

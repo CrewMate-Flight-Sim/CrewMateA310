@@ -6,6 +6,7 @@ import { isSoundPlaying, playSound, playSoundSequence } from "@/services/playSou
 import { useCabinReadyTimerStore } from "@/store/cabinReadyTimerStore"
 import { useChecklistStore } from "@/store/checklistStore"
 import { usePerformanceStore } from "@/store/performanceStore"
+import { useSettingsStore } from "@/store/settingsStore"
 import { useTelemetryStore } from "@/store/telemetryStore"
 import { useVoiceHintProgressStore } from "@/store/voiceHintProgressStore"
 import type { Check, ChecklistItem, ValidationRule } from "@/types/checklist"
@@ -128,12 +129,12 @@ async function runChecks(checks: Check[], signal: AbortSignal): Promise<boolean>
       }
 
       if (typeof check.expected === "boolean") {
-        // Boolean SimVars: compare truthy/falsy
         const rawBool = raw !== null ? (raw > 0.5 ? 1 : 0) : null
         pass = rawBool !== null && expected !== null && rawBool === expected
+      } else if (check.strict) {
+        pass = raw !== null && expected !== null && raw === expected
       } else {
-        // Numeric SimVars: compare with tolerance
-        pass = raw !== null && expected !== null && Math.abs(raw - expected) < 0.5
+        pass = raw !== null && expected !== null && Math.abs(raw - expected) < 0.1
       }
     }
 
@@ -141,7 +142,7 @@ async function runChecks(checks: Check[], signal: AbortSignal): Promise<boolean>
       const val = getStoreValue(check.store!)
       pass = val === check.equals
     }
-    
+
     if (!pass) {
       console.log(
         `[ChecklistRunner] check FAILED: type="${check.type}" var="${check.var ?? check.store}" expected="${check.expected ?? check.equals}"`
@@ -185,9 +186,7 @@ async function findPassingRule(
   // and items with no response-based validations)
   for (const rule of validations) {
     const w = rule.when
-    const conditionMet =
-      (w.store && getStoreValue(w.store.path) === w.store.equals) ||
-      w.always === true
+    const conditionMet = (w.store && getStoreValue(w.store.path) === w.store.equals) || w.always === true
 
     if (!conditionMet) continue
 
@@ -214,7 +213,7 @@ async function executeNormalItem(item: ChecklistItem, index: number, signal: Abo
   }
 
   const responseList = item.response ?? []
-  const hold = () => useChecklistStore.getState().holdOnIncorrect
+  const hold = () => useSettingsStore.getState().holdOnIncorrect
 
   while (true) {
     checkAbort(signal)
@@ -246,23 +245,23 @@ async function executeNormalItem(item: ChecklistItem, index: number, signal: Abo
     checkAbort(signal)
 
     // ── Run validations ───────────────────────────────────────────────────
-      if (item.validations?.length) {
-        const rule = await findPassingRule(item.validations, s, signal)
+    if (item.validations?.length) {
+      const rule = await findPassingRule(item.validations, s, signal)
 
-        if (!rule) {
-          await playSound(item.incorrect ?? "are_you_sure.ogg")
-          await waitForSoundFinished()
-          if (hold()) continue
-          else break
-        }
-
-        if (rule.copilot_response) {
-          await playSound(rule.copilot_response)
-          await waitForSoundFinished()
-        }
-
-        break
+      if (!rule) {
+        await playSound(item.incorrect ?? "are_you_sure.ogg")
+        await waitForSoundFinished()
+        if (hold()) continue
+        else break
       }
+
+      if (rule.copilot_response) {
+        await playSound(rule.copilot_response)
+        await waitForSoundFinished()
+      }
+
+      break
+    }
 
     // ── Baro confirmation ─────────────────────────────────────────────────
     if (item.baro_confirmation) {

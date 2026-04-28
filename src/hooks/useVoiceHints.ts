@@ -41,8 +41,7 @@ export function useVoiceHints({ voiceEnabled, connected }: UseVoiceHintsOptions)
   return useMemo(() => {
     if (!voiceEnabled || !connected) return null
 
-    const voiceChecklistRunning =
-      executionState === "running" && currentChecklist !== null && currentChecklist.mode !== "silent"
+    const voiceChecklistRunning = executionState === "running" && currentChecklist !== null
 
     // While a challenge/response checklist is active, show expected response phrases
     if (voiceChecklistRunning && currentChecklist) {

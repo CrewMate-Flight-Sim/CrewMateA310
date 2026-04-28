@@ -1,4 +1,4 @@
-import { Loader2, Mic, Play, Square, X } from "lucide-react"
+import { Mic, Play, Square } from "lucide-react"
 import { useEffect, useState } from "react"
 
 import { Button } from "@/components/ui/button"
@@ -19,7 +19,6 @@ export function ChecklistPanel() {
     if (currentChecklist) setSelectedId(currentChecklist.id)
   }, [currentChecklist])
 
-  const isSilent = allChecklists.find((c) => c.id === selectedId)?.mode === "silent"
   const activeItem: ChecklistItem | null =
     isRunning && currentChecklist ? (currentChecklist.items[currentStepIndex] ?? null) : null
 
@@ -66,30 +65,8 @@ export function ChecklistPanel() {
       {/* Running state */}
       {currentChecklist && executionState !== "idle" && (
         <div className="space-y-1">
-          {/* Silent mode */}
-          {isSilent && isRunning && (
-            <div className="flex items-center gap-1.5 text-xs text-slate-400">
-              <Loader2 className="w-2.5 h-2.5 animate-spin text-amber-400 shrink-0" />
-              <span>Checking…</span>
-            </div>
-          )}
-
-          {/* Silent mode results — show failed items */}
-          {isSilent && !isRunning && executionState === "error" && (
-            <div className="space-y-0.5">
-              {currentChecklist.items.map((item, i) =>
-                stepStatuses[i] === "failed" ? (
-                  <div key={i} className="flex items-center gap-1 text-xs text-red-400">
-                    <X className="w-2.5 h-2.5 shrink-0" />
-                    <span>{item.label}</span>
-                  </div>
-                ) : null
-              )}
-            </div>
-          )}
-
           {/* Normal mode — current item + progress (VoiceGuide handles response hints) */}
-          {!isSilent && isRunning && activeItem && (
+          {isRunning && activeItem && (
             <div className="flex items-center justify-between gap-1">
               <div className="flex items-center gap-1 min-w-0">
                 <Mic className="w-2.5 h-2.5 text-amber-400 shrink-0" />

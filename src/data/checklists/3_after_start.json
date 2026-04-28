@@ -22,7 +22,7 @@
       "validations": [
         {
           "when": { "always": true },
-          "checks": [{ "type": "simvar", "var": "(L:A310_TOTAL_RUDDER_TRIM)", "expected": 0 }]
+          "checks": [{ "type": "simvar", "var": "(L:A310_TOTAL_RUDDER_TRIM)", "expected": 0, "strict": true }]
         }
       ]
     },

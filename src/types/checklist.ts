@@ -23,7 +23,7 @@ export interface Check {
   // simvar
   var?: string
   expected?: number | boolean | { store: string }
-
+  strict?: boolean
   // store
   store?: string
   equals?: string

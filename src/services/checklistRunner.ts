@@ -129,12 +129,12 @@ async function runChecks(checks: Check[], signal: AbortSignal): Promise<boolean>
       }
 
       if (typeof check.expected === "boolean") {
-        // Boolean SimVars: compare truthy/falsy
         const rawBool = raw !== null ? (raw > 0.5 ? 1 : 0) : null
         pass = rawBool !== null && expected !== null && rawBool === expected
+      } else if (check.strict) {
+        pass = raw !== null && expected !== null && raw === expected
       } else {
-        // Numeric SimVars: compare with tolerance
-        pass = raw !== null && expected !== null && Math.abs(raw - expected) < 0.5
+        pass = raw !== null && expected !== null && Math.abs(raw - expected) < 0.1
       }
     }
 

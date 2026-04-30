@@ -68,6 +68,7 @@ $phrases = @{
     "gear_up"                              = "Gear up"
     "landing_checklist_completed"          = "Landing checklist completed"
     "minimum"                              = "Minimum"
+    "nav_prof_armed"                       = "Nav and profile armed"
     "neutral"                              = "Neutral"
     "no_reverse_engine_1_and_2"            = "No reverse engine one and two"
     "no_spoilers"                          = "No spoilers"

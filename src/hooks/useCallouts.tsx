@@ -324,7 +324,7 @@ export function useCallouts() {
     }
 
     if (!t.onGround && t.vs < -100 && !al.tenThousandDescent && crossedDown(p.alt, t.alt, 10000)) {
-      playSound(transitionLevel > 10000 ? "fl_100.ogg" : "ten_thousand.ogg")
+      playSound(transitionLevel < 10000 ? "fl_100.ogg" : "ten_thousand.ogg")
       al.tenThousandDescent = true
     }
 

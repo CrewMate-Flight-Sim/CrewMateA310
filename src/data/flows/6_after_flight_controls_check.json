@@ -72,7 +72,8 @@
       "label": "Arm nav mode",
       "read": "(L:A310_FCU_MANAGED_HEADING_BUTTON)",
       "on": "1 (>L:A310_FCU_MANAGED_HEADING_BUTTON)",
-      "expect": 1
+      "expect": 1,
+      "sound_after_execute": "nav_prof_armed.ogg"
     },
     {
       "label": "Weather radar on",

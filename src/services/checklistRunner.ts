@@ -342,10 +342,11 @@ export async function executeChecklist(checklistId: string): Promise<void> {
     useVoiceHintProgressStore.getState().recordChecklistCompleted(checklist.id)
 
     // Trigger timer for specific checklist
-    if (checklistId === "before_start_below_the_line") {
-      const duration = 5 + Math.random() * 4
+    if (checklistId === "after_start") {
+      // Shorten the timer slightly because they've been working during engine start
+      const duration = 1 + Math.random() * 3 
       cabinTimer.startTimer(duration)
-      console.log(`[CabinReadyTimer] Started with ${duration.toFixed(1)} minutes duration`)
+      console.log(`[CabinReadyTimer] Final walk-through in progress...`)
     }
   } catch (err) {
     const message = String(err)

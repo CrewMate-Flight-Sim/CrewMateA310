@@ -18,6 +18,8 @@ $voicesToGenerate = @(
 # "en-US-GuyNeural"   - Male, professional
 # "en-US-DavisNeural" - Male, authoritative
 # "en-US-JennyNeural"  - Female, clear
+$trimmedFiles = @("v_one", "rotate")
+
 
 $phrases = @{
     "0"                                    = "Zero"
@@ -201,7 +203,11 @@ foreach ($voiceName in $voicesToGenerate) {
             
             # Convert to OGG
             if (Test-Path $mp3Path) {
-                & $ffmpegExe -i "$mp3Path" -c:a libvorbis -q:a 4 "$oggPath" -y -loglevel error
+                if ($trimmedFiles -contains $file) {
+                    & $ffmpegExe -i "$mp3Path" -c:a libvorbis -q:a 4 -af "silenceremove=start_periods=1:start_threshold=-50dB:stop_periods=-1:stop_duration=0.05:stop_threshold=-50dB" "$oggPath" -y -loglevel error
+                } else {
+                    & $ffmpegExe -i "$mp3Path" -c:a libvorbis -q:a 4 "$oggPath" -y -loglevel error
+                }
                 Remove-Item $mp3Path -ErrorAction SilentlyContinue
                 Write-Host "  [OK] $file"
             }

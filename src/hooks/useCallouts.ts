@@ -1,6 +1,6 @@
 import { useEffect, useRef, useCallback } from "react"
 
-import { playSound, playSoundSequence, isSoundPlaying } from "@/services/playSounds"
+import { playSound, isSoundPlaying } from "@/services/playSounds"
 import { useGoAroundStore } from "@/store/goAroundStore"
 import { usePassingAltitudeStore } from "@/store/passingAltitudeStore"
 import { usePerformanceStore } from "@/store/performanceStore"
@@ -43,7 +43,6 @@ interface PreviousValues {
   alt: number
   radioAlt: number
   onGround: number
-  cabinIsReady: number
   takeoffN1: number
   fcuAlt: number
   mda: number
@@ -182,14 +181,12 @@ export function useCallouts() {
     alt: 0,
     radioAlt: 0,
     onGround: 1,
-    cabinIsReady: 0,
     takeoffN1: 0,
     fcuAlt: 0,
     mda: 0,
     dh: 0
   })
 
-  const cabinReadyPrimed = useRef(false)
   const thrustSetPrimed = useRef(false)
 
   // Re-arm positive-climb callout on go-around
@@ -218,18 +215,12 @@ export function useCallouts() {
     const v1 = t.v1 ?? 0
     const vr = t.vr ?? 0
     const now = Date.now()
-    const cabinIsReady = (t.cabinIsReady ?? 0) > 0.5 ? 1 : 0
     const takeoffN1 = Math.min(t.engineN1_1 ?? 0, t.engineN1_2 ?? 0)
     const fcuAlt = t.fcu_alt ?? 0
     const takeoffThrustTarget = getTakeoffThrustTarget(t)
     const mda = t.mda ?? 0
     const dh = t.dh ?? 0
     const isCat3B = dh === 0 && mda === 0
-
-    if (!cabinReadyPrimed.current) {
-      cabinReadyPrimed.current = true
-      p.cabinIsReady = cabinIsReady
-    }
 
     if (!thrustSetPrimed.current) {
       thrustSetPrimed.current = true
@@ -263,22 +254,18 @@ export function useCallouts() {
       al.above100dh = false
     }
 
+    // V1 callout logic
     if (t.onGround && !sp.v1Inhibit && v1 > 0 && t.ias >= v1 && t.ias < v1 + 5 && !sp.calledV1) {
+      playSound("v_one.ogg")
       sp.calledV1 = true
       sp.v1Inhibit = true
-      // If VR == V1 (or within 1 kt), chain rotate immediately after v_one
-      if (vr > 0 && Math.abs(vr - v1) <= 1) {
-        playSoundSequence(["v_one.ogg", "rotate.ogg"])
-        sp.calledVr = true
-      } else {
-        playSound("v_one.ogg")
-      }
     }
 
-    // VR callout
-    if (t.onGround && !sp.vrInhibit && vr > 0 && t.ias >= vr && t.ias < vr + 5 && !sp.calledVr) {
+    // VR callout logic
+    if (t.onGround && !sp.vrInhibit && vr > 0 && t.ias >= vr && t.ias < vr + 5 && !sp.calledVr && sp.calledV1) {
       playSound("rotate.ogg")
       sp.calledVr = true
+      sp.vrInhibit = true
     }
 
     // 100 knots callout
@@ -304,11 +291,6 @@ export function useCallouts() {
     ) {
       playSound("thrust_set.ogg")
       sp.calledThrustSet = true
-    }
-
-    // Cabin ready
-    if (t.onGround && p.cabinIsReady === 0 && cabinIsReady === 1) {
-      playSound("cabin_ready.ogg")
     }
 
     // Positive climb
@@ -472,7 +454,6 @@ export function useCallouts() {
     p.alt = t.alt
     p.radioAlt = t.radioAlt
     p.onGround = t.onGround
-    p.cabinIsReady = cabinIsReady
     p.takeoffN1 = takeoffN1
     p.fcuAlt = fcuAlt
     p.mda = mda

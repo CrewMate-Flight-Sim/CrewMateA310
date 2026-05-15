@@ -1,4 +1,4 @@
-use crate::audio::audio_player::{play_sequence_trimmed, AudioPlayer};
+use crate::audio::audio_player::AudioPlayer;
 use std::path::PathBuf;
 use std::sync::Mutex;
 use tauri::{AppHandle, Manager};
@@ -99,16 +99,8 @@ pub async fn play_sound_sequence(
     let paths = paths?;
 
     // Move only the two Arc fields so we don't need AudioPlayer: Clone.
-    let (stream_handle, is_playing) = {
-        let guard = audio_player.0.lock().map_err(|e| e.to_string())?;
-        (guard.stream_handle.clone(), guard.is_playing.clone())
-    };
-
-    // play_sequence_trimmed blocks — run on a thread-pool thread.
-    tokio::task::spawn_blocking(move || {
-        play_sequence_trimmed(&stream_handle, &is_playing, paths, volume)
-    })
-    .await
-    .map_err(|e| e.to_string())?
-    .map_err(|e| e.to_string())
+    let guard = audio_player.0.lock().map_err(|e| e.to_string())?;
+    guard
+        .play_sequence(paths, volume)
+        .map_err(|e| e.to_string())
 }

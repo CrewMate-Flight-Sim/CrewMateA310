@@ -344,7 +344,7 @@ export async function executeChecklist(checklistId: string): Promise<void> {
     // Trigger timer for specific checklist
     if (checklistId === "after_start") {
       // Shorten the timer slightly because they've been working during engine start
-      const duration = 1 + Math.random() * 3 
+      const duration = 1 + Math.random() * 3
       cabinTimer.startTimer(duration)
       console.log(`[CabinReadyTimer] Final walk-through in progress...`)
     }

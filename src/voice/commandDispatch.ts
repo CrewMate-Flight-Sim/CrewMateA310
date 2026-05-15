@@ -4,7 +4,6 @@ import { executeFlow } from "@/services/flowRunner"
 import { playSound, playSoundSequence } from "@/services/playSounds"
 import { useGroundEngineerStore } from "@/store/groundEngineerStore"
 import { usePassingAltitudeStore } from "@/store/passingAltitudeStore"
-import { usePerformanceStore } from "@/store/performanceStore"
 import { usePreflightTimerStore } from "@/store/preflightTimerStore"
 import { useSettingsStore } from "@/store/settingsStore"
 import { useTelemetryStore } from "@/store/telemetryStore"
@@ -325,17 +324,19 @@ export async function dispatchFoCommand(commandType: string, payload: Record<str
         await delay(500)
       }
       setHeadingDial(value)
+      playSound("check.ogg")
+
       return true
     }
 
     case "altitude": {
-      playSound("check.ogg")
       const feet = payload.flightLevel != null ? (payload.flightLevel as number) * 100 : (payload.value as number)
       if (isPull) {
         setSelAlt(1)
         await delay(500)
       }
       setAltitudeDial(feet)
+      playSound("check.ogg")
       return true
     }
 
@@ -346,6 +347,8 @@ export async function dispatchFoCommand(commandType: string, payload: Record<str
         await delay(500)
       }
       setAirspeedDial(value)
+      playSound("check.ogg")
+
       return true
     }
 
@@ -355,13 +358,7 @@ export async function dispatchFoCommand(commandType: string, payload: Record<str
     }
 
     case "missed_approach_altitude": {
-      if ((payload.mode as string) === "auto") {
-        const alt = usePerformanceStore.getState().landing?.["missedAltitude"]
-        if (alt != null) {
-          setAltitudeDial(alt)
-          playSound("go_around_alt_set.ogg")
-        }
-      } else if (payload.value != null) {
+      if (payload.value != null) {
         const altValue = payload.value as number
         const leadingNumber = Math.floor(altValue / 1000).toString()
         setAltitudeDial(altValue)

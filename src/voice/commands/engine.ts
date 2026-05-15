@@ -1,7 +1,7 @@
 import { simvarGet, simvarSet } from "@/API/simvarApi"
 import { playSound } from "@/services/playSounds"
 
-const delay = (ms: number) => new Promise((res) => setTimeout(res, ms))
+import { delay } from "../commandDispatch"
 
 export async function setIgnKnob(position: number) {
   try {

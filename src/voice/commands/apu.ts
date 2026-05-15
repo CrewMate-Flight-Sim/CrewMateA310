@@ -1,5 +1,7 @@
 import { simvarSet } from "@/API/simvarApi"
 
+import { delay } from "../commandDispatch"
+
 export async function setStartAPU(position: number) {
   try {
     const expression = `${position} (>L:A310_apu_master_switch)`
@@ -7,11 +9,11 @@ export async function setStartAPU(position: number) {
     const expression2 = `${position} (>L:A310_apu_bleed)`
     await simvarSet(expression)
 
-    await new Promise((resolve) => setTimeout(resolve, 2000)) // 2 seconds
+    await delay(2000)
 
     await simvarSet(expression1)
 
-    await new Promise((resolve) => setTimeout(resolve, 5000)) // 5 seconds
+    await delay(5000)
     await simvarSet(expression2)
   } catch (error) {
     console.error("Error setting APU (LVAR):", error)

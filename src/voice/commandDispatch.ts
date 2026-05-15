@@ -36,7 +36,7 @@ import { setLandingLights, setStrobeLights, setTaxiLights } from "./commands/lig
 import { setSeatBelts } from "./commands/seat_belts"
 import { setWipers } from "./commands/wipers"
 
-const delay = (ms: number) => new Promise<void>((r) => setTimeout(r, ms))
+export const delay = (ms: number) => new Promise<void>((r) => setTimeout(r, ms))
 const randomDelay = (min: number, max: number) => delay(min + Math.random() * (max - min))
 
 const gePack = () => useSettingsStore.getState().geSoundPack
@@ -224,7 +224,7 @@ export const discreteCommandMap: Record<string, () => void | Promise<void>> = {
     await playSound("check.ogg")
     const startAB = Math.random() < 0.5 ? 0 : 1
     await setIgnKnob(startAB)
-    await new Promise((resolve) => setTimeout(resolve, 2000))
+    await delay(2000)
     await startEngine2(1)
   },
   engine_start_1: async () => {

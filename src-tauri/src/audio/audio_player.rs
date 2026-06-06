@@ -1,9 +1,6 @@
 use crate::audio::audio_devices;
 use rodio::{buffer::SamplesBuffer, Decoder, OutputStream, OutputStreamHandle, Sink, Source};
 use std::collections::HashMap;
-use std::fs::File;
-use std::io::BufReader;
-use std::path::Path;
 use std::rc::Rc;
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::Arc;
@@ -30,15 +27,17 @@ fn trim_silence(samples: &[i16], threshold: i16, pad_samples: usize) -> Vec<i16>
     samples[padded_start..=padded_end].to_vec()
 }
 
-fn load_and_trim<P: AsRef<Path>>(
+fn load_and_trim<P: AsRef<std::path::Path>>(
     path: P,
 ) -> Result<DecodedSound, Box<dyn std::error::Error + Send + Sync>> {
+    use std::fs::File;
+    use std::io::BufReader;
     let file = File::open(path)?;
     let decoder = Decoder::new(BufReader::new(file))?;
     let channels = decoder.channels();
     let sample_rate = decoder.sample_rate();
     let raw: Vec<i16> = decoder.collect();
-    let samples = trim_silence(&raw, 500, 200);
+    let samples = trim_silence(&raw, 200, 4800);
     Ok(DecodedSound {
         samples,
         channels,
@@ -49,7 +48,7 @@ fn load_and_trim<P: AsRef<Path>>(
 // ── Queue item ────────────────────────────────────────────────────────────────
 
 /// A single item placed on the audio queue.
-/// `Single` plays one file; `Sequence` plays several back-to-back (trimmed).
+/// `Single` plays one file (silence-trimmed); `Sequence` plays several back-to-back (trimmed).
 pub enum QueueItem {
     Single {
         path: std::path::PathBuf,
@@ -123,7 +122,7 @@ impl AudioPlayer {
     }
 
     /// Enqueue a single file for playback. Returns immediately.
-    pub fn play_from_path<P: AsRef<Path>>(
+    pub fn play_from_path<P: AsRef<std::path::Path>>(
         &self,
         path: P,
         volume: f32,
@@ -138,7 +137,7 @@ impl AudioPlayer {
     }
 
     /// Enqueue a sequence of files for gapless playback. Returns immediately.
-    pub fn play_sequence<P: AsRef<Path>>(
+    pub fn play_sequence<P: AsRef<std::path::Path>>(
         &self,
         paths: Vec<P>,
         volume: f32,
@@ -159,21 +158,24 @@ impl AudioPlayer {
 
 // ── Blocking helpers (called from the worker thread) ─────────────────────────
 
-/// Play a single file synchronously; blocks until done.
+/// Play a single file synchronously; blocks until done. Trims silence from file.
 fn play_single_blocking(
     stream_handle: &OutputStreamHandle,
     is_playing: &Arc<AtomicBool>,
     path: std::path::PathBuf,
     volume: f32,
 ) -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
-    let file = File::open(&path)?;
-    let source = Decoder::new(BufReader::new(file))?.amplify(volume);
+    let decoded = load_and_trim(&path)?;
+    let volume = volume.clamp(0.0, 10.0);
 
     let sink = Sink::try_new(stream_handle)
         .map_err(|e| Box::new(e) as Box<dyn std::error::Error + Send + Sync>)?;
 
+    sink.append(
+        SamplesBuffer::new(decoded.channels, decoded.sample_rate, decoded.samples).amplify(volume),
+    );
+
     is_playing.store(true, Ordering::SeqCst);
-    sink.append(source);
     sink.sleep_until_end();
     is_playing.store(false, Ordering::SeqCst);
     Ok(())
@@ -193,6 +195,8 @@ pub fn play_sequence_trimmed(
     }
 
     let volume = volume.clamp(0.0, 10.0);
+
+    // Cache decoded sounds to avoid reloading the same file multiple times
     let mut cache: HashMap<String, DecodedSound> = HashMap::new();
     for path in &paths {
         let key = path.to_string_lossy().to_string();
@@ -206,6 +210,9 @@ pub fn play_sequence_trimmed(
     for path in &paths {
         let key = path.to_string_lossy().to_string();
         if let Some(s) = cache.get(&key) {
+            // Note: Each sound could have different sample rate/channels.
+            // SamplesBuffer takes ownership of samples, so we clone them here.
+            // This is acceptable because the cache already avoids re-decoding.
             sink.append(
                 SamplesBuffer::new(s.channels, s.sample_rate, s.samples.clone()).amplify(volume),
             );

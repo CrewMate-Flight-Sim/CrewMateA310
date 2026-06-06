@@ -46,15 +46,13 @@ export function LandingWindow() {
 
   return (
     <div className="h-screen bg-black text-white p-3 flex flex-col gap-3">
-      {/* Flaps + Anti Ice */}
-
+      {/* Row 1: Anti Ice + Transition Level + Landing Elevation */}
       <div className="grid grid-cols-3 gap-2">
         <div className="space-y-1">
           <div className={labelRow}>
             <Label htmlFor="antiIce" className="text-[10px] font-mono text-cyan-400 uppercase tracking-widest">
               Anti Ice
             </Label>
-
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
@@ -66,7 +64,6 @@ export function LandingWindow() {
               </Tooltip>
             </TooltipProvider>
           </div>
-
           <select
             id="antiIce"
             name="antiIce"
@@ -106,7 +103,6 @@ export function LandingWindow() {
             max={22000}
             onChange={(e) => {
               const numericValue = Number(e.target.value)
-
               if (numericValue <= 21000) {
                 handleChange("transitionLevel", numericValue)
               }
@@ -118,17 +114,13 @@ export function LandingWindow() {
             {formatToFL(landing.transitionLevel)}
           </div>
         </div>
-      </div>
 
-      {/* APU + Auto Brake */}
-      <div className="grid grid-cols-3 gap-2">
         <div className="space-y-1">
           <div className={labelRow}>
             <Label htmlFor="landingElevation" className="text-[10px] font-mono text-cyan-400 uppercase tracking-widest">
-              Landing Elevation
+              Elev
             </Label>
           </div>
-
           <Input
             type="number"
             id="landingElevation"
@@ -139,7 +131,10 @@ export function LandingWindow() {
             placeholder="—"
           />
         </div>
+      </div>
 
+      {/* Row 2: APU + Auto Brake */}
+      <div className="grid grid-cols-2 gap-2">
         <div className="space-y-1">
           <div className={labelRow}>
             <Label htmlFor="apuStart" className="text-[10px] font-mono text-cyan-400 uppercase tracking-widest">
@@ -156,7 +151,6 @@ export function LandingWindow() {
               </Tooltip>
             </TooltipProvider>
           </div>
-
           <select
             id="apuStart"
             name="apuStart"
@@ -174,7 +168,6 @@ export function LandingWindow() {
             <Label htmlFor="autoBrake" className="text-[10px] font-mono text-cyan-400 uppercase tracking-widest">
               AUTO BRAKE
             </Label>
-
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
@@ -186,7 +179,6 @@ export function LandingWindow() {
               </Tooltip>
             </TooltipProvider>
           </div>
-
           <select
             id="autoBrake"
             name="autoBrake"
@@ -204,7 +196,7 @@ export function LandingWindow() {
 
       <Button
         onClick={() => getCurrentWindow().close()}
-        className="w-full h-8 bg-cyan-600 hover:bg-cyan-700 text-white font-semibold text-sm mt-3"
+        className="w-full h-8 bg-cyan-600 hover:bg-cyan-700 text-white font-semibold text-sm mt-auto"
       >
         Ok
       </Button>

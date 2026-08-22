@@ -13,14 +13,6 @@ $voicesToGenerate = @(
     "en-US-ChristopherNeural"
 )
 
-# Other voices:
-# "en-US-AriaNeural"  - Female, friendly
-# "en-US-GuyNeural"   - Male, professional
-# "en-US-DavisNeural" - Male, authoritative
-# "en-US-JennyNeural"  - Female, clear
-$trimmedFiles = @("v_one", "rotate")
-
-
 $phrases = @{
     "0"                                    = "Zero"
     "1"                                    = "One"
@@ -56,8 +48,8 @@ $phrases = @{
     "confirmed"                            = "Confirmed"
     "decel"                                = "Deecel"
     "fire_test"                            = "A P U Fire test"
-    "five_minutes"                         = "Five minutes"
-    "five_minutes_not_passed"              = "Five minutes not passed yet"
+    "three_minutes"                         = "Three minutes"
+    "three_minutes_not_passed"              = "Three minutes not passed yet"
     "fl_100"                               = "Flight level one hundred"
     "flight_controls"                      = "Flight controls"
     "fuel_quantity"                        = "Fuel quantity"
@@ -203,11 +195,7 @@ foreach ($voiceName in $voicesToGenerate) {
             
             # Convert to OGG
             if (Test-Path $mp3Path) {
-                if ($trimmedFiles -contains $file) {
-                    & $ffmpegExe -i "$mp3Path" -c:a libvorbis -q:a 4 -af "silenceremove=start_periods=1:start_threshold=-50dB:stop_periods=-1:stop_duration=0.05:stop_threshold=-50dB" "$oggPath" -y -loglevel error
-                } else {
-                    & $ffmpegExe -i "$mp3Path" -c:a libvorbis -q:a 4 "$oggPath" -y -loglevel error
-                }
+                & $ffmpegExe -i "$mp3Path" -c:a libvorbis -q:a 4 "$oggPath" -y -loglevel error
                 Remove-Item $mp3Path -ErrorAction SilentlyContinue
                 Write-Host "  [OK] $file"
             }

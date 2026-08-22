@@ -1,9 +1,11 @@
 import { useEffect, useRef, useCallback } from "react"
 
-import { playSound, isSoundPlaying } from "@/services/playSounds"
+import { simvarSet } from "@/API/simvarApi"
+import { playSound, isSoundPlaying, playSoundSequence } from "@/services/playSounds"
 import { useGoAroundStore } from "@/store/goAroundStore"
 import { usePassingAltitudeStore } from "@/store/passingAltitudeStore"
 import { usePerformanceStore } from "@/store/performanceStore"
+import { useSettingsStore } from "@/store/settingsStore"
 import { useTelemetryStore } from "@/store/telemetryStore"
 import type { Telemetry } from "@/store/telemetryStore"
 
@@ -259,6 +261,12 @@ export function useCallouts() {
       playSound("v_one.ogg")
       sp.calledV1 = true
       sp.v1Inhibit = true
+      if (vr > 0 && Math.abs(vr - v1) <= 1) {
+        playSoundSequence(["v_one.ogg", "rotate.ogg"])
+        sp.calledVr = true
+      } else {
+        playSound("v_one.ogg")
+      }
     }
 
     // VR callout logic
@@ -278,6 +286,11 @@ export function useCallouts() {
     if (t.onGround && crossedDown(p.speed, t.ias, 80) && !sp.called80) {
       playSound("80_knots.ogg")
       sp.called80 = true
+      setTimeout(() => {
+        if (useSettingsStore.getState().postLandingShutdownEnabled) {
+          void simvarSet("1 (>L:A300DR_CHRONO_START_BUTTON_FO)")
+        }
+      }, 5000)
     }
 
     // Thrust set callout

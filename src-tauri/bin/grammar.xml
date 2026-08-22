@@ -432,7 +432,7 @@
       <item>continue<tag>out.pid="42";</tag></item>
       <item>shutdown procedure<tag>out.pid="43";</tag></item>
       <item>flight controls check<tag>out.pid="44";</tag></item>
-      <item>let's prepare for descent<tag>out.pid="45"</tag></item>
+      <item>set landing elevation<tag>out.pid="45"</tag></item>
       <item>wing anti ice on<tag>out.pid="50";</tag></item>
       <item>wing anti ice off<tag>out.pid="51";</tag></item>
       <item>engine anti ice on<tag>out.pid="52";</tag></item>
@@ -517,6 +517,9 @@
       <item>chocks in and brakes on<tag>out.pid="127";</tag></item>
       <item>secure the aircraft<tag>out.pid="128";</tag></item>
       <item>securing aircraft checklist<tag>out.pid="129";</tag></item>
+      <item>we are ready for pushback<tag>out.pid="130";</tag></item>
+      <item>a p u bleed on<tag>out.pid="131";</tag></item>
+      <item>a p u bleed off<tag>out.pid="132";</tag></item>
     </one-of>
   </rule>
 

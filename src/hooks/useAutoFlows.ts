@@ -46,7 +46,7 @@ export function useAutoFlows() {
 
   const prev = useRef<PrevValues>({
     onGround: 1,
-    ignitionKnob: 3,
+    ignitionKnob: -1,
     flapsIndex: 0,
     spoilersArmed: 0,
     landingGear: 1,
@@ -80,7 +80,7 @@ export function useAutoFlows() {
     if (!primed.current) {
       primed.current = true
       prev.current.onGround = t.onGround
-      prev.current.ignitionKnob = t.ignitionKnob ?? 3
+      prev.current.ignitionKnob = t.ignitionKnob === 2 ? 2 : -1
       prev.current.flapsIndex = t.flapsIndex ?? 0
       prev.current.spoilersArmed = t.spoilersArmed ?? 0
       prev.current.landingGear = t.landingGear ?? 1
@@ -115,8 +115,8 @@ export function useAutoFlows() {
     }
 
     if (!isRunning) {
-      // After Start: ignition knob 0 → 1 while on ground
-      if (!fl.afterStart && t.onGround && p.ignitionKnob !== 3 && t.ignitionKnob === 3) {
+      // After Start: ignition knob moved from CRANK (2) to IGN OFF (3) while on ground
+      if (!fl.afterStart && t.onGround && p.ignitionKnob === 2 && t.ignitionKnob === 3) {
         fl.afterStart = true
         executeFlow("after_start")
       }
@@ -166,7 +166,7 @@ export function useAutoFlows() {
 
     p.thrredalt = t.thrredalt ?? 1024
     p.onGround = t.onGround
-    p.ignitionKnob = t.ignitionKnob ?? 3
+    p.ignitionKnob = t.ignitionKnob ?? -1
     p.flapsIndex = t.flapsIndex ?? 0
     p.spoilersArmed = t.spoilersArmed ?? 0
     p.landingGear = t.landingGear ?? 1

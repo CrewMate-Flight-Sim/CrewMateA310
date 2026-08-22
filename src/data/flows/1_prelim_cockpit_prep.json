@@ -63,6 +63,15 @@
       "wait_ms": 6000
     },
     {
+      "label": "Dome on",
+      "read": "(L:A310_DOME_LIGHT_SWITCH)",
+      "on": "1 (>L:A310_DOME_LIGHT_SWITCH)",
+      "only_if": {
+        "read": "(E:TIME OF DAY)",
+        "one_of": [0, 2, 3]
+      }
+    },
+    {
       "label": "Cockpit lights on",
       "read": "(L:A310_POTENTIOMETER_27)",
       "on": "85 (>L:A310_POTENTIOMETER_27)",

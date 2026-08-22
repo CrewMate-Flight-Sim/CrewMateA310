@@ -37,9 +37,16 @@
     },
     {
       "label": "Chrono",
-      "read": "(L:A300DR_CHRONO_STATE_FO)",
-      "on": "2 (>L:A300DR_CHRONO_STATE_FO)",
-      "expect": 2
+      "read": "(L:A300DR_CHRONO_START_BUTTON_FO)",
+      "on": "1 (>L:A300DR_CHRONO_START_BUTTON_FO)",
+      "expect": 1,
+      "wait_ms": 1000
+    },
+    {
+      "label": "Chrono",
+      "read": "(L:A300DR_CHRONO_START_BUTTON_FO)",
+      "on": "1 (>L:A300DR_CHRONO_START_BUTTON_FO)",
+      "expect": 1
     }
   ]
 }

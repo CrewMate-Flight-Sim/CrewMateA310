@@ -1,7 +1,6 @@
 import { simvarGet, simvarSet } from "@/API/simvarApi"
+import { delay } from "@/lib/utils"
 import { playSound } from "@/services/playSounds"
-
-import { delay } from "../commandDispatch"
 
 export async function setIgnKnob(position: number) {
   try {

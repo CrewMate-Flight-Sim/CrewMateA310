@@ -422,7 +422,10 @@ namespace VoiceSidecar
             [126] = "apu_tbs",
             [127] = "brakes_on_chocks_on",
             [128] = "secure_aircraft",
-            [129] = "checklist_secure"
+            [129] = "checklist_secure",
+            [130] = "pushback_request",
+            [131] = "apu_bleed_on",
+            [132] = "apu_bleed_off"
         };
 
         private static VoiceCommand? DispatchDiscrete(int pid, string raw)

@@ -1,4 +1,5 @@
 import { simvarSet } from "@/API/simvarApi"
+import { delay } from "@/lib/utils"
 import { playSound } from "@/services/playSounds"
 import { useTelemetryStore } from "@/store/telemetryStore"
 
@@ -23,10 +24,6 @@ const soundMap: Record<number, string> = {
   2: "flaps_15.ogg",
   3: "flaps_20.ogg",
   4: "flaps_40.ogg"
-}
-
-function delay(ms: number) {
-  return new Promise((resolve) => window.setTimeout(resolve, ms))
 }
 
 export async function setFlaps(setting: number, skipAnnouncement = false) {

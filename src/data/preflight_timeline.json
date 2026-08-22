@@ -2,10 +2,11 @@
   {
     "minuteMark": 45,
     "label": "Arrive at aircraft",
-    "type": "reminder"
+    "type": "flow",
+    "flowId": "arrive_at_aircraft"
   },
   {
-    "minuteMark": 43,
+    "minuteMark": 44,
     "label": "Preliminary cockpit preparation",
     "type": "flow",
     "flowId": "prelim_cockpit_prep"
@@ -17,7 +18,7 @@
     "sound": "walkaround.ogg"
   },
   {
-    "minuteMark": 30,
+    "minuteMark": 32,
     "label": "PM back from walkaround and cockpit preparation",
     "type": "flow",
     "sound": "walkaround_completed.ogg",

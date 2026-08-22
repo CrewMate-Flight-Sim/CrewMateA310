@@ -1,4 +1,5 @@
 import { buildPassingAltitudeSequence } from "@/hooks/useCallouts"
+import { delay } from "@/lib/utils"
 import { abortChecklist, executeChecklist } from "@/services/checklistRunner"
 import { executeFlow } from "@/services/flowRunner"
 import { playSound, playSoundSequence } from "@/services/playSounds"
@@ -9,7 +10,7 @@ import { useSettingsStore } from "@/store/settingsStore"
 import { useTelemetryStore } from "@/store/telemetryStore"
 
 import { setEngAntiIce, setWingAntiIce } from "./commands/anti_ice"
-import { setStartAPU } from "./commands/apu"
+import { setAPUBleed, setStartAPU } from "./commands/apu"
 import {
   setAirspeedDial,
   setAltitudeDial,
@@ -31,12 +32,11 @@ import { setFlaps } from "./commands/flaps"
 import { flightControlsCheck, opencloseFCTLECAM } from "./commands/flight_controls_check"
 import { setGearHandle } from "./commands/gear"
 import { executeGoAround } from "./commands/goAround"
-import { disconnectAllGround, setASU, setGPU } from "./commands/groundServices"
+import { callPushback, disconnectAllGround, setASU, setGPU } from "./commands/groundServices"
 import { setLandingLights, setStrobeLights, setTaxiLights } from "./commands/lights"
 import { setSeatBelts } from "./commands/seat_belts"
 import { setWipers } from "./commands/wipers"
 
-export const delay = (ms: number) => new Promise<void>((r) => setTimeout(r, ms))
 const randomDelay = (min: number, max: number) => delay(min + Math.random() * (max - min))
 
 const gePack = () => useSettingsStore.getState().geSoundPack
@@ -172,6 +172,16 @@ export const discreteCommandMap: Record<string, () => void | Promise<void>> = {
     setStartAPU(1)
   },
 
+  apu_bleed_on: () => {
+    playSound("check.ogg")
+    setAPUBleed(1)
+  },
+
+  apu_bleed_off: () => {
+    playSound("check.ogg")
+    setAPUBleed(0)
+  },
+
   // ── Anti-ice ──────────────────────────────────────────────────────────────
   engine_anti_ice_on: () => {
     playSound("check.ogg")
@@ -260,6 +270,10 @@ export const discreteCommandMap: Record<string, () => void | Promise<void>> = {
   continue: () => playSound("check.ogg"),
 
   // ── Ground engineer ───────────────────────────────────────────────────────
+  pushback_request: async () => {
+    useGroundEngineerStore.getState().deactivate()
+    await callPushback()
+  },
   ground_call: async () => {
     await randomDelay(2000, 6000)
     await playSound("go_ahead.ogg", { pack: gePack() })

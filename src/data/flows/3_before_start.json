@@ -3,6 +3,18 @@
   "name": "Before Start",
   "steps": [
     {
+      "label": "Close Cockpit door",
+      "read": "(L:A300DR_COCKPIT_DOOR_OPEN)",
+      "on": "0 (>L:A300_COCKPIT_DOOR_STATE)",
+      "expect": 0
+    },
+    {
+      "label": "Jetway Toggle",
+      "read": "(A:JETWAY MOVING, bool)",
+      "on": "(>K:TOGGLE_JETWAY)",
+      "expect": 1
+    },
+    {
       "label": "SET MCDU",
       "read": "(L:A310_MCDU2_FPLAN)",
       "on": "1 (>L:A310_MCDU2_FPLAN)",

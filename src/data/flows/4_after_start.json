@@ -49,6 +49,11 @@
       "read": "(L:ELEV_TRIM_RATIO)",
       "on": "{pitch_trim_cmd}",
       "expect": "{pitch_trim_expect}"
+    },
+    {
+      "label": "Dome off",
+      "read": "(L:A310_DOME_LIGHT_SWITCH)",
+      "on": "0 (>L:A310_DOME_LIGHT_SWITCH)"
     }
   ]
 }

@@ -1,3 +1,4 @@
+import arrivalAtAircraft from "@/data/flows/0_arrival_at_aircraft.json"
 import afterTakeoffP2 from "@/data/flows/10_both_packs.json"
 import climbTenThousand from "@/data/flows/11_climb_ten_thousand_flow.json"
 import desPrep from "@/data/flows/12_des_prep.json"
@@ -19,6 +20,7 @@ import { usePerformanceStore } from "@/store/performanceStore"
 import type { Flow, FlowStep } from "@/types/flow"
 
 export const allFlows: Flow[] = [
+  arrivalAtAircraft,
   prelimCockpitPrep,
   cockpitPrep,
   beforeStart,

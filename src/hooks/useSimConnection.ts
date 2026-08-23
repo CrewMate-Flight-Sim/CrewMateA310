@@ -79,7 +79,8 @@ const simVars: { key: string; expression: string }[] = [
   { key: "eng2_reverse", expression: "(L:A310_REVERSE2_HANDLE_PERCENT)" },
   { key: "trp", expression: "(L:A310_TRP_MODE)" },
   { key: "a310FoCrono", expression: "(L:A300DR_CHRONO_TIME_FO)" },
-  { key: "taxiLight", expression: "(L:A310_TAXI_LIGHTS_SWITCH)" }
+  { key: "taxiLight", expression: "(L:A310_TAXI_LIGHTS_SWITCH)" },
+  { key: "a310altimeter", expression: "(L:XMLVAR_Baro1_Mode)" }
 ]
 
 const RETRY_INTERVAL_MS = 5000

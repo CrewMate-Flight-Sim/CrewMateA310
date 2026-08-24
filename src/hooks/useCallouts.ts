@@ -258,12 +258,12 @@ export function useCallouts() {
 
     // V1 callout logic
     if (t.onGround && !sp.v1Inhibit && v1 > 0 && t.ias >= v1 && t.ias < v1 + 5 && !sp.calledV1) {
-      playSound("v_one.ogg")
       sp.calledV1 = true
       sp.v1Inhibit = true
       if (vr > 0 && Math.abs(vr - v1) <= 1) {
         playSoundSequence(["v_one.ogg", "rotate.ogg"])
         sp.calledVr = true
+        sp.vrInhibit = true
       } else {
         playSound("v_one.ogg")
       }

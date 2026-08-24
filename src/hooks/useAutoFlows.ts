@@ -116,7 +116,7 @@ export function useAutoFlows() {
 
     if (!isRunning) {
       // After Start: ignition knob moved from CRANK (2) to IGN OFF (3) while on ground
-      if (!fl.afterStart && t.onGround && p.ignitionKnob === 2 && t.ignitionKnob === 3) {
+      if (!fl.afterStart && t.onGround && p.ignitionKnob >= 0 && p.ignitionKnob <= 2 && t.ignitionKnob === 3) {
         fl.afterStart = true
         executeFlow("after_start")
       }

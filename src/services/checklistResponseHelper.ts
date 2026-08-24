@@ -30,15 +30,15 @@ export function getDisplayResponses(item: ChecklistItem): string[] {
   // Takeoff confirmation: show only the currently-configured thrust variant + safeword
 
   // If an item expects feet (minimums), show BARO/RADIO examples
-  if (item.label?.toLowerCase().includes("Minimums")) {
-    extras.push("mda #3 feet", "dh #3 feet")
+  if (item.label?.includes("Minimums")) {
+    extras.push("mda #3 feet set", "dh #3 feet set")
   }
 
-  if (item.label?.toLowerCase().includes("pitch trim")) {
+  if (item.label?.includes("Pitch Trim")) {
     extras.push("#.# up set", "#.# down set")
   }
 
-  if (item.label?.toLowerCase().includes("Landing Elevation")) {
+  if (item.label?.includes("Landing Elevation")) {
     extras.push("#4 feet set")
   }
   // Merge, preserve order, remove duplicates

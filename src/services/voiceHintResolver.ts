@@ -82,7 +82,7 @@ export function resolveVoiceHints(args: ResolveVoiceHintsArgs): VoiceHintPhase |
       }
     }
 
-    if (!descending && alt > transitionAltitude && lastCl !== "after_takeoff_climb_below_the_line") {
+    if (!descending && alt > transitionAltitude && onStandard && lastCl === "climb_to_the_line") {
       return {
         id: "after_takeoff_below_line",
         title: "After takeoff climb",
@@ -90,7 +90,7 @@ export function resolveVoiceHints(args: ResolveVoiceHintsArgs): VoiceHintPhase |
       }
     }
 
-    if (!descending && flapsIndex === 0 && lastFl === "thr_red") {
+    if (!descending && flapsIndex === 0 && lastFl === "both_packs") {
       return {
         id: "after_takeoff_to_line",
         title: "After takeoff climb",
@@ -120,7 +120,7 @@ export function resolveVoiceHints(args: ResolveVoiceHintsArgs): VoiceHintPhase |
       return {
         id: "approach",
         title: "Approach",
-        phrases: ["gear down", "flaps X"]
+        phrases: ["gear down", "flaps X", "slats extend"]
       }
     }
 
@@ -129,15 +129,15 @@ export function resolveVoiceHints(args: ResolveVoiceHintsArgs): VoiceHintPhase |
       return {
         id: "approach_checklist",
         title: "Approach",
-        phrases: ["approach checklist", "gear down", "flaps X"]
+        phrases: ["approach checklist", "gear down", "flaps X", "slats extend"]
       }
     }
 
     // Climb / cruise — above 3 000 ft, flaps clean, not descending
     const cruisePhrases: string[] = []
     if (alt > transitionAltitude && !onStandard) cruisePhrases.push("set standard")
-    if (alt > 10000) cruisePhrases.push("seatbelts auto")
-    cruisePhrases.push("set landing elevation")
+    if (alt > 10000) cruisePhrases.push("seatbelts off")
+    if (lastCl === "climb_below_the_line") cruisePhrases.push("set landing elevation")
 
     return {
       id: "climb_cruise",
@@ -161,19 +161,19 @@ export function resolveVoiceHints(args: ResolveVoiceHintsArgs): VoiceHintPhase |
   }
 
   // After the after_landing flow has completed → show after-landing hints (on ground)
-  if (lastFl === "after_landing" && ias <= TAXI_MAX_IAS) {
+  if (lastFl === "after_landing" && lastCl !== "after_landing" && ias <= TAXI_MAX_IAS) {
     return {
       id: "after_landing_hints",
       title: "After landing",
-      phrases: ["after landing checklist", "start the apu", "apu bleed on", "taxi lights off"]
+      phrases: ["after landing checklist", "start the apu", "taxi lights off"]
     }
   }
 
-  if (lastCl === "after_landing" && ias <= TAXI_MAX_IAS) {
+  if (lastFl === "after_landing" && lastCl === "after_landing" && ias <= TAXI_MAX_IAS) {
     return {
       id: "after_landing_hints",
       title: "After landing",
-      phrases: ["start the apu", "apu bleed on", "taxi lights off"]
+      phrases: ["start the apu", "taxi lights off"]
     }
   }
 
@@ -283,7 +283,7 @@ export function resolveVoiceHints(args: ResolveVoiceHintsArgs): VoiceHintPhase |
     return {
       id: "prep_timeline",
       title: "Prepare",
-      phrases: ["before start checklist to the line", "start the apu", "start apu"]
+      phrases: ["before start checklist to the line", "start the apu", "apu bleed on"]
     }
   }
 

@@ -71,8 +71,6 @@ const simVars: { key: string; expression: string }[] = [
   { key: "vr", expression: "(L:A310_VR)" },
   { key: "autobrakeLevel", expression: "(L:A310_AUTOBRAKE_LEVEL)" },
   { key: "thrredalt", expression: "(L:A310_REDUCTION_ALTITUDE)" },
-  { key: "v1", expression: "(L:A310_V1)" },
-  { key: "vr", expression: "(L:A310_VR)" },
   { key: "mda", expression: "(L:A310_FMS_MDA)" },
   { key: "dh", expression: "(L:A310_MINIMUMS_PILOT)" },
   { key: "eng1_reverse", expression: "(L:A310_REVERSE1_HANDLE_PERCENT)" },

@@ -1,14 +1,9 @@
-import { simvarGet, simvarSet } from "@/API/simvarApi"
+import { setLvar, simvarGet } from "@/API/simvarApi"
 import { delay } from "@/lib/utils"
 import { playSound } from "@/services/playSounds"
 
 export async function setIgnKnob(position: number) {
-  try {
-    const expression = `${position} (>L:A310_eng_ignition_switch)`
-    await simvarSet(expression)
-  } catch (error) {
-    console.error("[Engine] Error setting ignition knob", error)
-  }
+  await setLvar(position, "A310_eng_ignition_switch", "ignition knob")
 }
 
 async function monitorEngineStart(engineNum: number) {
@@ -44,29 +39,17 @@ async function monitorEngineStart(engineNum: number) {
 }
 
 export async function startEngine2(position: number) {
-  try {
-    const expression = `${position} (>L:A310_ENG2_STARTER)`
-    await simvarSet(expression)
-
-    // Start the "Watcher" in the background
-    if (position === 1) {
-      monitorEngineStart(2)
-    }
-  } catch (error) {
-    console.error("[Engine] Error starting engine 2:", error)
+  const ok = await setLvar(position, "A310_ENG2_STARTER", "engine 2 starter")
+  // Start the "Watcher" in the background
+  if (ok && position === 1) {
+    monitorEngineStart(2)
   }
 }
 
 export async function startEngine1(position: number) {
-  try {
-    const expression = `${position} (>L:A310_ENG1_STARTER)`
-    await simvarSet(expression)
-
-    // Start the "Watcher" in the background
-    if (position === 1) {
-      monitorEngineStart(1)
-    }
-  } catch (error) {
-    console.error("[Engine] Error starting engine 1:", error)
+  const ok = await setLvar(position, "A310_ENG1_STARTER", "engine 1 starter")
+  // Start the "Watcher" in the background
+  if (ok && position === 1) {
+    monitorEngineStart(1)
   }
 }

@@ -28,8 +28,8 @@ function isOnGround(t: Telemetry | null): boolean {
 function enginesOff(t: Telemetry | null): boolean {
   const m1 = num(t, "mixture1") ?? 1
   const m2 = num(t, "mixture2") ?? 1
-  const n1 = num(t, "engineN1_1") ?? 0
-  const n2 = num(t, "engineN1_2") ?? 0
+  const n1 = num(t, "engine1N1") ?? 0
+  const n2 = num(t, "engine2N1") ?? 0
   return m1 < 0.5 && m2 < 0.5 && n1 < N1_IDLE_MAX && n2 < N1_IDLE_MAX
 }
 
@@ -67,7 +67,7 @@ export function resolveVoiceHints(args: ResolveVoiceHintsArgs): VoiceHintPhase |
   const landingGear = num(t, "landingGear") ?? 0
   const transitionAltitude = usePerformanceStore.getState().takeoff.transitionAltitude || 5000
   const transitionLevel = usePerformanceStore.getState().landing.transitionLevel || 5000
-  const onStandard = num(t, "a310altimeter") === 1
+  const onStandard = num(t, "baroMode") === 1
 
   // ── AIRBORNE ────────────────────────────────────────────────────────────────
   if (!ground) {

@@ -55,7 +55,7 @@ const THRUST_SET_MARGIN = 1
 
 const getTakeoffThrustTarget = (t: Telemetry) => {
   // A310 TRP_MODE: 5 = TOGA, 6 = FLEX
-  if (t.trp === 6) {
+  if (t.thrustRatingMode === 6) {
     // FLEX mode - use flex thrust if flex temp is set (>1)
     return (t.iniFlexTemperature ?? 0) > 1 ? (t.iniThrustFlexN1 ?? 0) : (t.iniThrustTogaN1 ?? 0)
   }
@@ -121,7 +121,7 @@ function handleSpoilersPhase(ls: LandingSequenceState, t: Telemetry, elapsed: nu
 }
 
 function handleReverserPhase(ls: LandingSequenceState, t: Telemetry, elapsed: number, now: number) {
-  if (t.eng1_reverse > 0.1 || t.eng2_reverse > 0.1) {
+  if (t.engine1Reverse > 0.1 || t.engine2Reverse > 0.1) {
     playSound("reverse_green.ogg")
     advancePhase(ls, "decel", now)
   } else if (elapsed >= REVERSER_TIMEOUT) {
@@ -217,8 +217,8 @@ export function useCallouts() {
     const v1 = t.v1 ?? 0
     const vr = t.vr ?? 0
     const now = Date.now()
-    const takeoffN1 = Math.min(t.engineN1_1 ?? 0, t.engineN1_2 ?? 0)
-    const fcuAlt = t.fcu_alt ?? 0
+    const takeoffN1 = Math.min(t.engine1N1 ?? 0, t.engine2N1 ?? 0)
+    const fcuAlt = t.fcuAlt ?? 0
     const takeoffThrustTarget = getTakeoffThrustTarget(t)
     const mda = t.mda ?? 0
     const dh = t.dh ?? 0

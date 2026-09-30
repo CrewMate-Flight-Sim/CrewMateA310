@@ -1,30 +1,14 @@
-import { simvarSet } from "@/API/simvarApi"
+import { setLvar } from "@/API/simvarApi"
 
 export async function setLandingLights(position: number) {
-  try {
-    const expression1 = `${position} (>L:A310_LANDING_LIGHT_L_SWITCH)`
-    const expression2 = `${position} (>L:A310_LANDING_LIGHT_R_SWITCH)`
-    await simvarSet(expression2)
-    await simvarSet(expression1)
-  } catch (error) {
-    console.error("[Lights] Error setting landing lights:", error)
-  }
+  await setLvar(position, "A310_LANDING_LIGHT_R_SWITCH", "right landing light")
+  await setLvar(position, "A310_LANDING_LIGHT_L_SWITCH", "left landing light")
 }
 
 export async function setStrobeLights(position: number) {
-  try {
-    const expression = `${position} (>L:A310_POTENTIOMETER_24)`
-    await simvarSet(expression)
-  } catch (error) {
-    console.error("[Lights] Error setting strobe lights:", error)
-  }
+  await setLvar(position, "A310_POTENTIOMETER_24", "strobe lights")
 }
 
 export async function setTaxiLights(position: number) {
-  try {
-    const expression = `${position} (>L:A310_TAXI_LIGHTS_SWITCH)`
-    await simvarSet(expression)
-  } catch (error) {
-    console.error("[Lights] Error setting taxi lights:", error)
-  }
+  await setLvar(position, "A310_TAXI_LIGHTS_SWITCH", "taxi lights")
 }

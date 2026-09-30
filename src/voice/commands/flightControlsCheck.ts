@@ -1,4 +1,4 @@
-import { simvarSet } from "@/API/simvarApi"
+import { setLvar } from "@/API/simvarApi"
 import { executeFlow } from "@/services/flowRunner"
 import { playSound, waitForSoundFinished } from "@/services/playSounds"
 import { useTelemetryStore } from "@/store/telemetryStore"
@@ -47,12 +47,7 @@ function waitFor(condition: (t: Telemetry) => boolean): Promise<void> {
 }
 
 export async function opencloseFCTLECAM(position: number) {
-  try {
-    const expression = `${position} (>L:PUSH_ECAM_FCTL)`
-    await simvarSet(expression)
-  } catch (error) {
-    console.error("[FlightControlsCheck] Error opening FCTL ECAM", error)
-  }
+  await setLvar(position, "PUSH_ECAM_FCTL", "FCTL ECAM page")
 }
 
 export async function flightControlsCheck() {

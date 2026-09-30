@@ -29,7 +29,7 @@ interface PrevValues {
   alt: number
   mixture1: number
   mixture2: number
-  thrredalt: number
+  thrustReductionAlt: number
 }
 
 export function useAutoFlows() {
@@ -53,7 +53,7 @@ export function useAutoFlows() {
     alt: 0,
     mixture1: 1,
     mixture2: 1,
-    thrredalt: 0
+    thrustReductionAlt: 0
   })
 
   const phase = useRef<"ground" | "airborne">("ground")
@@ -87,7 +87,7 @@ export function useAutoFlows() {
       prev.current.alt = t.alt ?? 0
       prev.current.mixture1 = t.mixture1 ?? 1
       prev.current.mixture2 = t.mixture2 ?? 1
-      prev.current.thrredalt = t.thrredalt ?? 1024
+      prev.current.thrustReductionAlt = t.thrustReductionAlt ?? 1024
       phase.current = t.onGround ? "ground" : "airborne"
       return
     }
@@ -122,7 +122,7 @@ export function useAutoFlows() {
       }
 
       // Thrust Reduction
-      else if (!fl.afterTakeoffP1 && !t.onGround && p.alt <= t.thrredalt && t.alt >= t.thrredalt) {
+      else if (!fl.afterTakeoffP1 && !t.onGround && p.alt <= t.thrustReductionAlt && t.alt >= t.thrustReductionAlt) {
         fl.afterTakeoffP1 = true
         executeFlow("thr_red")
       } else if (!fl.afterTakeoffP2 && !t.onGround && p.flapsIndex > 0 && t.flapsIndex === 0) {
@@ -164,7 +164,7 @@ export function useAutoFlows() {
       }
     }
 
-    p.thrredalt = t.thrredalt ?? 1024
+    p.thrustReductionAlt = t.thrustReductionAlt ?? 1024
     p.onGround = t.onGround
     p.ignitionKnob = t.ignitionKnob ?? -1
     p.flapsIndex = t.flapsIndex ?? 0

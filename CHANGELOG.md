@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- Added Push-to-talk and a Mic On/Off button, bindable to a key, mouse button, joystick, yoke, throttle or controller button in Settings - @marxio09dio
+
 ## [0.3.2] - 2026-08-26
 
 - Add GSX Support - @alexlenh 

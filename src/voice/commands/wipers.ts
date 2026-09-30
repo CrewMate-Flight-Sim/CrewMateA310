@@ -2,13 +2,13 @@ import { simvarSet } from "@/API/simvarApi"
 import { playSound } from "@/services/playSounds"
 import { useTelemetryStore } from "@/store/telemetryStore"
 
-const wipersSpeedLimit = 230 // knots
+const WIPERS_SPEED_LIMIT = 230 // knots
 
 export async function setWipers(position: number) {
   try {
     const { telemetry } = useTelemetryStore.getState()
     const currentSpeed = telemetry?.ias ?? 0
-    if (position != 0 && currentSpeed > wipersSpeedLimit) {
+    if (position != 0 && currentSpeed > WIPERS_SPEED_LIMIT) {
       playSound("check_speed.ogg")
       return
     }
@@ -19,6 +19,6 @@ export async function setWipers(position: number) {
     await simvarSet(expression2)
     playSound("check.ogg")
   } catch (error) {
-    console.error("Error setting wipers:", error)
+    console.error("[Wipers] Error setting wipers:", error)
   }
 }

@@ -18,7 +18,7 @@ export const playSound = async (filename: string, options?: PlaySoundOptions) =>
       volume
     })
   } catch (error) {
-    console.error("Error playing sound via backend:", error)
+    console.error("[PlaySounds] Error playing sound via backend:", error)
   }
 }
 
@@ -41,6 +41,6 @@ export const playSoundSequence = async (filenames: string[], options?: PlaySound
       volume
     })
   } catch (error) {
-    console.error("Error playing sound sequence via backend:", error)
+    console.error("[PlaySounds] Error playing sound sequence via backend:", error)
   }
 }

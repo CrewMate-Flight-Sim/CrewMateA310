@@ -7,7 +7,7 @@ export async function setIgnKnob(position: number) {
     const expression = `${position} (>L:A310_eng_ignition_switch)`
     await simvarSet(expression)
   } catch (error) {
-    console.error("Error setting ignition knob", error)
+    console.error("[Engine] Error setting ignition knob", error)
   }
 }
 
@@ -53,7 +53,7 @@ export async function startEngine2(position: number) {
       monitorEngineStart(2)
     }
   } catch (error) {
-    console.error("Error starting engine 2:", error)
+    console.error("[Engine] Error starting engine 2:", error)
   }
 }
 
@@ -67,6 +67,6 @@ export async function startEngine1(position: number) {
       monitorEngineStart(1)
     }
   } catch (error) {
-    console.error("Error starting engine 1:", error)
+    console.error("[Engine] Error starting engine 1:", error)
   }
 }

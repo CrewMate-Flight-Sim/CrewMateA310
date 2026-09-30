@@ -6,7 +6,7 @@ export async function setAPUBleed(position: number) {
     const expression = `${position} (>L:A310_apu_bleed)`
     await simvarSet(expression)
   } catch (error) {
-    console.error("Error setting APU bleed (LVAR):", error)
+    console.error("[Apu] Error setting APU bleed (LVAR):", error)
   }
 }
 
@@ -18,6 +18,6 @@ export async function setStartAPU(position: number) {
     await delay(2000)
     await simvarSet(expression1)
   } catch (error) {
-    console.error("Error setting APU (LVAR):", error)
+    console.error("[Apu] Error setting APU (LVAR):", error)
   }
 }

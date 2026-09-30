@@ -9,7 +9,7 @@ import { usePreflightTimerStore } from "@/store/preflightTimerStore"
 import { useSettingsStore } from "@/store/settingsStore"
 import { useTelemetryStore } from "@/store/telemetryStore"
 
-import { setEngAntiIce, setWingAntiIce } from "./commands/anti_ice"
+import { setEngAntiIce, setWingAntiIce } from "./commands/antiIce"
 import { setAPUBleed, setStartAPU } from "./commands/apu"
 import {
   setAirspeedDial,
@@ -29,12 +29,12 @@ import {
 import { setStdBaro } from "./commands/baro"
 import { startEngine1, startEngine2, setIgnKnob } from "./commands/engine"
 import { setFlaps } from "./commands/flaps"
-import { flightControlsCheck, opencloseFCTLECAM } from "./commands/flight_controls_check"
+import { flightControlsCheck, opencloseFCTLECAM } from "./commands/flightControlsCheck"
 import { setGearHandle } from "./commands/gear"
 import { executeGoAround } from "./commands/goAround"
 import { callPushback, disconnectAllGround, setASU, setGPU } from "./commands/groundServices"
 import { setLandingLights, setStrobeLights, setTaxiLights } from "./commands/lights"
-import { setSeatBelts } from "./commands/seat_belts"
+import { setSeatBelts } from "./commands/seatBelts"
 import { setWipers } from "./commands/wipers"
 
 const randomDelay = (min: number, max: number) => delay(min + Math.random() * (max - min))
@@ -251,13 +251,13 @@ export const discreteCommandMap: Record<string, () => void | Promise<void>> = {
   secure_aircraft: () => executeFlow("secure"),
 
   // ── Checklists ────────────────────────────────────────────────────────────
-  checklist_before_startP1: () => executeChecklist("before_start_to_the_line"),
-  checklist_before_startP2: () => executeChecklist("before_start_below_the_line"),
+  checklist_before_start_p1: () => executeChecklist("before_start_to_the_line"),
+  checklist_before_start_p2: () => executeChecklist("before_start_below_the_line"),
   checklist_after_start: () => executeChecklist("after_start"),
-  checklist_before_takeoffP1: () => executeChecklist("before_takeoff_to_the_line"),
-  checklist_before_takeoffP2: () => executeChecklist("before_takeoff_below_the_line"),
-  checklist_after_takeoffP1: () => executeChecklist("climb_to_the_line"),
-  checklist_after_takeoffP2: () => executeChecklist("climb_below_the_line"),
+  checklist_before_takeoff_p1: () => executeChecklist("before_takeoff_to_the_line"),
+  checklist_before_takeoff_p2: () => executeChecklist("before_takeoff_below_the_line"),
+  checklist_after_takeoff_p1: () => executeChecklist("climb_to_the_line"),
+  checklist_after_takeoff_p2: () => executeChecklist("climb_below_the_line"),
   checklist_after_landing: () => executeChecklist("after_landing"),
   checklist_approach: () => executeChecklist("approach"),
   checklist_landing: () => executeChecklist("landing"),

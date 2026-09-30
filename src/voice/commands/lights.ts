@@ -7,7 +7,7 @@ export async function setLandingLights(position: number) {
     await simvarSet(expression2)
     await simvarSet(expression1)
   } catch (error) {
-    console.error("Error setting landing lights:", error)
+    console.error("[Lights] Error setting landing lights:", error)
   }
 }
 
@@ -16,7 +16,7 @@ export async function setStrobeLights(position: number) {
     const expression = `${position} (>L:A310_POTENTIOMETER_24)`
     await simvarSet(expression)
   } catch (error) {
-    console.error("Error setting strobe lights:", error)
+    console.error("[Lights] Error setting strobe lights:", error)
   }
 }
 
@@ -25,6 +25,6 @@ export async function setTaxiLights(position: number) {
     const expression = `${position} (>L:A310_TAXI_LIGHTS_SWITCH)`
     await simvarSet(expression)
   } catch (error) {
-    console.error("Error setting taxi lights:", error)
+    console.error("[Lights] Error setting taxi lights:", error)
   }
 }

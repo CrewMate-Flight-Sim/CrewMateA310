@@ -7,7 +7,7 @@ export async function setAutoPilot(position: number) {
     const expression = `${position} (>L:A310_AP1_BUTTON)`
     await simvarSet(expression)
   } catch (error) {
-    console.error("Error setting autopilot (LVAR):", error)
+    console.error("[AutoPilot] Error setting autopilot (LVAR):", error)
   }
 }
 
@@ -16,7 +16,7 @@ export async function setLevelOff(position: number) {
     const expression = `${position} (>L:AP1_BUTTON)`
     await simvarSet(expression)
   } catch (error) {
-    console.error("Error leveling off (LVAR):", error)
+    console.error("[AutoPilot] Error leveling off (LVAR):", error)
   }
 }
 
@@ -25,7 +25,7 @@ export async function setLOC(position: number) {
     const expression = `${position} (>L:AP6_BUTTON)`
     await simvarSet(expression)
   } catch (error) {
-    console.error("Error setting localizer (LVAR):", error)
+    console.error("[AutoPilot] Error setting localizer (LVAR):", error)
   }
 }
 
@@ -34,7 +34,7 @@ export async function setAPPR(position: number) {
     const expression = `${position} (>L:AP7_BUTTON)`
     await simvarSet(expression)
   } catch (error) {
-    console.error("Error setting approach (LVAR):", error)
+    console.error("[AutoPilot] Error setting approach (LVAR):", error)
   }
 }
 
@@ -46,7 +46,7 @@ export async function setFlightDirector(position: number) {
     await simvarSet(expression1)
     await simvarSet(expression2)
   } catch (error) {
-    console.error("Error setting flight director:", error)
+    console.error("[AutoPilot] Error setting flight director:", error)
   }
 }
 
@@ -57,7 +57,7 @@ export async function setAirspeedDial(knots: number) {
     await simvarSet(`${knots} (>L:A310_Airspeed_Dial)`)
     playSound("check.ogg")
   } catch (error) {
-    console.error("Error setting airspeed dial:", error)
+    console.error("[AutoPilot] Error setting airspeed dial:", error)
   }
 }
 export async function setSelSpeed(position: number) {
@@ -65,7 +65,7 @@ export async function setSelSpeed(position: number) {
     const expression = `${position} (>L:A310_FCU_SELECTED_SPEED_BUTTON)`
     await simvarSet(expression)
   } catch (error) {
-    console.error("Error selecting manual speed:", error)
+    console.error("[AutoPilot] Error selecting manual speed:", error)
   }
 }
 // Heading commands
@@ -75,7 +75,7 @@ export async function setHeadingDial(degrees: number) {
     await simvarSet(`${degrees} (>L:A310_HEADING_DIAL)`)
     playSound("check.ogg")
   } catch (error) {
-    console.error("Error setting heading dial:", error)
+    console.error("[AutoPilot] Error setting heading dial:", error)
   }
 }
 export async function syncHeading(position: number) {
@@ -83,7 +83,7 @@ export async function syncHeading(position: number) {
     const expression = `${position} (>L:A310_FCU_SYNC_HEADING_BUTTON)`
     await simvarSet(expression)
   } catch (error) {
-    console.error("Error syncing heading:", error)
+    console.error("[AutoPilot] Error syncing heading:", error)
   }
 }
 export async function setHdgSel(position: number) {
@@ -91,7 +91,7 @@ export async function setHdgSel(position: number) {
     const expression = `${position} (>L:A310_FCU_SELECTED_HEADING_BUTTON)`
     await simvarSet(expression)
   } catch (error) {
-    console.error("Error syncing heading:", error)
+    console.error("[AutoPilot] Error syncing heading:", error)
   }
 }
 export async function setNav(position: number) {
@@ -99,7 +99,7 @@ export async function setNav(position: number) {
     const expression = `${position} (>L:A310_FCU_MANAGED_HEADING_BUTTON)`
     await simvarSet(expression)
   } catch (error) {
-    console.error("Error selecting managed heading:", error)
+    console.error("[AutoPilot] Error selecting managed heading:", error)
   }
 }
 
@@ -109,7 +109,7 @@ export async function setAltitudeDial(feet: number) {
   try {
     await simvarSet(`${feet} (>L:A310_Altitude_Dial)`)
   } catch (error) {
-    console.error("Error setting altitude dial:", error)
+    console.error("[AutoPilot] Error setting altitude dial:", error)
   }
 }
 export async function setSelAlt(position: number) {
@@ -117,6 +117,6 @@ export async function setSelAlt(position: number) {
     const expression = `${position} (>L:A310_FCU_ALTITUDE_PULL_COMMAND)`
     await simvarSet(expression)
   } catch (error) {
-    console.error("Error selecting manual altitude:", error)
+    console.error("[AutoPilot] Error selecting manual altitude:", error)
   }
 }

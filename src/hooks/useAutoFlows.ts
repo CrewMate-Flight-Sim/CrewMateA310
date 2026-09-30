@@ -1,5 +1,6 @@
-import { useEffect, useRef, useCallback } from "react"
+import { useEffect, useRef } from "react"
 
+import { useTelemetryTick } from "@/hooks/useTelemetryTick"
 import { executeFlow } from "@/services/flowRunner"
 import { useFlowStore } from "@/store/flowStore"
 import { useGoAroundStore } from "@/store/goAroundStore"
@@ -21,7 +22,6 @@ interface TriggeredFlags {
 }
 
 interface PrevValues {
-  onGround: number
   ignitionKnob: number
   flapsIndex: number
   spoilersArmed: number
@@ -45,7 +45,6 @@ export function useAutoFlows() {
   })
 
   const prev = useRef<PrevValues>({
-    onGround: 1,
     ignitionKnob: -1,
     flapsIndex: 0,
     spoilersArmed: 0,
@@ -71,7 +70,7 @@ export function useAutoFlows() {
     })
   }, [])
 
-  const tick = useCallback(() => {
+  const tick = () => {
     const t = useTelemetryStore.getState().telemetry
     if (!t || t.isSlewActive) return
 
@@ -79,7 +78,6 @@ export function useAutoFlows() {
     // detect false edges (e.g. ignitionKnob already 1 on app start).
     if (!primed.current) {
       primed.current = true
-      prev.current.onGround = t.onGround
       prev.current.ignitionKnob = t.ignitionKnob === 2 ? 2 : -1
       prev.current.flapsIndex = t.flapsIndex ?? 0
       prev.current.spoilersArmed = t.spoilersArmed ?? 0
@@ -165,7 +163,6 @@ export function useAutoFlows() {
     }
 
     p.thrustReductionAlt = t.thrustReductionAlt ?? 1024
-    p.onGround = t.onGround
     p.ignitionKnob = t.ignitionKnob ?? -1
     p.flapsIndex = t.flapsIndex ?? 0
     p.spoilersArmed = t.spoilersArmed ?? 0
@@ -173,10 +170,7 @@ export function useAutoFlows() {
     p.alt = t.alt ?? 0
     p.mixture1 = t.mixture1 ?? 1
     p.mixture2 = t.mixture2 ?? 1
-  }, [])
+  }
 
-  useEffect(() => {
-    const id = setInterval(tick, 100)
-    return () => clearInterval(id)
-  }, [tick])
+  useTelemetryTick(tick)
 }

@@ -1,6 +1,7 @@
-import { useEffect, useRef, useCallback } from "react"
+import { useEffect, useRef } from "react"
 
 import { simvarSet } from "@/API/simvarApi"
+import { useTelemetryTick } from "@/hooks/useTelemetryTick"
 import { playSound, isSoundPlaying, playSoundSequence } from "@/services/playSounds"
 import { useGoAroundStore } from "@/store/goAroundStore"
 import { usePassingAltitudeStore } from "@/store/passingAltitudeStore"
@@ -47,8 +48,6 @@ interface PreviousValues {
   onGround: number
   takeoffN1: number
   fcuAlt: number
-  mda: number
-  dh: number
 }
 
 const THRUST_SET_MARGIN = 1
@@ -184,9 +183,7 @@ export function useCallouts() {
     radioAlt: 0,
     onGround: 1,
     takeoffN1: 0,
-    fcuAlt: 0,
-    mda: 0,
-    dh: 0
+    fcuAlt: 0
   })
 
   const thrustSetPrimed = useRef(false)
@@ -202,7 +199,7 @@ export function useCallouts() {
     })
   }, [])
 
-  const tick = useCallback(async () => {
+  const tick = async () => {
     const t = useTelemetryStore.getState().telemetry
     if (!t || t.isSlewActive) return
 
@@ -469,11 +466,7 @@ export function useCallouts() {
     p.onGround = t.onGround
     p.takeoffN1 = takeoffN1
     p.fcuAlt = fcuAlt
-    p.mda = mda
-  }, [])
+  }
 
-  useEffect(() => {
-    const id = setInterval(tick, 100)
-    return () => clearInterval(id)
-  }, [tick])
+  useTelemetryTick(tick)
 }

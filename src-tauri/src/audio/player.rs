@@ -42,7 +42,7 @@ fn load_and_trim<P: AsRef<std::path::Path>>(
     let channels = decoder.channels();
     let sample_rate = decoder.sample_rate();
     let raw: Vec<i16> = decoder.collect();
-    // 15ms padding, scaled to this file's sample rate.
+    // 40ms padding, scaled to this file's sample rate.
     let pad_samples = (sample_rate as f32 * 0.04) as usize;
     let samples = trim_silence(&raw, 200, pad_samples);
     Ok(DecodedSound {

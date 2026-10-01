@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Added "you have control" / "i have control" handover callouts - @marxio09dio
 - A go-around altitude with hundreds (e.g. 3500) was read back as "three thousand feet set", and 10,000 ft and flight levels lost their number - the FO now reads the value in full, or "go around altitude set" when the voice pack can't say it - @marxio09dio
 - Added Push-to-talk and a Mic On/Off button, bindable to a key, mouse button, joystick, yoke, throttle or controller button in Settings - @marxio09dio
 - Voice commands the FO cannot act on are no longer shown as accepted - @marxio09dio

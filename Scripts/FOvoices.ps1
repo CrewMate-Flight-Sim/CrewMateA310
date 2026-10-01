@@ -156,6 +156,8 @@ $phrases = @{
     "go_around_alt"                        = "Go around altitude"
     "feet_set"                             = "feet set"
     "100_above"                            = "one hundred above"
+    "i_have_ctrl"                          = "I have control"
+    "you_have_ctrl"                        = "You have control"
 }
 # Derive folder name from voice: "en-US-JennyNeural" -> "Jenny"
 

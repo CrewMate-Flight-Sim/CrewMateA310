@@ -281,6 +281,14 @@ export const DISCRETE_COMMAND_MAP: Record<string, () => void | Promise<void>> = 
   //abort_takeoff: () => playSound("check.ogg"),
   continue: () => playSound("check.ogg"),
 
+  // ── Control handover ──────────────────────────────────────────────────────
+  you_have_ctrl: () => {
+    playSound("i_have_ctrl.ogg")
+  },
+  i_have_ctrl: () => {
+    playSound("you_have_ctrl.ogg")
+  },
+
   // ── Ground engineer ───────────────────────────────────────────────────────
   pushback_request: async () => {
     if (!useGroundEngineerStore.getState().isActive) return

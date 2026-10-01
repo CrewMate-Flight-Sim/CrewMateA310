@@ -426,6 +426,9 @@
       <item>we are ready for pushback<tag>out.pid="pushback_request";</tag></item>
       <item>a p u bleed on<tag>out.pid="apu_bleed_on";</tag></item>
       <item>a p u bleed off<tag>out.pid="apu_bleed_off";</tag></item>
+      <!--Control handover-->
+      <item>you have control<tag>out.pid="you_have_ctrl";</tag></item>
+      <item>i have control<tag>out.pid="i_have_ctrl";</tag></item>
     </one-of>
   </rule>
 

@@ -12,7 +12,7 @@ import approach from "@/data/checklists/8_approach.json"
 import landing from "@/data/checklists/9_landing.json"
 import type { Checklist } from "@/types/checklist"
 
-export const allChecklists: Checklist[] = [
+export const ALL_CHECKLISTS: Checklist[] = [
   beforeStartP1,
   beforeStartP2,
   afterStart,
@@ -28,5 +28,5 @@ export const allChecklists: Checklist[] = [
 ] as Checklist[]
 
 export function getChecklistById(id: string): Checklist | undefined {
-  return allChecklists.find((c) => c.id === id)
+  return ALL_CHECKLISTS.find((c) => c.id === id)
 }

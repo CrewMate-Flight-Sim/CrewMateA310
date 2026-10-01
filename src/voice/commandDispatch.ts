@@ -42,10 +42,10 @@ const randomDelay = (min: number, max: number) => delay(min + Math.random() * (m
 const gePack = () => useSettingsStore.getState().geSoundPack
 
 // Commands that are allowed to fire even while a checklist is running.
-export const checklistAbortCommands = new Set(["checklist_cancel"])
+export const CHECKLIST_ABORT_COMMANDS = new Set(["checklist_cancel"])
 
 // Still work while the FO is on the walkaround: the ground engineer is someone else, and the timer drives the absence
-export const foAwayAllowedCommands = new Set([
+export const FO_AWAY_ALLOWED_COMMANDS = new Set([
   "ground_call",
   "pushback_request",
   "connect_gpu",
@@ -58,7 +58,7 @@ export const foAwayAllowedCommands = new Set([
 
 // ─── Discrete command map ─────────────────────────────────────────────────────
 
-export const discreteCommandMap: Record<string, () => void | Promise<void>> = {
+export const DISCRETE_COMMAND_MAP: Record<string, () => void | Promise<void>> = {
   // ── Gear ──────────────────────────────────────────────────────────────────
   gear_up: () => setGearHandle(0),
   gear_down: () => setGearHandle(1),
@@ -339,7 +339,7 @@ export async function dispatchFoCommand(commandType: string, payload: Record<str
     case "discrete": {
       const cmd = payload.command as string | undefined
       if (!cmd) return false
-      const handler = discreteCommandMap[cmd]
+      const handler = DISCRETE_COMMAND_MAP[cmd]
       if (!handler) return false
       await handler()
       return true

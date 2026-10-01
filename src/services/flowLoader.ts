@@ -19,7 +19,7 @@ import afterTakeoffP1 from "@/data/flows/9_thr_red.json"
 import { usePerformanceStore } from "@/store/performanceStore"
 import type { Flow, FlowStep } from "@/types/flow"
 
-export const allFlows: Flow[] = [
+export const ALL_FLOWS: Flow[] = [
   arrivalAtAircraft,
   prelimCockpitPrep,
   cockpitPrep,
@@ -41,7 +41,7 @@ export const allFlows: Flow[] = [
 ] as Flow[]
 
 export function getFlowById(id: string): Flow | undefined {
-  return allFlows.find((f) => f.id === id)
+  return ALL_FLOWS.find((f) => f.id === id)
 }
 
 async function getTemplateVars(): Promise<Record<string, string>> {

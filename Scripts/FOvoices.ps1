@@ -1,3 +1,6 @@
+# Pass -Only <name>[,<name>] to regenerate just those phrases; a full run rewrites every ogg in every pack
+param([string[]]$Only)
+
 # This script uses Azure Cognitive Services for high-quality TTS
 # You'll need a free Azure account: https://azure.microsoft.com/free/
 
@@ -84,6 +87,7 @@ $phrases = @{
     "standard_cross_checked"               = "Standard cross checked"
     "standard_set"                         = "Standard Set"
     "ten_thousand"                         = "Ten thousand"
+    "hundred"                              = "Hundred"
     "thousand"                             = "Thousand"
     "thrust_set"                           = "Thrust set"
     "tcas"                                 = "T cas"
@@ -185,6 +189,7 @@ foreach ($voiceName in $voicesToGenerate) {
     Write-Host "`n[FOvoices] >>> STARTING VOICE: $voiceShortName" -ForegroundColor Cyan
 
     foreach ($file in $phrases.Keys) {
+        if ($Only -and $Only -notcontains $file) { continue }
         $text = $phrases[$file]
         $mp3Path = "$outDir\$file.mp3"
         $oggPath = "$outDir\$file.ogg"

@@ -2,7 +2,7 @@ import { delay } from "@/lib/utils"
 import { abortChecklist, executeChecklist } from "@/services/checklistRunner"
 import { executeFlow } from "@/services/flowRunner"
 import { playSound, playSoundSequence } from "@/services/playSounds"
-import { buildPassingAltitudeSequence } from "@/services/soundSequences"
+import { buildGoAroundAltSequence, buildPassingAltitudeSequence } from "@/services/soundSequences"
 import { useGroundEngineerStore } from "@/store/groundEngineerStore"
 import { usePassingAltitudeStore } from "@/store/passingAltitudeStore"
 import { usePreflightTimerStore } from "@/store/preflightTimerStore"
@@ -388,9 +388,8 @@ export async function dispatchFoCommand(commandType: string, payload: Record<str
     case "missed_approach_altitude": {
       if (payload.value != null) {
         const altValue = payload.value as number
-        const leadingNumber = Math.floor(altValue / 1000).toString()
         setAltitudeDial(altValue)
-        playSoundSequence(["go_around_alt.ogg", `${leadingNumber}.ogg`, "thousand.ogg", "feet_set.ogg"])
+        playSoundSequence(buildGoAroundAltSequence(altValue))
       }
       return true
     }

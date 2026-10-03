@@ -50,11 +50,16 @@ export async function opencloseFCTLECAM(position: number) {
   await setLvar(position, "PUSH_ECAM_FCTL", "FCTL ECAM page")
 }
 
+// Bumped on every call, so a check still waiting goes quiet once a newer one starts
+let latestCheck = 0
+
 export async function flightControlsCheck() {
+  const check = ++latestCheck
   await waitForSoundFinished()
 
   for (const step of STEPS) {
     await waitFor(step.condition)
+    if (check !== latestCheck) return
     await playSound(step.sound)
     await waitForSoundFinished()
   }

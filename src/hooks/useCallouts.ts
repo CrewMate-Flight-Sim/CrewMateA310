@@ -386,8 +386,8 @@ export function useCallouts() {
 
     // Landing sequence
 
-    // Track sustained airborne (vs > 200 filters ground bounces)
-    if (!t.onGround && t.vs > 200) {
+    // Height rather than a climb, so a flight started on approach still arms; a bounce stays below 100 ft
+    if (!t.onGround && t.radioAlt > 100) {
       ls.wasAirborne = true
     }
 

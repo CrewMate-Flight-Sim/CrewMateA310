@@ -24,15 +24,23 @@
     {
       "label": "APU",
       "read": "(L:A310_apu_master_switch)",
-      "on": "{landing_apu_master_cmd}",
-      "expect": "{landing_apu_master_expect}",
-      "wait_ms": 2000
+      "on": "1 (>L:A310_apu_master_switch)",
+      "expect": 1,
+      "wait_ms": 2000,
+      "only_if": {
+        "option": "landing.apuStart",
+        "one_of": ["auto"]
+      }
     },
     {
       "label": "APU Start",
       "read": "(L:A310_APU_START_BUTTON)",
-      "on": "{landing_apu_start_cmd}",
-      "expect": "{landing_apu_start_expect}"
+      "on": "1 (>L:A310_apu_start_button)",
+      "expect": 1,
+      "only_if": {
+        "option": "landing.apuStart",
+        "one_of": ["auto"]
+      }
     },
 
     {

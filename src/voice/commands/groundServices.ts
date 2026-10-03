@@ -1,37 +1,25 @@
 import { gsxClient } from "@/API/gsxApi"
-import { simvarSet } from "@/API/simvarApi"
+import { setLvar } from "@/API/simvarApi"
 
 gsxClient.connect()
 
 export async function setGPU(on: boolean) {
-  try {
-    await simvarSet(`${on ? 1 : 0} (>L:A310_gpu_avail)`)
-  } catch (error) {
-    console.error("Error setting GPU (LVAR):", error)
-  }
+  await setLvar(on ? 1 : 0, "A310_gpu_avail", "GPU")
 }
 
 export async function setASU(on: boolean) {
-  try {
-    await simvarSet(`${on ? 1 : 0} (>L:A310_AC_UNIT_STATE)`)
-  } catch (error) {
-    console.error("Error setting ASU (LVAR):", error)
-  }
+  await setLvar(on ? 1 : 0, "A310_AC_UNIT_STATE", "ASU")
 }
 
 export async function disconnectAllGround() {
-  try {
-    await simvarSet("0 (>L:A310_gpu_avail)")
-    await simvarSet("0 (>L:A310_AC_UNIT_STATE)")
-  } catch (error) {
-    console.error("Error disconnecting all ground services (LVAR):", error)
-  }
+  await setGPU(false)
+  await setASU(false)
 }
 
 export async function callPushback() {
   try {
     await gsxClient.triggerService("Departure")
   } catch (error) {
-    console.error("Error calling GSX Pushback (Remote API):", error)
+    console.error("[GroundServices] Failed to call GSX pushback:", error)
   }
 }

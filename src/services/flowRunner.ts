@@ -1,12 +1,13 @@
 import { simvarGet, simvarSet } from "@/API/simvarApi"
 import { delay } from "@/lib/utils"
 import { getFlowById, resolveFlow } from "@/services/flowLoader"
-import { playSound, isSoundPlaying } from "@/services/playSounds"
+import { playSound, waitForSoundFinished } from "@/services/playSounds"
 import { useCabinReadyTimerStore } from "@/store/cabinReadyTimerStore"
 import { useFlowStore } from "@/store/flowStore"
 import { usePerformanceStore } from "@/store/performanceStore"
 import { useSettingsStore } from "@/store/settingsStore"
-import { Telemetry, useTelemetryStore } from "@/store/telemetryStore"
+import { useTelemetryStore } from "@/store/telemetryStore"
+import type { Telemetry } from "@/store/telemetryStore"
 import { useVoiceHintProgressStore } from "@/store/voiceHintProgressStore"
 import type { Flow, FlowStep, FlowConditionValue } from "@/types/flow"
 
@@ -28,9 +29,6 @@ const FUZZY_EPS = 0.5
 const getRandomStepDelay = () => Math.random() * (STEP_DELAY.MAX - STEP_DELAY.MIN) + STEP_DELAY.MIN
 const fuzzyEquals = (a: number, b: number, eps = FUZZY_EPS) => Math.abs(a - b) < eps
 const toNumber = (v: number | string) => (typeof v === "string" ? parseFloat(v) : v)
-const waitForSoundFinished = async () => {
-  while (await isSoundPlaying()) await delay(100)
-}
 
 // ---------------------------------------------------------------------------
 // SimVar I/O
@@ -137,7 +135,7 @@ class PostLandingTimer {
 
   private onTelemetry(telemetry: Telemetry | null): void {
     if (!telemetry) return
-    const chronoValue = telemetry.a310FoCrono
+    const chronoValue = telemetry.foChrono
     if (typeof chronoValue !== "number") return
 
     // Chrono reset to 0 — re-arm for the next landing

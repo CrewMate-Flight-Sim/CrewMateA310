@@ -1,0 +1,889 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<grammar
+  version="1.0"
+  xml:lang="en-US"
+  xmlns="http://www.w3.org/2001/06/grammar"
+  tag-format="semantics/1.0"
+  root="TOPLEVEL"
+>
+  <!-- ═══════════════════════════════════════════════════════════════════════════
+       TOPLEVEL
+  ════════════════════════════════════════════════════════════════════════════ -->
+  <rule id="TOPLEVEL" scope="public">
+    <item repeat="0-1">please</item>
+    <one-of>
+      <item>
+        <ruleref uri="#FO_COMMANDS" />
+        <tag>out.ActionRuleId="FO_COMMANDS"; out.CmdId=rules.FO_COMMANDS.pid; out.CmdValue=rules.FO_COMMANDS.cval;</tag>
+      </item>
+      <item>
+        <ruleref uri="#FMA_CALLOUTS" />
+        <tag>out.ActionRuleId="FMA_CALLOUTS"; out.CmdId=rules.FMA_CALLOUTS.pid; out.CmdValue=rules.FMA_CALLOUTS.cval;</tag>
+      </item>
+      <item>
+        <ruleref uri="#DISCRETE_COMMANDS" />
+        <tag>out.ActionRuleId="DISCRETE_COMMANDS"; out.CmdId=rules.DISCRETE_COMMANDS.pid;</tag>
+      </item>
+      <item>
+        <ruleref uri="#CHECKLIST_RESPONSES" />
+        <tag>out.ActionRuleId="DISCRETE_COMMANDS"; out.CmdId=rules.CHECKLIST_RESPONSES.pid;</tag>
+      </item>
+    </one-of>
+    <item repeat="0-1">please</item>
+  </rule>
+
+  <!-- ═══════════════════════════════════════════════════════════════════════════
+       FO_COMMANDS  (parameterized — cval carries the numeric value)
+  ════════════════════════════════════════════════════════════════════════════ -->
+  <rule id="FO_COMMANDS">
+    <one-of>
+      <!-- Heading -->
+      <item>
+        <item repeat="0-1">
+          <ruleref uri="#VERB" />
+        </item>
+        <one-of>
+          <item>heading</item>
+        </one-of>
+        <ruleref uri="#HDG_SPD_FL_VALUE" />
+        <tag>out.pid="1"; out.cval=rules.HDG_SPD_FL_VALUE;</tag>
+      </item>
+
+      <!-- Flight level -->
+      <item>
+        <item repeat="0-1">set</item>
+        <item>flight level</item>
+        <ruleref uri="#HDG_SPD_FL_VALUE" />
+        <item repeat="0-1">pull</item>
+        <tag>out.pid="2"; out.cval=rules.HDG_SPD_FL_VALUE;</tag>
+      </item>
+
+      <!-- Altitude feet -->
+      <item>
+        <item repeat="0-1">set</item>
+        <item>altitude</item>
+        <ruleref uri="#ALTITUDE_VALUE" />
+        <item repeat="0-1">pull</item>
+        <tag>out.pid="3"; out.cval=rules.ALTITUDE_VALUE;</tag>
+      </item>
+
+      <!-- Speed -->
+      <item>
+        <item repeat="0-1">
+          <ruleref uri="#VERB" />
+        </item>
+        <item>speed</item>
+        <ruleref uri="#HDG_SPD_FL_VALUE" />
+        <item repeat="0-1">knots</item>
+        <tag>out.pid="4"; out.cval=rules.HDG_SPD_FL_VALUE;</tag>
+      </item>
+
+      <item>
+        <item repeat="0-1">
+          <ruleref uri="#VERB" />
+        </item>
+        <item>qnh</item>
+        <ruleref uri="#ALTIMETER_VALUE" />
+        <item repeat="0-1">set</item>
+        <tag>out.pid="7"; out.cval=rules.ALTIMETER_VALUE;</tag>
+      </item>
+
+      <!-- Altimeter — prefixed "altimeter XXXX [set]" -->
+      <item>
+        <item>altimeter</item>
+        <ruleref uri="#ALTIMETER_VALUE" />
+        <item repeat="0-1">set</item>
+        <tag>out.pid="7"; out.cval=rules.ALTIMETER_VALUE;</tag>
+      </item>
+
+      <!-- Altimeter — bare "XXX[X] set" -->
+      <item>
+        <ruleref uri="#ALTIMETER_VALUE" />
+        <item>set</item>
+        <tag>out.pid="7"; out.cval=rules.ALTIMETER_VALUE;</tag>
+      </item>
+
+      <!-- Fuel kilograms [balanced] -->
+      <item>
+        <item repeat="0-1">
+          <one-of>
+            <item>fuel quantity</item>
+            <item>fuel</item>
+          </one-of>
+        </item>
+        <ruleref uri="#FUEL_VALUE" />
+        <tag>out.fv=rules.FUEL_VALUE;</tag>
+        <one-of>
+          <item>kilograms</item>
+          <item>kilos</item>
+        </one-of>
+        <one-of>
+          <item>balanced<tag>out.pid="9"; out.cval=out.fv;</tag></item>
+          <item>
+            <tag>out.pid="8"; out.cval=out.fv;</tag>
+          </item>
+        </one-of>
+      </item>
+
+      <!-- Fuel pounds [balanced] -->
+      <item>
+        <item repeat="0-1">
+          <one-of>
+            <item>fuel quantity</item>
+            <item>fuel</item>
+          </one-of>
+        </item>
+        <ruleref uri="#FUEL_VALUE" />
+        <tag>out.fv=rules.FUEL_VALUE;</tag>
+        <item>pounds</item>
+        <one-of>
+          <item>balanced<tag>out.pid="11"; out.cval=out.fv;</tag></item>
+          <item>
+            <tag>out.pid="10"; out.cval=out.fv;</tag>
+          </item>
+        </one-of>
+      </item>
+
+      <!-- Fuel tons [balanced] -->
+      <item>
+        <item repeat="0-1">
+          <one-of>
+            <item>fuel quantity</item>
+            <item>fuel</item>
+          </one-of>
+        </item>
+        <ruleref uri="#FUEL_TONS_VALUE" />
+        <tag>out.fv=rules.FUEL_TONS_VALUE;</tag>
+        <one-of>
+          <item>tons</item>
+          <item>metric tons</item>
+        </one-of>
+        <one-of>
+          <item>balanced<tag>out.pid="13"; out.cval=out.fv;</tag></item>
+          <item>
+            <tag>out.pid="12"; out.cval=out.fv;</tag>
+          </item>
+        </one-of>
+      </item>
+
+      <!-- Missed approach altitude — explicit feet -->
+      <item>
+        <one-of>
+          <item>set go around altitude</item>
+          <item>set go around</item>
+          <item>go around altitude</item>
+          <item>go around</item>
+        </one-of>
+        <ruleref uri="#ALTITUDE_VALUE" />
+        <item repeat="0-1">feet</item>
+        <tag>out.pid="17"; out.cval=rules.ALTITUDE_VALUE;</tag>
+      </item>
+
+      <!-- Missed approach altitude — explicit flight level -->
+      <item>
+        <one-of>
+          <item>set go around altitude</item>
+          <item>set go around</item>
+          <item>go around altitude</item>
+          <item>go around</item>
+        </one-of>
+        <item>flight level</item>
+        <ruleref uri="#HDG_SPD_FL_VALUE" />
+        <tag>out.pid="18"; out.cval=rules.HDG_SPD_FL_VALUE;</tag>
+      </item>
+
+      <!-- MDA minimums — "mda four hundred fifty [feet] set" → "450" (engine reports them as baro) -->
+      <item>
+        <item>mda</item>
+        <ruleref uri="#MINIMUMS_VALUE" />
+        <item repeat="0-1">feet</item>
+        <item>set</item>
+        <tag>out.pid="19"; out.cval=rules.MINIMUMS_VALUE;</tag>
+      </item>
+
+      <!-- DH minimums — "dh one hundred sixty [feet] set" → "160" (engine reports them as radio) -->
+      <item>
+        <item>dh</item>
+        <ruleref uri="#MINIMUMS_VALUE" />
+        <item repeat="0-1">feet</item>
+        <item>set</item>
+        <tag>out.pid="20"; out.cval=rules.MINIMUMS_VALUE;</tag>
+      </item>
+    </one-of>
+  </rule>
+
+  <!-- ═══════════════════════════════════════════════════════════════════════════
+       FMA_CALLOUTS
+       pid always "1". cval = "thrust|vertical|lateral|combined|cat|armed|urgent"
+  ════════════════════════════════════════════════════════════════════════════ -->
+  <rule id="FMA_CALLOUTS">
+    <one-of>
+      <!-- urgent standalones -->
+      <!-- compound: optional thrust + vertical/combined/lateral + optional cat + optional armed -->
+      <item>
+        <tag>out.th=""; out.vt=""; out.lt=""; out.cb=""; out.ct=""; out.ar="";</tag>
+        <item repeat="0-1">check</item>
+        <item repeat="0-1">
+          <ruleref uri="#FMA_THRUST_MODE" />
+          <tag>out.th=rules.FMA_THRUST_MODE;</tag>
+        </item>
+        <one-of>
+          <item>
+            <ruleref uri="#FMA_COMBINED_MODE" />
+            <tag>out.cb=rules.FMA_COMBINED_MODE;</tag>
+          </item>
+          <item>
+            <ruleref uri="#FMA_VERTICAL_MODE" />
+            <tag>out.vt=rules.FMA_VERTICAL_MODE;</tag>
+            <item repeat="0-1">
+              <ruleref uri="#FMA_LATERAL_MODE" />
+              <tag>out.lt=rules.FMA_LATERAL_MODE;</tag>
+            </item>
+          </item>
+          <item>
+            <ruleref uri="#FMA_LATERAL_MODE" />
+            <tag>out.lt=rules.FMA_LATERAL_MODE;</tag>
+          </item>
+        </one-of>
+        <item repeat="0-1">
+          <ruleref uri="#FMA_APPROACH_CAT" />
+          <tag>out.ct=rules.FMA_APPROACH_CAT;</tag>
+        </item>
+        <tag>out.pid="1"; out.cval=out.th+"|"+out.vt+"|"+out.lt+"|"+out.cb+"|"+out.ct+"|";</tag>
+      </item>
+
+      <!-- thrust only -->
+      <item>
+        <tag>out.ar="";</tag>
+        <ruleref uri="#FMA_THRUST_MODE" />
+        <tag>out.th=rules.FMA_THRUST_MODE;</tag>
+        <tag>out.pid="1"; out.cval=out.th+"|||||";</tag>
+      </item>
+    </one-of>
+  </rule>
+
+  <!-- FMA column 1: thrust modes -->
+  <rule id="FMA_THRUST_MODE">
+    <one-of>
+      <item>thrust<tag>out="THR";</tag></item>
+      <item>profile thrust<tag>out="P. THR";</tag></item>
+      <item>speed<tag>out="SPEED";</tag></item>
+      <item>mach<tag>out="MACH";</tag></item>
+      <item>profile speed<tag>out="P. SPEED";</tag></item>
+      <item>profile mach<tag>out="P. MACH";</tag></item>
+      <item>retard<tag>out="RTAR";</tag></item>
+      <item>thrust latch<tag>out="THR L";</tag></item>
+    </one-of>
+  </rule>
+
+  <!-- FMA column 2: vertical modes -->
+  <rule id="FMA_VERTICAL_MODE">
+    <one-of>
+      <item>srs<tag>out="SRS";</tag></item>
+      <item>alt hold<tag>out="ALT";</tag></item>
+      <item>alt star<tag>out="ALT*";</tag></item>
+      <item>profile descent<tag>out="P. DES";</tag></item>
+      <item>glideslope<tag>out="G/S";</tag></item>
+      <item>glideslope star<tag>out="G/S*";</tag></item>
+      <item>glideslope capture<tag>out="G/S*";</tag></item>
+      <item>profile climb<tag>out="P. CLB";</tag></item>
+      <item>profile alt hold<tag>out="P. ALT";</tag></item>
+      <item>mach<tag>out="MACH";</tag></item>
+      <item>vertical speed<tag>out="V/S";</tag></item>
+      <item>speed<tag>out="SPD";</tag></item>
+    </one-of>
+  </rule>
+
+  <!-- FMA column 3: lateral modes -->
+  <rule id="FMA_LATERAL_MODE">
+    <one-of>
+      <item>runway<tag>out="RWY";</tag></item>
+      <item>heading<tag>out="HDG";</tag></item>
+      <item>heading select<tag>out="HDG/S";</tag></item>
+      <item>nav<tag>out="NAV";</tag></item>
+      <item>loc<tag>out="LOC";</tag></item>
+      <item>loc star<tag>out="LOC*";</tag></item>
+      <item>loc capture<tag>out="LOC*";</tag></item>
+      <item>localizer<tag>out="LOC";</tag></item>
+      <item>localizer star<tag>out="LOC*";</tag></item>
+      <item>localizer capture<tag>out="LOC*";</tag></item>
+      <item>v o r<tag>out="VOR";</tag></item>
+      <item>v o r capture<tag>out="VOR*";</tag></item>
+      <item>v o r star<tag>out="VOR*";</tag></item>
+    </one-of>
+  </rule>
+
+  <!-- FMA cols 2+3: combined modes -->
+  <rule id="FMA_COMBINED_MODE">
+    <one-of>
+      <item>land<tag>out="LAND";</tag></item>
+      <item>flare<tag>out="FLARE";</tag></item>
+      <item>roll out<tag>out="ROLL OUT";</tag></item>
+      <item>go around<tag>out="GO AROUND";</tag></item>
+    </one-of>
+  </rule>
+
+  <!-- FMA column 4: approach category -->
+  <rule id="FMA_APPROACH_CAT">
+    <one-of>
+      <item>cat one<tag>out="CAT 1";</tag></item>
+      <item>cat two<tag>out="CAT 2";</tag></item>
+      <item>cat three single<tag>out="CAT 3 SINGLE";</tag></item>
+      <item>cat three dual<tag>out="CAT 3 DUAL";</tag></item>
+    </one-of>
+  </rule>
+
+  <!-- ═══════════════════════════════════════════════════════════════════════════
+       DISCRETE_COMMANDS  (no numeric value)
+  ════════════════════════════════════════════════════════════════════════════ -->
+  <rule id="DISCRETE_COMMANDS">
+    <one-of>
+      <!-- 1-9: Primary Flight Controls -->
+      <item>gear up<tag>out.pid="gear_up";</tag></item>
+      <item>gear down<tag>out.pid="gear_down";</tag></item>
+      <item>Slats retract<tag>out.pid="slats_ret";</tag></item>
+      <item>flaps zero<tag>out.pid="slats_ext_zero";</tag></item>
+      <item>Slats extend<tag>out.pid="slats_ext_zero";</tag></item>
+      <item>flaps fifteen<tag>out.pid="flaps_15";</tag></item>
+      <item>flaps twenty<tag>out.pid="flaps_20";</tag></item>
+      <item>flaps fourty<tag>out.pid="flaps_40";</tag></item>
+      <item>go around flaps<tag>out.pid="go_around_flaps";</tag></item>
+
+      <item>landing light on<tag>out.pid="landing_lights_on";</tag></item>
+      <item>landing light off<tag>out.pid="landing_lights_off";</tag></item>
+      <item>takeoff light on<tag>out.pid="takeoff_lights_on";</tag></item>
+      <item>strobe light on<tag>out.pid="strobe_lights_on";</tag></item>
+      <item>strobe light auto<tag>out.pid="strobe_lights_auto";</tag></item>
+      <item>strobe light off<tag>out.pid="strobe_lights_off";</tag></item>
+      <item>taxi light on<tag>out.pid="taxi_lights_on";</tag></item>
+      <item>taxi light off<tag>out.pid="taxi_lights_off";</tag></item>
+      <item>flight director on<tag>out.pid="flight_director_on";</tag></item>
+      <item>flight director off<tag>out.pid="flight_director_off";</tag></item>
+
+      <item>parking checklist<tag>out.pid="checklist_parking";</tag></item>
+      <item>before start checklist to the line<tag>out.pid="checklist_before_start_p1";</tag></item>
+      <item>before start checklist below the line<tag>out.pid="checklist_before_start_p2";</tag></item>
+      <item>after start checklist<tag>out.pid="checklist_after_start";</tag></item>
+      <item>before takeoff checklist to the line<tag>out.pid="checklist_before_takeoff_p1";</tag></item>
+      <item>before takeoff checklist below the line<tag>out.pid="checklist_before_takeoff_p2";</tag></item>
+      <item>after takeoff climb checklist to the line<tag>out.pid="checklist_after_takeoff_p1";</tag></item>
+      <item>after takeoff climb checklist below the line<tag>out.pid="checklist_after_takeoff_p2";</tag></item>
+      <item>approach checklist<tag>out.pid="checklist_approach";</tag></item>
+      <item>landing checklist<tag>out.pid="checklist_landing";</tag></item>
+      <item>after landing checklist<tag>out.pid="checklist_after_landing";</tag></item>
+      <item>cancel checklist<tag>out.pid="checklist_cancel";</tag></item>
+      <item>lets prepare the aircraft<tag>out.pid="prepare_aircraft";</tag></item>
+      <item>start engine one<tag>out.pid="engine_start_1";</tag></item>
+      <item>start engine two<tag>out.pid="engine_start_2";</tag></item>
+      <item>start apu<tag>out.pid="apu_start";</tag></item>
+      <item>start the apu<tag>out.pid="apu_start";</tag></item>
+      <item>clear left<tag>out.pid="clear_left";</tag></item>
+      <item>runway entry procedure<tag>out.pid="runway_entry_procedure";</tag></item>
+      <item>clear to line up<tag>out.pid="runway_entry_procedure";</tag></item>
+      <item>before start procedure<tag>out.pid="before_start_procedure";</tag></item>
+      <item>takeoff<tag>out.pid="clear_for_takeoff";</tag></item>
+      <item>continue<tag>out.pid="continue";</tag></item>
+      <item>flight controls check<tag>out.pid="flight_controls_check";</tag></item>
+      <item>set landing elevation<tag>out.pid="des_prep";</tag></item>
+      <item>wing anti ice on<tag>out.pid="wing_anti_ice_on";</tag></item>
+      <item>wing anti ice off<tag>out.pid="wing_anti_ice_off";</tag></item>
+      <item>engine anti ice on<tag>out.pid="engine_anti_ice_on";</tag></item>
+      <item>engine anti ice off<tag>out.pid="engine_anti_ice_off";</tag></item>
+      <item>wipers off<tag>out.pid="wipers_off";</tag></item>
+      <item>wipers slow<tag>out.pid="wipers_slow";</tag></item>
+      <item>wipers fast<tag>out.pid="wipers_fast";</tag></item>
+      <item>seat belts on<tag>out.pid="seat_belts_on";</tag></item>
+      <item>seat belts off<tag>out.pid="seat_belts_off";</tag></item>
+      <item>brake check<tag>out.pid="brake_check";</tag></item>
+      <item>set standard<tag>out.pid="set_standard";</tag></item>
+
+      <item>autopilot on<tag>out.pid="autopilot_engage";</tag></item>
+      <item>autopilot off<tag>out.pid="autopilot_disconnect";</tag></item>
+      <item>altitude pull<tag>out.pid="pull_altitude";</tag></item>
+      <item>heading push<tag>out.pid="push_heading";</tag></item>
+      <item>pull speed<tag>out.pid="pull_speed";</tag></item>
+      <item>engage heading<tag>out.pid="pull_heading";</tag></item>
+      <item>engage nav<tag>out.pid="manage_nav";</tag></item>
+      <item>engage altitude hold<tag>out.pid="push_to_level_off";</tag></item>
+      <item>arm land<tag>out.pid="arm_approach";</tag></item>
+      <item>arm localizer<tag>out.pid="arm_localizer";</tag></item>
+
+      <item>ground from cockpit<tag>out.pid="ground_call";</tag></item>
+      <item>cockpit to ground<tag>out.pid="ground_call";</tag></item>
+      <item>ground from flight deck<tag>out.pid="ground_call";</tag></item>
+      <item>flight deck to ground<tag>out.pid="ground_call";</tag></item>
+      <item>connect ground power<tag>out.pid="connect_gpu";</tag></item>
+      <item>disconnect ground power<tag>out.pid="disconnect_gpu";</tag></item>
+      <item>connect G P U<tag>out.pid="connect_gpu";</tag></item>
+      <item>disconnect G P U<tag>out.pid="disconnect_gpu";</tag></item>
+      <item>connect air starter<tag>out.pid="connect_asu";</tag></item>
+      <item>disconnect air starter<tag>out.pid="disconnect_asu";</tag></item>
+      <item>connect A S U<tag>out.pid="connect_asu";</tag></item>
+      <item>disconnect A S U<tag>out.pid="disconnect_asu";</tag></item>
+      <item>disconnect all<tag>out.pid="disconnect_all_ground";</tag></item>
+      <item>secure the aircraft<tag>out.pid="secure_aircraft";</tag></item>
+      <item>securing aircraft checklist<tag>out.pid="checklist_secure";</tag></item>
+      <item>we are ready for pushback<tag>out.pid="pushback_request";</tag></item>
+      <item>a p u bleed on<tag>out.pid="apu_bleed_on";</tag></item>
+      <item>a p u bleed off<tag>out.pid="apu_bleed_off";</tag></item>
+      <!--Control handover-->
+      <item>you have control<tag>out.pid="you_have_ctrl";</tag></item>
+      <item>i have control<tag>out.pid="i_have_ctrl";</tag></item>
+    </one-of>
+  </rule>
+
+  <!-- ═══════════════════════════════════════════════════════════════════════════
+       CHECKLIST_RESPONSES  (no handler; checklistRunner.ts matches them by spoken text)
+  ════════════════════════════════════════════════════════════════════════════ -->
+  <rule id="CHECKLIST_RESPONSES">
+    <one-of>
+      <item>set and checked<tag>out.pid="set_and_checked";</tag></item>
+      <item>chocks in place<tag>out.pid="chocks_in_place";</tag></item>
+      <item>parking brake on<tag>out.pid="parking_brake_set";</tag></item>
+      <item>engine anti ice is on<tag>out.pid="eng_ai_on";</tag></item>
+      <item>normal and on<tag>out.pid="norm_on";</tag></item>
+      <item>fifteen zero<tag>out.pid="fifteen_zero";</tag></item>
+      <item>fifteen<tag>out.pid="fifteen";</tag></item>
+      <item>twenty<tag>out.pid="twenty";</tag></item>
+      <item>completed<tag>out.pid="completed";</tag></item>
+      <item>confirm<tag>out.pid="confirm";</tag></item>
+      <item>negative<tag>out.pid="negative";</tag></item>
+      <item>checked<tag>out.pid="checked";</tag></item>
+      <item>set<tag>out.pid="set";</tag></item>
+      <item>on<tag>out.pid="on";</tag></item>
+      <item>off<tag>out.pid="off";</tag></item>
+      <item>armed<tag>out.pid="armed";</tag></item>
+      <item>disarmed<tag>out.pid="disarmed";</tag></item>
+      <item>on and auto<tag>out.pid="on_and_auto";</tag></item>
+      <item>up and neutral<tag>out.pid="up_neutral";</tag></item>
+      <item>standard set<tag>out.pid="standard_set";</tag></item>
+      <item>normal<tag>out.pid="normal";</tag></item>
+      <item>secured<tag>out.pid="secured";</tag></item>
+      <item>low<tag>out.pid="low";</tag></item>
+      <item>mid<tag>out.pid="mid";</tag></item>
+      <item>max<tag>out.pid="max";</tag></item>
+      <item>check zero<tag>out.pid="check_zero";</tag></item>
+      <item>retracted<tag>out.pid="retracted";</tag></item>
+      <item>down<tag>out.pid="down";</tag></item>
+      <item>removed<tag>out.pid="removed";</tag></item>
+      <item>released<tag>out.pid="released";</tag></item>
+      <item>received<tag>out.pid="received";</tag></item>
+      <item>started<tag>out.pid="started";</tag></item>
+      <item>running<tag>out.pid="running";</tag></item>
+      <item>advised<tag>out.pid="advised";</tag></item>
+      <item>closed<tag>out.pid="closed";</tag></item>
+      <item>check and read<tag>out.pid="check_and_read";</tag></item>
+      <item>fourty<tag>out.pid="fourty_response";</tag></item>
+      <item>twenty<tag>out.pid="twenty_response";</tag></item>
+      <item>confirmed<tag>out.pid="confirmed";</tag></item>
+      <item>t a r a<tag>out.pid="ta_ra";</tag></item>
+      <item>cont relight<tag>out.pid="cont_relight";</tag></item>
+      <item>secure<tag>out.pid="secure";</tag></item>
+      <item>on supplied by apu<tag>out.pid="on_apu";</tag></item>
+      <item>to be started<tag>out.pid="apu_tbs";</tag></item>
+      <item>chocks in and brakes on<tag>out.pid="brakes_on_chocks_on";</tag></item>
+      <!-- Pitch trim and landing elevation: only checklist answers, the value is never read -->
+      <item>
+        <ruleref uri="#NUMBERS" />
+        <item>point</item>
+        <ruleref uri="#NUMBERS" />
+        <one-of>
+          <item>up</item>
+          <item>down</item>
+        </one-of>
+        <item>set</item>
+        <tag>out.pid="pitch_trim_set";</tag>
+      </item>
+      <item>
+        <one-of>
+          <item>
+            <item repeat="0-1"><ruleref uri="#ALTV_THOUSANDS" /> thousand</item>
+            <item repeat="0-1"><ruleref uri="#ALTV_HUNDREDS" /></item>
+            <item repeat="0-1">fifty</item>
+          </item>
+          <item>zero</item>
+        </one-of>
+        <item>feet set</item>
+        <tag>out.pid="landing_elevation_set";</tag>
+      </item>
+    </one-of>
+  </rule>
+
+  <!-- ═══════════════════════════════════════════════════════════════════════════
+       SHARED VERB
+  ════════════════════════════════════════════════════════════════════════════ -->
+  <rule id="VERB">
+    <one-of>
+      <item>set</item>
+      <item>pull</item>
+    </one-of>
+  </rule>
+
+  <!-- ═══════════════════════════════════════════════════════════════════════════
+       NUMBER PRIMITIVES
+  ════════════════════════════════════════════════════════════════════════════ -->
+
+  <!-- Single digit 0-9 -->
+  <rule id="NUMBERS">
+    <one-of>
+      <item>zero<tag>out="0";</tag></item>
+      <item>one<tag>out="1";</tag></item>
+      <item>two<tag>out="2";</tag></item>
+      <item>three<tag>out="3";</tag></item>
+      <item>four<tag>out="4";</tag></item>
+      <item>five<tag>out="5";</tag></item>
+      <item>six<tag>out="6";</tag></item>
+      <item>seven<tag>out="7";</tag></item>
+      <item>eight<tag>out="8";</tag></item>
+      <item>nine<tag>out="9";</tag></item>
+      <item>niner<tag>out="9";</tag></item>
+    </one-of>
+  </rule>
+
+  <!-- Ones words 1-9 (no zero) -->
+  <rule id="ONES_WORD">
+    <one-of>
+      <item>one<tag>out="1";</tag></item>
+      <item>two<tag>out="2";</tag></item>
+      <item>three<tag>out="3";</tag></item>
+      <item>four<tag>out="4";</tag></item>
+      <item>five<tag>out="5";</tag></item>
+      <item>six<tag>out="6";</tag></item>
+      <item>seven<tag>out="7";</tag></item>
+      <item>eight<tag>out="8";</tag></item>
+      <item>nine<tag>out="9";</tag></item>
+    </one-of>
+  </rule>
+
+  <!-- Teens 10-19 -->
+  <rule id="TEEN_WORD">
+    <one-of>
+      <item>ten<tag>out="10";</tag></item>
+      <item>eleven<tag>out="11";</tag></item>
+      <item>twelve<tag>out="12";</tag></item>
+      <item>thirteen<tag>out="13";</tag></item>
+      <item>fourteen<tag>out="14";</tag></item>
+      <item>fifteen<tag>out="15";</tag></item>
+      <item>sixteen<tag>out="16";</tag></item>
+      <item>seventeen<tag>out="17";</tag></item>
+      <item>eighteen<tag>out="18";</tag></item>
+      <item>nineteen<tag>out="19";</tag></item>
+    </one-of>
+  </rule>
+
+  <!-- Tens words → leading digit: "sixty" → "6" -->
+  <rule id="TENS_WORD">
+    <one-of>
+      <item>twenty<tag>out="2";</tag></item>
+      <item>thirty<tag>out="3";</tag></item>
+      <item>forty<tag>out="4";</tag></item>
+      <item>fifty<tag>out="5";</tag></item>
+      <item>sixty<tag>out="6";</tag></item>
+      <item>seventy<tag>out="7";</tag></item>
+      <item>eighty<tag>out="8";</tag></item>
+      <item>ninety<tag>out="9";</tag></item>
+    </one-of>
+  </rule>
+
+  <!-- 3-digit value: "two seven zero" → "270" -->
+  <rule id="HDG_SPD_FL_VALUE">
+    <ruleref uri="#NUMBERS" />
+    <tag>out.a=rules.NUMBERS;</tag>
+    <ruleref uri="#NUMBERS" />
+    <tag>out.b=rules.NUMBERS;</tag>
+    <ruleref uri="#NUMBERS" />
+    <tag>out=out.a+out.b+rules.NUMBERS;</tag>
+  </rule>
+
+  <!-- 3-or-4-digit altimeter value
+       4 digits: inHg   "two nine nine two"  → "2992"  (dispatcher checks 2700-3100)
+       3 digits: hPa    "nine nine eight"    → "998"   (dispatcher checks 900-1100)
+       FOUR_DIGIT_VALUE is kept for transponder (always 4 digits). -->
+  <rule id="ALTIMETER_VALUE">
+    <one-of>
+      <!-- 4-digit inHg: digit by digit -->
+      <item>
+        <ruleref uri="#NUMBERS" />
+        <tag>out.a=rules.NUMBERS;</tag>
+        <ruleref uri="#NUMBERS" />
+        <tag>out.b=rules.NUMBERS;</tag>
+        <ruleref uri="#NUMBERS" />
+        <tag>out.c=rules.NUMBERS;</tag>
+        <ruleref uri="#NUMBERS" />
+        <tag>out=out.a+out.b+out.c+rules.NUMBERS;</tag>
+      </item>
+      <!-- 3-digit hPa: digit by digit -->
+      <item>
+        <ruleref uri="#NUMBERS" />
+        <tag>out.a=rules.NUMBERS;</tag>
+        <ruleref uri="#NUMBERS" />
+        <tag>out.b=rules.NUMBERS;</tag>
+        <ruleref uri="#NUMBERS" />
+        <tag>out=out.a+out.b+rules.NUMBERS;</tag>
+      </item>
+    </one-of>
+  </rule>
+
+  <!-- 4-digit value: "two nine nine two" → "2992" -->
+  <rule id="FOUR_DIGIT_VALUE">
+    <ruleref uri="#NUMBERS" />
+    <tag>out.a=rules.NUMBERS;</tag>
+    <ruleref uri="#NUMBERS" />
+    <tag>out.b=rules.NUMBERS;</tag>
+    <ruleref uri="#NUMBERS" />
+    <tag>out.c=rules.NUMBERS;</tag>
+    <ruleref uri="#NUMBERS" />
+    <tag>out=out.a+out.b+out.c+rules.NUMBERS;</tag>
+  </rule>
+
+  <!-- Hundreds component: "five hundred" → "500" -->
+  <rule id="ALTV_HUNDREDS">
+    <one-of>
+      <item>one hundred<tag>out="100";</tag></item>
+      <item>two hundred<tag>out="200";</tag></item>
+      <item>three hundred<tag>out="300";</tag></item>
+      <item>four hundred<tag>out="400";</tag></item>
+      <item>five hundred<tag>out="500";</tag></item>
+      <item>six hundred<tag>out="600";</tag></item>
+      <item>seven hundred<tag>out="700";</tag></item>
+      <item>eight hundred<tag>out="800";</tag></item>
+      <item>nine hundred<tag>out="900";</tag></item>
+    </one-of>
+  </rule>
+
+  <!-- Thousands component for altitude 1-59: "twelve" → "12", "eight" → "08" -->
+  <rule id="ALTV_THOUSANDS">
+    <one-of>
+      <item>one<tag>out="01";</tag></item>
+      <item>two<tag>out="02";</tag></item>
+      <item>three<tag>out="03";</tag></item>
+      <item>four<tag>out="04";</tag></item>
+      <item>five<tag>out="05";</tag></item>
+      <item>six<tag>out="06";</tag></item>
+      <item>seven<tag>out="07";</tag></item>
+      <item>eight<tag>out="08";</tag></item>
+      <item>nine<tag>out="09";</tag></item>
+      <item>
+        <ruleref uri="#TEEN_WORD" />
+        <tag>out=rules.TEEN_WORD;</tag>
+      </item>
+      <item>
+        <ruleref uri="#TENS_WORD" />
+        <tag>out.t=rules.TENS_WORD;</tag>
+        <ruleref uri="#ONES_WORD" />
+        <tag>out=out.t+rules.ONES_WORD;</tag>
+      </item>
+      <item>twenty<tag>out="20";</tag></item>
+      <item>thirty<tag>out="30";</tag></item>
+      <item>forty<tag>out="40";</tag></item>
+      <item>fifty<tag>out="50";</tag></item>
+    </one-of>
+  </rule>
+
+  <!-- Altitude value: "twelve thousand five hundred" → "12500" -->
+  <rule id="ALTITUDE_VALUE">
+    <ruleref uri="#ALTV_THOUSANDS" />
+    <tag>out.t=rules.ALTV_THOUSANDS; out.h="000";</tag>
+    <item>thousand</item>
+    <item repeat="0-1">
+      <ruleref uri="#ALTV_HUNDREDS" />
+      <tag>out.h=rules.ALTV_HUNDREDS;</tag>
+    </item>
+    <tag>out=out.t+out.h;</tag>
+  </rule>
+
+  <!-- Thousands component for fuel 1-99 -->
+  <rule id="FUEL_THOUSANDS">
+    <one-of>
+      <item>
+        <ruleref uri="#ONES_WORD" />
+        <tag>out=rules.ONES_WORD;</tag>
+      </item>
+      <item>
+        <ruleref uri="#TEEN_WORD" />
+        <tag>out=rules.TEEN_WORD;</tag>
+      </item>
+      <item>
+        <ruleref uri="#TENS_WORD" />
+        <tag>out.t=rules.TENS_WORD;</tag>
+        <ruleref uri="#ONES_WORD" />
+        <tag>out=out.t+rules.ONES_WORD;</tag>
+      </item>
+      <item>twenty<tag>out="20";</tag></item>
+      <item>thirty<tag>out="30";</tag></item>
+      <item>forty<tag>out="40";</tag></item>
+      <item>fifty<tag>out="50";</tag></item>
+      <item>sixty<tag>out="60";</tag></item>
+      <item>seventy<tag>out="70";</tag></item>
+      <item>eighty<tag>out="80";</tag></item>
+      <item>ninety<tag>out="90";</tag></item>
+    </one-of>
+  </rule>
+
+  <!-- Fuel kg/lbs value: "sixty thousand six hundred" → "60|600" -->
+  <rule id="FUEL_VALUE">
+    <one-of>
+      <item>
+        <ruleref uri="#FUEL_THOUSANDS" />
+        <tag>out.t=rules.FUEL_THOUSANDS;</tag>
+        <item>thousand</item>
+        <ruleref uri="#ALTV_HUNDREDS" />
+        <tag>out=out.t+"|"+rules.ALTV_HUNDREDS;</tag>
+      </item>
+      <item>
+        <ruleref uri="#FUEL_THOUSANDS" />
+        <item>thousand</item>
+        <tag>out=rules.FUEL_THOUSANDS+"|000";</tag>
+      </item>
+      <item>
+        <ruleref uri="#ALTV_HUNDREDS" />
+        <tag>out="0|"+rules.ALTV_HUNDREDS;</tag>
+      </item>
+    </one-of>
+  </rule>
+
+  <!-- Fuel tons: "eighteen point five" → "18.5" -->
+  <rule id="FUEL_TONS_VALUE">
+    <ruleref uri="#FUEL_THOUSANDS" />
+    <tag>out.w=rules.FUEL_THOUSANDS;</tag>
+    <item>point</item>
+    <ruleref uri="#NUMBERS" />
+    <tag>out=out.w+"."+rules.NUMBERS;</tag>
+  </rule>
+
+  <!-- ─── Minimums value ───────────────────────────────────────────────────────
+       Supports BARO and RADIO minimums announced by the PF per FCOM.
+       Examples:
+         "baro four hundred fifty three feet"          → pid 19, cval "453"
+         "radio six hundred thirty four feet"          → pid 20, cval "634"
+         "baro one thousand two hundred thirty four"   → pid 19, cval "1234"
+         "baro one thousand feet"                      → pid 19, cval "1000"
+         "radio fifty feet"                            → pid 20, cval "50"
+
+  ──────────────────────────────────────────────────────────────────────────── -->
+  <rule id="MINIMUMS_VALUE">
+    <one-of>
+      <!-- pure sub-hundred: CAT III DH values like "fifty" or "eighty" -->
+      <item>
+        <ruleref uri="#MIN_BELOW_100" />
+        <tag>out=rules.MIN_BELOW_100;</tag>
+      </item>
+
+      <!-- N hundred [+ sub-hundred]: "four hundred fifty three" → "4"+"53" = "453" -->
+      <item>
+        <ruleref uri="#MIN_H_LEAD" />
+        <tag>out.h=rules.MIN_H_LEAD; out.r="00";</tag>
+        <item>hundred</item>
+        <item repeat="0-1">
+          <ruleref uri="#MIN_BELOW_100" />
+          <tag>out.r=rules.MIN_BELOW_100;</tag>
+        </item>
+        <tag>out=out.h+out.r;</tag>
+      </item>
+
+      <!-- N thousand [+ N hundred [+ sub-hundred]]:
+           "one thousand two hundred thirty four" → "1"+"2"+"34" = "1234"
+           "one thousand five hundred"            → "1"+"5"+"00" = "1500"
+           "one thousand"                         → "1"+"000"    = "1000" -->
+      <item>
+        <ruleref uri="#MIN_H_LEAD" />
+        <tag>out.th=rules.MIN_H_LEAD; out.rest="000";</tag>
+        <item>thousand</item>
+        <item repeat="0-1">
+          <ruleref uri="#MIN_H_LEAD" />
+          <tag>out.hh=rules.MIN_H_LEAD; out.r2="00";</tag>
+          <item>hundred</item>
+          <item repeat="0-1">
+            <ruleref uri="#MIN_BELOW_100" />
+            <tag>out.r2=rules.MIN_BELOW_100;</tag>
+          </item>
+          <tag>out.rest=out.hh+out.r2;</tag>
+        </item>
+        <tag>out=out.th+out.rest;</tag>
+      </item>
+    </one-of>
+  </rule>
+
+  <!-- Single leading digit for hundreds/thousands: "one"→"1" … "nine"→"9" -->
+  <rule id="MIN_H_LEAD">
+    <one-of>
+      <item>one<tag>out="1";</tag></item>
+      <item>two<tag>out="2";</tag></item>
+      <item>three<tag>out="3";</tag></item>
+      <item>four<tag>out="4";</tag></item>
+      <item>five<tag>out="5";</tag></item>
+      <item>six<tag>out="6";</tag></item>
+      <item>seven<tag>out="7";</tag></item>
+      <item>eight<tag>out="8";</tag></item>
+      <item>nine<tag>out="9";</tag></item>
+    </one-of>
+  </rule>
+
+  <!-- Sub-hundred value as two-char string: teens, pure tens, tens+ones.
+       "thirteen"    → "13"
+       "fifty"       → "50"
+       "fifty three" → "53"  (TENS_WORD "5" + ONES_WORD "3") -->
+  <rule id="MIN_BELOW_100">
+    <one-of>
+      <!-- 10-19 -->
+      <item>
+        <ruleref uri="#TEEN_WORD" />
+        <tag>out=rules.TEEN_WORD;</tag>
+      </item>
+      <!-- 21-99: tens + ones -->
+      <item>
+        <ruleref uri="#TENS_WORD" />
+        <tag>out.t=rules.TENS_WORD;</tag>
+        <ruleref uri="#ONES_WORD" />
+        <tag>out=out.t+rules.ONES_WORD;</tag>
+      </item>
+      <!-- pure tens 20-90 (no trailing ones word) -->
+      <item>twenty<tag>out="20";</tag></item>
+      <item>thirty<tag>out="30";</tag></item>
+      <item>forty<tag>out="40";</tag></item>
+      <item>fifty<tag>out="50";</tag></item>
+      <item>sixty<tag>out="60";</tag></item>
+      <item>seventy<tag>out="70";</tag></item>
+      <item>eighty<tag>out="80";</tag></item>
+      <item>ninety<tag>out="90";</tag></item>
+    </one-of>
+  </rule>
+
+  <!-- Flex temperature: "sixty five" or "six five" → "65" -->
+  <rule id="FLEX_TEMP_VALUE">
+    <one-of>
+      <!-- "sixty five" — natural spoken -->
+      <item>
+        <ruleref uri="#FLEX_TENS" />
+        <tag>out.t=rules.FLEX_TENS;</tag>
+        <ruleref uri="#ONES_WORD" />
+        <tag>out=out.t+rules.ONES_WORD;</tag>
+      </item>
+      <!-- "six five" — digit by digit -->
+      <item>
+        <ruleref uri="#NUMBERS" />
+        <tag>out.a=rules.NUMBERS;</tag>
+        <ruleref uri="#NUMBERS" />
+        <tag>out=out.a+rules.NUMBERS;</tag>
+      </item>
+      <!-- "sixty" — pure tens -->
+      <item>
+        <ruleref uri="#FLEX_TENS" />
+        <tag>out=rules.FLEX_TENS+"0";</tag>
+      </item>
+    </one-of>
+  </rule>
+
+  <!-- Tens as leading flex digit (realistic range 30-99) -->
+  <rule id="FLEX_TENS">
+    <one-of>
+      <item>thirty<tag>out="3";</tag></item>
+      <item>forty<tag>out="4";</tag></item>
+      <item>fifty<tag>out="5";</tag></item>
+      <item>sixty<tag>out="6";</tag></item>
+      <item>seventy<tag>out="7";</tag></item>
+      <item>eighty<tag>out="8";</tag></item>
+      <item>ninety<tag>out="9";</tag></item>
+    </one-of>
+  </rule>
+</grammar>

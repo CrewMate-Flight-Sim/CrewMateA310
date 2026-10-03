@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label"
 import { TooltipProvider, Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip"
 import { usePerformanceStore } from "@/store/performanceStore"
 
-const selectCls =
+const SELECT_CLS =
   "w-full h-8 bg-slate-900/50 border border-slate-600 text-white text-xs rounded-md px-2 focus:outline-none focus:ring-2 focus:ring-cyan-500"
 
 const formatToFL = (value: number | undefined | null) => {
@@ -69,7 +69,7 @@ export function LandingWindow() {
             name="antiIce"
             value={landing.antiIce}
             onChange={handleSelectChange}
-            className={selectCls}
+            className={SELECT_CLS}
           >
             <option value="off">OFF</option>
             <option value="oneng">ENG</option>
@@ -165,7 +165,7 @@ export function LandingWindow() {
             name="apuStart"
             value={landing.apuStart}
             onChange={handleSelectChange}
-            className={selectCls}
+            className={SELECT_CLS}
           >
             <option value="auto">Auto</option>
             <option value="manual">Manual</option>
@@ -193,7 +193,7 @@ export function LandingWindow() {
             name="autoBrake"
             value={landing.autoBrake}
             onChange={handleSelectChange}
-            className={selectCls}
+            className={SELECT_CLS}
           >
             <option value="off">OFF</option>
             <option value="min">LOW</option>
@@ -205,7 +205,7 @@ export function LandingWindow() {
 
       <Button
         onClick={() => getCurrentWindow().close()}
-        className="w-full h-8 bg-cyan-600 hover:bg-cyan-700 text-white font-semibold text-sm mt-auto"
+        className="w-full h-8 bg-cyan-700 hover:bg-cyan-800 text-white font-semibold text-sm mt-auto"
       >
         Ok
       </Button>

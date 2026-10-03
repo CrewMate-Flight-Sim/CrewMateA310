@@ -3,14 +3,14 @@ import { delay } from "@/lib/utils"
 import { playSound } from "@/services/playSounds"
 import { useTelemetryStore } from "@/store/telemetryStore"
 
-const flapSpeedLimits: Record<number, number> = {
+const FLAP_SPEED_LIMITS: Record<number, number> = {
   1: 245,
   2: 210,
   3: 195,
   4: 180
 }
 
-const keyEventMap: Record<number, string> = {
+const KEY_EVENT_MAP: Record<number, string> = {
   0: "FLAPS_UP",
   1: "FLAPS_1",
   2: "FLAPS_2",
@@ -18,7 +18,7 @@ const keyEventMap: Record<number, string> = {
   4: "FLAPS_DOWN"
 }
 
-const soundMap: Record<number, string> = {
+const SOUND_MAP: Record<number, string> = {
   0: "slats_retr.ogg",
   1: "flaps_0.ogg",
   2: "flaps_15.ogg",
@@ -32,7 +32,7 @@ export async function setFlaps(setting: number, skipAnnouncement = false) {
     const currentSpeed = telemetry?.ias ?? 0
     const isOnGround = telemetry?.onGround ?? 0
     const currentFlapIndex = telemetry?.flapsIndex ?? 0
-    const speedLimit = flapSpeedLimits[setting]
+    const speedLimit = FLAP_SPEED_LIMITS[setting]
     const isInitialExtension = currentFlapIndex === 0 && setting === 1
     const isExtendingOrStatic = setting >= currentFlapIndex && setting > 0
     const isTransition3to4 = currentFlapIndex === 3 && setting === 4
@@ -43,7 +43,7 @@ export async function setFlaps(setting: number, skipAnnouncement = false) {
       return
     }
 
-    const keyEvent = keyEventMap[setting]
+    const keyEvent = KEY_EVENT_MAP[setting]
     if (!keyEvent) {
       return
     }
@@ -66,7 +66,7 @@ export async function setFlaps(setting: number, skipAnnouncement = false) {
     if (isInitialExtension) {
       playSound("slats_ext.ogg")
     } else {
-      const confirmation = soundMap[setting]
+      const confirmation = SOUND_MAP[setting]
       if (confirmation) playSound(confirmation)
     }
   } catch (error) {

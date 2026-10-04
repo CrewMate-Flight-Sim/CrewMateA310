@@ -1,6 +1,7 @@
-import { useEffect, useRef, useCallback } from "react"
+import { useEffect, useRef } from "react"
 
 import { simvarSet } from "@/API/simvarApi"
+import { useTelemetryTick } from "@/hooks/useTelemetryTick"
 import { playSound, isSoundPlaying, playSoundSequence } from "@/services/playSounds"
 import { useGoAroundStore } from "@/store/goAroundStore"
 import { usePassingAltitudeStore } from "@/store/passingAltitudeStore"
@@ -47,15 +48,13 @@ interface PreviousValues {
   onGround: number
   takeoffN1: number
   fcuAlt: number
-  mda: number
-  dh: number
 }
 
 const THRUST_SET_MARGIN = 1
 
 const getTakeoffThrustTarget = (t: Telemetry) => {
   // A310 TRP_MODE: 5 = TOGA, 6 = FLEX
-  if (t.trp === 6) {
+  if (t.thrustRatingMode === 6) {
     // FLEX mode - use flex thrust if flex temp is set (>1)
     return (t.iniFlexTemperature ?? 0) > 1 ? (t.iniThrustFlexN1 ?? 0) : (t.iniThrustTogaN1 ?? 0)
   }
@@ -66,26 +65,6 @@ const getTakeoffThrustTarget = (t: Telemetry) => {
 const crossedUp = (prev: number, curr: number, threshold: number) => prev < threshold && curr >= threshold
 
 const crossedDown = (prev: number, curr: number, threshold: number) => prev > threshold && curr <= threshold
-
-/**
- * Build audio sequence for "standard crosschecked, passing FL XXX"
- * @param targetAlt Target altitude in feet
- * @returns Array of audio filenames to play in sequence
- */
-export const buildPassingAltitudeSequence = (targetAlt: number): string[] => {
-  const sequence: string[] = ["standard_cross_checked.ogg", "passing_flight_level.ogg"]
-
-  const flightLevel = Math.round(targetAlt / 100)
-  //  FL050, FL100, FL250, etc.
-  const flString = flightLevel.toString().padStart(3, "0")
-
-  // digit files
-  for (const digit of flString) {
-    sequence.push(`${digit}.ogg`)
-  }
-
-  return sequence
-}
 
 const advancePhase = (ls: LandingSequenceState, next: LandingPhase, now: number) => {
   ls.phase = next
@@ -121,7 +100,7 @@ function handleSpoilersPhase(ls: LandingSequenceState, t: Telemetry, elapsed: nu
 }
 
 function handleReverserPhase(ls: LandingSequenceState, t: Telemetry, elapsed: number, now: number) {
-  if (t.eng1_reverse > 0.1 || t.eng2_reverse > 0.1) {
+  if (t.engine1Reverse > 0.1 || t.engine2Reverse > 0.1) {
     playSound("reverse_green.ogg")
     advancePhase(ls, "decel", now)
   } else if (elapsed >= REVERSER_TIMEOUT) {
@@ -139,7 +118,7 @@ function handleDecelPhase(ls: LandingSequenceState, t: Telemetry, elapsed: numbe
   }
 }
 
-const phaseHandlers: Record<
+const PHASE_HANDLERS: Record<
   Exclude<LandingPhase, "idle">,
   (ls: LandingSequenceState, t: Telemetry, elapsed: number, now: number) => void
 > = {
@@ -184,9 +163,7 @@ export function useCallouts() {
     radioAlt: 0,
     onGround: 1,
     takeoffN1: 0,
-    fcuAlt: 0,
-    mda: 0,
-    dh: 0
+    fcuAlt: 0
   })
 
   const thrustSetPrimed = useRef(false)
@@ -202,7 +179,7 @@ export function useCallouts() {
     })
   }, [])
 
-  const tick = useCallback(async () => {
+  const tick = async () => {
     const t = useTelemetryStore.getState().telemetry
     if (!t || t.isSlewActive) return
 
@@ -217,8 +194,8 @@ export function useCallouts() {
     const v1 = t.v1 ?? 0
     const vr = t.vr ?? 0
     const now = Date.now()
-    const takeoffN1 = Math.min(t.engineN1_1 ?? 0, t.engineN1_2 ?? 0)
-    const fcuAlt = t.fcu_alt ?? 0
+    const takeoffN1 = Math.min(t.engine1N1 ?? 0, t.engine2N1 ?? 0)
+    const fcuAlt = t.fcuAlt ?? 0
     const takeoffThrustTarget = getTakeoffThrustTarget(t)
     const mda = t.mda ?? 0
     const dh = t.dh ?? 0
@@ -409,8 +386,8 @@ export function useCallouts() {
 
     // Landing sequence
 
-    // Track sustained airborne (vs > 200 filters ground bounces)
-    if (!t.onGround && t.vs > 200) {
+    // Height rather than a climb, so a flight started on approach still arms; a bounce stays below 100 ft
+    if (!t.onGround && t.radioAlt > 100) {
       ls.wasAirborne = true
     }
 
@@ -451,7 +428,7 @@ export function useCallouts() {
     if (ls.phase !== "idle" && !(await isSoundPlaying())) {
       const elapsed = ls.phaseStartTime ? now - ls.phaseStartTime : 0
       const handler = (
-        phaseHandlers as Record<string, (ls: LandingSequenceState, t: Telemetry, elapsed: number, now: number) => void>
+        PHASE_HANDLERS as Record<string, (ls: LandingSequenceState, t: Telemetry, elapsed: number, now: number) => void>
       )[ls.phase]
       if (typeof handler === "function") {
         handler(ls, t, elapsed, now)
@@ -469,11 +446,7 @@ export function useCallouts() {
     p.onGround = t.onGround
     p.takeoffN1 = takeoffN1
     p.fcuAlt = fcuAlt
-    p.mda = mda
-  }, [])
+  }
 
-  useEffect(() => {
-    const id = setInterval(tick, 100)
-    return () => clearInterval(id)
-  }, [tick])
+  useTelemetryTick(tick)
 }

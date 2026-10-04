@@ -70,7 +70,7 @@
 
 ## Reporting Bugs & Requesting Features
 
-If you encounter a problem or want to request a new feature, please [open an issue](https://github.com/alexlenh/CrewMateA310/issues).
+If you encounter a problem or want to request a new feature, please [open an issue](https://github.com/CrewMate-Flight-Sim/CrewMateA310/issues).
 
 ---
 

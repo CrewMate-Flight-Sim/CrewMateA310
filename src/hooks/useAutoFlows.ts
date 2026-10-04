@@ -1,5 +1,6 @@
-import { useEffect, useRef, useCallback } from "react"
+import { useEffect, useRef } from "react"
 
+import { useTelemetryTick } from "@/hooks/useTelemetryTick"
 import { executeFlow } from "@/services/flowRunner"
 import { useFlowStore } from "@/store/flowStore"
 import { useGoAroundStore } from "@/store/goAroundStore"
@@ -21,7 +22,6 @@ interface TriggeredFlags {
 }
 
 interface PrevValues {
-  onGround: number
   ignitionKnob: number
   flapsIndex: number
   spoilersArmed: number
@@ -29,7 +29,7 @@ interface PrevValues {
   alt: number
   mixture1: number
   mixture2: number
-  thrredalt: number
+  thrustReductionAlt: number
 }
 
 export function useAutoFlows() {
@@ -45,7 +45,6 @@ export function useAutoFlows() {
   })
 
   const prev = useRef<PrevValues>({
-    onGround: 1,
     ignitionKnob: -1,
     flapsIndex: 0,
     spoilersArmed: 0,
@@ -53,7 +52,7 @@ export function useAutoFlows() {
     alt: 0,
     mixture1: 1,
     mixture2: 1,
-    thrredalt: 0
+    thrustReductionAlt: 0
   })
 
   const phase = useRef<"ground" | "airborne">("ground")
@@ -67,11 +66,12 @@ export function useAutoFlows() {
         goAroundCount.current = s.count
         triggered.current.afterTakeoffP1 = false
         triggered.current.afterTakeoffP2 = false
+        triggered.current.landing = false
       }
     })
   }, [])
 
-  const tick = useCallback(() => {
+  const tick = () => {
     const t = useTelemetryStore.getState().telemetry
     if (!t || t.isSlewActive) return
 
@@ -79,7 +79,6 @@ export function useAutoFlows() {
     // detect false edges (e.g. ignitionKnob already 1 on app start).
     if (!primed.current) {
       primed.current = true
-      prev.current.onGround = t.onGround
       prev.current.ignitionKnob = t.ignitionKnob === 2 ? 2 : -1
       prev.current.flapsIndex = t.flapsIndex ?? 0
       prev.current.spoilersArmed = t.spoilersArmed ?? 0
@@ -87,7 +86,7 @@ export function useAutoFlows() {
       prev.current.alt = t.alt ?? 0
       prev.current.mixture1 = t.mixture1 ?? 1
       prev.current.mixture2 = t.mixture2 ?? 1
-      prev.current.thrredalt = t.thrredalt ?? 1024
+      prev.current.thrustReductionAlt = t.thrustReductionAlt ?? 1024
       phase.current = t.onGround ? "ground" : "airborne"
       return
     }
@@ -122,7 +121,7 @@ export function useAutoFlows() {
       }
 
       // Thrust Reduction
-      else if (!fl.afterTakeoffP1 && !t.onGround && p.alt <= t.thrredalt && t.alt >= t.thrredalt) {
+      else if (!fl.afterTakeoffP1 && !t.onGround && p.alt <= t.thrustReductionAlt && t.alt >= t.thrustReductionAlt) {
         fl.afterTakeoffP1 = true
         executeFlow("thr_red")
       } else if (!fl.afterTakeoffP2 && !t.onGround && p.flapsIndex > 0 && t.flapsIndex === 0) {
@@ -164,8 +163,7 @@ export function useAutoFlows() {
       }
     }
 
-    p.thrredalt = t.thrredalt ?? 1024
-    p.onGround = t.onGround
+    p.thrustReductionAlt = t.thrustReductionAlt ?? 1024
     p.ignitionKnob = t.ignitionKnob ?? -1
     p.flapsIndex = t.flapsIndex ?? 0
     p.spoilersArmed = t.spoilersArmed ?? 0
@@ -173,10 +171,7 @@ export function useAutoFlows() {
     p.alt = t.alt ?? 0
     p.mixture1 = t.mixture1 ?? 1
     p.mixture2 = t.mixture2 ?? 1
-  }, [])
+  }
 
-  useEffect(() => {
-    const id = setInterval(tick, 100)
-    return () => clearInterval(id)
-  }, [tick])
+  useTelemetryTick(tick)
 }

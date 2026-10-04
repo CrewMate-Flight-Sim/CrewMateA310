@@ -3,14 +3,17 @@ import { emit, listen } from "@tauri-apps/api/event"
 import { create } from "zustand"
 import { persist } from "zustand/middleware"
 
+import type { InputBinding, VoiceMode } from "@/types/input"
+
 export type LightsControlMode = "virtual" | "user"
 
-const defaultLightsControlMode: LightsControlMode = "user"
+const DEFAULT_LIGHTS_CONTROL_MODE: LightsControlMode = "user"
 
 interface SettingsStore {
   voiceEnabled: boolean
-  voiceMode: "continuous" | "ptt"
-  pttShortcut: string
+  voiceMode: VoiceMode
+  pttBinding: InputBinding | null
+  micToggleBinding: InputBinding | null
   soundPack: string
   geSoundPack: string
   soundVolume: number
@@ -21,8 +24,9 @@ interface SettingsStore {
   confidenceThreshold: number
   postLandingShutdownEnabled: boolean
   setVoiceEnabled: (enabled: boolean) => void
-  setVoiceMode: (mode: "continuous" | "ptt") => void
-  setPttShortcut: (shortcut: string) => void
+  setVoiceMode: (mode: VoiceMode) => void
+  setPttBinding: (binding: InputBinding | null) => void
+  setMicToggleBinding: (binding: InputBinding | null) => void
   setSoundPack: (pack: string) => void
   setGeSoundPack: (pack: string) => void
   setSoundVolume: (volume: number) => void
@@ -43,19 +47,28 @@ const applyConfidenceThreshold = async (threshold: number) => {
   await invoke("set_confidence_threshold", { threshold: toEngineThreshold(threshold) })
 }
 
+const applyMicBindings = async (ptt: InputBinding | null, toggle: InputBinding | null) => {
+  await invoke("set_mic_bindings", { ptt, toggle })
+}
+
+type SettingsValues = {
+  [K in keyof SettingsStore as SettingsStore[K] extends (...args: never[]) => unknown ? never : K]: SettingsStore[K]
+}
+
 export const useSettingsStore = create<SettingsStore>()(
   persist(
-    (set) => ({
+    (set, get) => ({
       voiceEnabled: false,
       voiceMode: "continuous",
-      pttShortcut: "CmdOrCtrl+Shift+Space",
+      pttBinding: null,
+      micToggleBinding: null,
       soundPack: "Jenny",
       geSoundPack: "GE_Christopher",
       soundVolume: 100,
       outputDevice: null,
       inputDevice: null,
       holdOnIncorrect: false,
-      lightsControlMode: defaultLightsControlMode,
+      lightsControlMode: DEFAULT_LIGHTS_CONTROL_MODE,
       confidenceThreshold: 85,
       postLandingShutdownEnabled: true,
 
@@ -68,14 +81,29 @@ export const useSettingsStore = create<SettingsStore>()(
       },
       setVoiceMode: (mode) => {
         set({ voiceMode: mode })
+        invoke("set_voice_mode", { mode }).catch((err) => {
+          console.error("[SettingsStore] Failed to apply voice mode:", err)
+        })
         if (!isUpdatingFromEvent) {
           emit("settings-changed", { voiceMode: mode })
         }
       },
-      setPttShortcut: (shortcut) => {
-        set({ pttShortcut: shortcut })
+      setPttBinding: (binding) => {
+        set({ pttBinding: binding })
+        applyMicBindings(binding, get().micToggleBinding).catch((err) => {
+          console.error("[SettingsStore] Failed to apply PTT binding:", err)
+        })
         if (!isUpdatingFromEvent) {
-          emit("settings-changed", { pttShortcut: shortcut })
+          emit("settings-changed", { pttBinding: binding })
+        }
+      },
+      setMicToggleBinding: (binding) => {
+        set({ micToggleBinding: binding })
+        applyMicBindings(get().pttBinding, binding).catch((err) => {
+          console.error("[SettingsStore] Failed to apply mic toggle binding:", err)
+        })
+        if (!isUpdatingFromEvent) {
+          emit("settings-changed", { micToggleBinding: binding })
         }
       },
       setSoundPack: (pack) => {
@@ -124,7 +152,7 @@ export const useSettingsStore = create<SettingsStore>()(
         const safeThreshold = normalizeThreshold(threshold)
         set({ confidenceThreshold: safeThreshold })
         applyConfidenceThreshold(safeThreshold).catch((err) => {
-          console.error("Failed to apply confidence threshold:", err)
+          console.error("[SettingsStore] Failed to apply confidence threshold:", err)
         })
         if (!isUpdatingFromEvent) {
           emit("settings-changed", { confidenceThreshold: safeThreshold })
@@ -146,7 +174,7 @@ export const useSettingsStore = create<SettingsStore>()(
             useSettingsStore.setState({ confidenceThreshold: safeThreshold })
           }
           applyConfidenceThreshold(safeThreshold).catch((err) => {
-            console.error("Failed to restore confidence threshold:", err)
+            console.error("[SettingsStore] Failed to restore confidence threshold:", err)
           })
         }
         if (state && state.outputDevice) {
@@ -155,26 +183,20 @@ export const useSettingsStore = create<SettingsStore>()(
         if (state && state.inputDevice) {
           invoke("set_input_device", { device: state.inputDevice }).catch(() => {})
         }
+        if (state) {
+          invoke("set_voice_mode", { mode: state.voiceMode }).catch((err) => {
+            console.error("[SettingsStore] Failed to restore voice mode:", err)
+          })
+          applyMicBindings(state.pttBinding ?? null, state.micToggleBinding ?? null).catch((err) => {
+            console.error("[SettingsStore] Failed to restore mic bindings:", err)
+          })
+        }
       }
     }
   )
 )
 
-listen<
-  Partial<
-    Omit<
-      SettingsStore,
-      | "setVoiceEnabled"
-      | "setVoiceMode"
-      | "setPttShortcut"
-      | "setSoundPack"
-      | "setSoundVolume"
-      | "setLightsControlMode"
-      | "setConfidenceThreshold"
-      | "setPostLandingShutdownEnabled"
-    >
-  >
->("settings-changed", (event) => {
+listen<Partial<SettingsValues>>("settings-changed", (event) => {
   isUpdatingFromEvent = true
 
   if (event.payload.voiceEnabled !== undefined) {
@@ -183,8 +205,11 @@ listen<
   if (event.payload.voiceMode !== undefined) {
     useSettingsStore.setState({ voiceMode: event.payload.voiceMode })
   }
-  if (event.payload.pttShortcut !== undefined) {
-    useSettingsStore.setState({ pttShortcut: event.payload.pttShortcut })
+  if (event.payload.pttBinding !== undefined) {
+    useSettingsStore.setState({ pttBinding: event.payload.pttBinding })
+  }
+  if (event.payload.micToggleBinding !== undefined) {
+    useSettingsStore.setState({ micToggleBinding: event.payload.micToggleBinding })
   }
   if (event.payload.soundPack !== undefined) {
     useSettingsStore.setState({ soundPack: event.payload.soundPack })

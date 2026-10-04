@@ -1,15 +1,15 @@
-import { buildPassingAltitudeSequence } from "@/hooks/useCallouts"
 import { delay } from "@/lib/utils"
 import { abortChecklist, executeChecklist } from "@/services/checklistRunner"
 import { executeFlow } from "@/services/flowRunner"
 import { playSound, playSoundSequence } from "@/services/playSounds"
+import { buildGoAroundAltSequence, buildPassingAltitudeSequence } from "@/services/soundSequences"
 import { useGroundEngineerStore } from "@/store/groundEngineerStore"
 import { usePassingAltitudeStore } from "@/store/passingAltitudeStore"
 import { usePreflightTimerStore } from "@/store/preflightTimerStore"
 import { useSettingsStore } from "@/store/settingsStore"
 import { useTelemetryStore } from "@/store/telemetryStore"
 
-import { setEngAntiIce, setWingAntiIce } from "./commands/anti_ice"
+import { setEngAntiIce, setWingAntiIce } from "./commands/antiIce"
 import { setAPUBleed, setStartAPU } from "./commands/apu"
 import {
   setAirspeedDial,
@@ -29,12 +29,12 @@ import {
 import { setStdBaro } from "./commands/baro"
 import { startEngine1, startEngine2, setIgnKnob } from "./commands/engine"
 import { setFlaps } from "./commands/flaps"
-import { flightControlsCheck, opencloseFCTLECAM } from "./commands/flight_controls_check"
+import { flightControlsCheck, opencloseFCTLECAM } from "./commands/flightControlsCheck"
 import { setGearHandle } from "./commands/gear"
 import { executeGoAround } from "./commands/goAround"
 import { callPushback, disconnectAllGround, setASU, setGPU } from "./commands/groundServices"
 import { setLandingLights, setStrobeLights, setTaxiLights } from "./commands/lights"
-import { setSeatBelts } from "./commands/seat_belts"
+import { setSeatBelts } from "./commands/seatBelts"
 import { setWipers } from "./commands/wipers"
 
 const randomDelay = (min: number, max: number) => delay(min + Math.random() * (max - min))
@@ -42,11 +42,23 @@ const randomDelay = (min: number, max: number) => delay(min + Math.random() * (m
 const gePack = () => useSettingsStore.getState().geSoundPack
 
 // Commands that are allowed to fire even while a checklist is running.
-export const checklistAbortCommands = new Set(["checklist_cancel"])
+export const CHECKLIST_ABORT_COMMANDS = new Set(["checklist_cancel"])
+
+// Still work while the FO is on the walkaround: the ground engineer is someone else, and the timer drives the absence
+export const FO_AWAY_ALLOWED_COMMANDS = new Set([
+  "ground_call",
+  "pushback_request",
+  "connect_gpu",
+  "disconnect_gpu",
+  "connect_asu",
+  "disconnect_asu",
+  "disconnect_all_ground",
+  "prepare_aircraft"
+])
 
 // ─── Discrete command map ─────────────────────────────────────────────────────
 
-export const discreteCommandMap: Record<string, () => void | Promise<void>> = {
+export const DISCRETE_COMMAND_MAP: Record<string, () => void | Promise<void>> = {
   // ── Gear ──────────────────────────────────────────────────────────────────
   gear_up: () => setGearHandle(0),
   gear_down: () => setGearHandle(1),
@@ -251,13 +263,13 @@ export const discreteCommandMap: Record<string, () => void | Promise<void>> = {
   secure_aircraft: () => executeFlow("secure"),
 
   // ── Checklists ────────────────────────────────────────────────────────────
-  checklist_before_startP1: () => executeChecklist("before_start_to_the_line"),
-  checklist_before_startP2: () => executeChecklist("before_start_below_the_line"),
+  checklist_before_start_p1: () => executeChecklist("before_start_to_the_line"),
+  checklist_before_start_p2: () => executeChecklist("before_start_below_the_line"),
   checklist_after_start: () => executeChecklist("after_start"),
-  checklist_before_takeoffP1: () => executeChecklist("before_takeoff_to_the_line"),
-  checklist_before_takeoffP2: () => executeChecklist("before_takeoff_below_the_line"),
-  checklist_after_takeoffP1: () => executeChecklist("climb_to_the_line"),
-  checklist_after_takeoffP2: () => executeChecklist("climb_below_the_line"),
+  checklist_before_takeoff_p1: () => executeChecklist("before_takeoff_to_the_line"),
+  checklist_before_takeoff_p2: () => executeChecklist("before_takeoff_below_the_line"),
+  checklist_after_takeoff_p1: () => executeChecklist("climb_to_the_line"),
+  checklist_after_takeoff_p2: () => executeChecklist("climb_below_the_line"),
   checklist_after_landing: () => executeChecklist("after_landing"),
   checklist_approach: () => executeChecklist("approach"),
   checklist_landing: () => executeChecklist("landing"),
@@ -268,6 +280,14 @@ export const discreteCommandMap: Record<string, () => void | Promise<void>> = {
   // ── RTO / Continue  ─────────────────────────────────────
   //abort_takeoff: () => playSound("check.ogg"),
   continue: () => playSound("check.ogg"),
+
+  // ── Control handover ──────────────────────────────────────────────────────
+  you_have_ctrl: () => {
+    playSound("i_have_ctrl.ogg")
+  },
+  i_have_ctrl: () => {
+    playSound("you_have_ctrl.ogg")
+  },
 
   // ── Ground engineer ───────────────────────────────────────────────────────
   pushback_request: async () => {
@@ -327,8 +347,9 @@ export async function dispatchFoCommand(commandType: string, payload: Record<str
     case "discrete": {
       const cmd = payload.command as string | undefined
       if (!cmd) return false
-      const handler = discreteCommandMap[cmd]
-      if (handler) await handler()
+      const handler = DISCRETE_COMMAND_MAP[cmd]
+      if (!handler) return false
+      await handler()
       return true
     }
 
@@ -375,9 +396,8 @@ export async function dispatchFoCommand(commandType: string, payload: Record<str
     case "missed_approach_altitude": {
       if (payload.value != null) {
         const altValue = payload.value as number
-        const leadingNumber = Math.floor(altValue / 1000).toString()
         setAltitudeDial(altValue)
-        playSoundSequence(["go_around_alt.ogg", `${leadingNumber}.ogg`, "thousand.ogg", "feet_set.ogg"])
+        playSoundSequence(buildGoAroundAltSequence(altValue))
       }
       return true
     }

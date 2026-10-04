@@ -1,3 +1,6 @@
+# Pass -Only <name>[,<name>] to regenerate just those phrases; a full run rewrites every ogg in every pack
+param([string[]]$Only)
+
 # This script uses Azure Cognitive Services for high-quality TTS
 # You'll need a free Azure account: https://azure.microsoft.com/free/
 
@@ -40,7 +43,6 @@ $phrases = @{
     "check_belts"                          = "Seat belt sign is not on"
     "check_flaps"                          = "Check flaps"
     "check_landing_gear"                   = "Check landing gear"
-    "check_seatbelts"                      = "Check seatbelts"
     "check_speed"                          = "Check speed"
     "check_spoilers"                       = "Check spoilers"
     "checked"                              = "Checked"
@@ -85,6 +87,7 @@ $phrases = @{
     "standard_cross_checked"               = "Standard cross checked"
     "standard_set"                         = "Standard Set"
     "ten_thousand"                         = "Ten thousand"
+    "hundred"                              = "Hundred"
     "thousand"                             = "Thousand"
     "thrust_set"                           = "Thrust set"
     "tcas"                                 = "T cas"
@@ -153,6 +156,8 @@ $phrases = @{
     "go_around_alt"                        = "Go around altitude"
     "feet_set"                             = "feet set"
     "100_above"                            = "one hundred above"
+    "i_have_ctrl"                          = "I have control"
+    "you_have_ctrl"                        = "You have control"
 }
 # Derive folder name from voice: "en-US-JennyNeural" -> "Jenny"
 
@@ -170,10 +175,10 @@ if (-not $ffmpegExe) {
 }
 
 if (-not (Test-Path $ffmpegExe)) {
-    Write-Error "FFmpeg NOT FOUND! Please install it or check the path: $ffmpegExe"
+    Write-Error "[FOvoices] FFmpeg NOT FOUND! Please install it or check the path: $ffmpegExe"
     exit 1
 }
-Write-Host "Using FFmpeg from: $ffmpegExe" -ForegroundColor Yellow
+Write-Host "[FOvoices] Using FFmpeg from: $ffmpegExe" -ForegroundColor Yellow
 
 # === VOICE GENERATION LOOP ===
 foreach ($voiceName in $voicesToGenerate) {
@@ -183,9 +188,10 @@ foreach ($voiceName in $voicesToGenerate) {
     $outDir = [System.IO.Path]::GetFullPath($outDir)
     New-Item -ItemType Directory -Force -Path $outDir | Out-Null
 
-    Write-Host "`n>>> STARTING VOICE: $voiceShortName" -ForegroundColor Cyan
+    Write-Host "`n[FOvoices] >>> STARTING VOICE: $voiceShortName" -ForegroundColor Cyan
 
     foreach ($file in $phrases.Keys) {
+        if ($Only -and $Only -notcontains $file) { continue }
         $text = $phrases[$file]
         $mp3Path = "$outDir\$file.mp3"
         $oggPath = "$outDir\$file.ogg"
@@ -198,13 +204,13 @@ foreach ($voiceName in $voicesToGenerate) {
             if (Test-Path $mp3Path) {
                 & $ffmpegExe -i "$mp3Path" -c:a libvorbis -q:a 4 "$oggPath" -y -loglevel error
                 Remove-Item $mp3Path -ErrorAction SilentlyContinue
-                Write-Host "  [OK] $file"
+                Write-Host "[FOvoices] [OK] $file"
             }
         }
         catch {
-            Write-Error "Failed $file : $_"
+            Write-Error "[FOvoices] Failed $file : $_"
         }
     }
 }
 
-Write-Host "Completed! Audio files created in $outDir"
+Write-Host "[FOvoices] Completed! Audio files created in $outDir"
